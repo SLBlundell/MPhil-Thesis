@@ -16,6 +16,9 @@
 %    - CSV financial friction (Bernanke-Gertler-Gilchrist 1999)
 %    - Home bias in sovereign debt holdings (gamma)
 %
+%   The model is set to 5-year periods, with parameters compounded compared
+%   to annual values accordingly.
+%
 %  See main.tex, equations [sys_leverage], [sys_clearing], [sys_default].
 
 clear; clc;
@@ -26,7 +29,7 @@ fprintf('============================================================\n\n');
 %% ========================= PARAMETERS ================================
 
 % Preferences
-par.beta    = 0.96;         % discount factor
+par.beta    = 0.815;         % discount factor
 par.sigma_u = 2;            % CRRA risk aversion
 
 % CES aggregator
@@ -41,14 +44,14 @@ par.sigma_w = 0.35;         % idiosyncratic shock volatility (sigma_omega)
 par.mu      = 0.25;         % CSV monitoring cost
 
 % International
-par.Rstar   = 1.04;         % world gross interest rate
+par.Rstar   = 1.104;         % world gross interest rate
 
 % Endowment process:  log(g1) = (1-rho) log(mu_g) + rho log(g0) + eps
 par.y0      = 1.0;          % Period 0 endowment (normalised)
 par.b0      = 0.30;         % pre-existing debt
-par.rho     = 0.90;         % AR(1) persistence of growth
+par.rho     = 0.00;         % AR(1) persistence of growth
 par.mu_g    = 1.00;         % unconditional mean growth rate
-par.sigma_g = 0.034;        % growth shock std. dev.
+par.sigma_g = 0.10;        % growth shock std. dev.
 par.g0      = 1.00;         % initial growth rate
 
 fprintf('Parameters:\n');
