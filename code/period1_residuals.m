@@ -19,7 +19,7 @@ function R = period1_residuals(x, par, csv)
 %   csv must be the struct returned by csv_functions().
 
     D        = x(1);
-    omegabar = x(2);
+    omegabar = exp(x(2));  % solve for log(omegabar) to ensure positivity
     Mf       = x(3);
 
     % --- Derived quantities ---
