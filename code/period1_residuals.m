@@ -26,6 +26,13 @@ function R = period1_residuals(x, par, csv)
     N   = par.nbar + par.gamma * (par.b1 - D);          % intermediary net worth
     ell = 1 - N / Mf;                                   % leverage ratio
 
+    % Guard: return large penalty if outside feasible region 
+    % (enforcing KKT)
+    if Mf <= 0 || N <= 0 || ell <= 0 || ell >= 1 || omegabar <= 0
+        R = [1e6; 1e6; 1e6];
+        return
+    end
+
     % --- CSV evaluations ---
     Gam  = csv.Gamma(omegabar);
     Gp   = csv.GammaPrime(omegabar);

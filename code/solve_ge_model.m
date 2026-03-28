@@ -38,8 +38,8 @@ par.eta     = -1;           % CES parameter (eta < 0  =>  complements)
 par.sigma   = 1/(1-par.eta);% elasticity of substitution = 1/(1-eta)
 
 % Financial sector
-par.nbar    = 0.03;         % long-run intermediary net worth
-par.gamma   = 0.60;         % home bias share of sovereign debt
+par.nbar    = 0.10;         % long-run intermediary net worth
+par.gamma   = 0.20;         % home bias share of sovereign debt
 par.sigma_w = 0.35;         % idiosyncratic shock volatility (sigma_omega)
 par.mu      = 0.25;         % CSV monitoring cost
 
@@ -119,7 +119,11 @@ x0      = [];
 for j = 1:nq
     sol1{j}  = solve_period1(y1_nodes(j), b1_star, par, csv, x0);
     D_vals(j) = sol1{j}.D;
-    x0 = [sol1{j}.D; sol1{j}.omegabar; sol1{j}.Mf];
+    if sol1{j}.exitflag <= 0 || sol1{j}.omegabar < 1e-6
+        x0 = [];
+    else
+        x0 = [sol1{j}.D; log(sol1{j}.omegabar); sol1{j}.Mf];
+    end
 end
 
 % --- Bond price ---

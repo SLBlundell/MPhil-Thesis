@@ -35,7 +35,11 @@ function R = period0_euler(b1, par, csv, y1_nodes, weights)
         dpm_dN_vals(j)  = sol_j.dpm_dN;
 
         % Warm-start next quadrature node with current solution
-        x0 = [sol_j.D; sol_j.omegabar; sol_j.Mf];
+        if sol_j.exitflag <= 0 || sol_j.omegabar < 1e-6
+            x0 = [];
+        else
+            x0 = [sol_j.D; log(sol_j.omegabar); sol_j.Mf];
+        end
     end
 
     % --- Bond price [eq:bondprice] ---
