@@ -1,0 +1,90 @@
+\section{Proof of Equilibrium}
+
+\subsection{Period 1 Equilibrium}
+
+Throughout, take the states $(y_1, b_1)$ with $b_1 > 0$ as given. Define the net-worth ratio $\ell \equiv N_1 / M_1^f \in (0,1)$.
+
+Rewrite the leverage--threshold condition~\eqref{eq:sys_leverage} as
+\begin{equation}\label{eq:h}
+    h(\bar\omega, \ell) \;\equiv\; \Gamma'(\bar\omega)\,\bar\omega\,\frac{\ell}{1 - \ell} - \bigl[1 - \Gamma(\bar\omega)\bigr] \;=\; 0.
+\end{equation}
+
+\begin{lemma}\label{lem:omega-ell}
+For each $\ell \in (0,1)$, equation~\eqref{eq:h} has a unique solution $\bar\omega_1(\ell) > 0$.  The mapping $\ell \mapsto \bar\omega_1(\ell)$ is $C^1$ and strictly decreasing.
+\end{lemma}
+
+\begin{proof}
+Fix $\ell \in (0,1)$.
+
+\emph{Boundary behaviour.}  Under the log-normal specification~\eqref{eq:Gammadef}, $\Gamma(0) = 0$ and $\Gamma'(0) = 1 - F(0) = 1$, so $h(0, \ell) = -1 < 0$.  As $\bar\omega \to \infty$, $\Gamma(\bar\omega) \to 1$ and $1 - \Gamma(\bar\omega) \to 0$.  Because the log-normal hazard rate $\bar\omega f(\bar\omega)/[1 - F(\bar\omega)]$ is eventually increasing\footnote{This is a standard property of the log-normal distribution; see, for example, \citet[Appendix~B]{bernanke_chapter_1999}.}, the product $\Gamma'(\bar\omega)\,\bar\omega = [1 - F(\bar\omega)]\,\bar\omega$ dominates $1 - \Gamma(\bar\omega)$ for $\bar\omega$ sufficiently large, so $h(\bar\omega, \ell) > 0$ eventually.  By the Intermediate Value Theorem, a root exists.
+
+\emph{Uniqueness.}  Differentiate with respect to $\bar\omega$:
+\[
+    \frac{\partial h}{\partial \bar\omega} = \bigl[\Gamma''(\bar\omega)\,\bar\omega + \Gamma'(\bar\omega)\bigr]\,\frac{\ell}{1 - \ell} + \Gamma'(\bar\omega).
+\]
+Since $\Gamma''(\bar\omega) < 0$ for all $\bar\omega > 0$ by~\eqref{eq:Gammapp}, this expression has the same sign as the intermediary's second-order condition for profit maximisation.  Concavity of the intermediary's problem (a maintained assumption) requires $\partial h / \partial \bar\omega > 0$ at any solution.  Hence $h$ crosses zero exactly once.
+
+\emph{Comparative static.}  Since $\partial h / \partial \ell = \Gamma'(\bar\omega)\,\bar\omega / (1 - \ell)^2 > 0$, the implicit function theorem gives
+\[
+    \frac{d\bar\omega_1}{d\ell} = -\frac{\partial h / \partial \ell}{\partial h / \partial \bar\omega} < 0. \qedhere
+\]
+\end{proof}
+
+Substitute $\bar\omega_1(\ell)$ into the interior default condition~\eqref{eq:sys_default}.  The key observation is that the scale variable $M_1^f$ cancels from this equation.
+
+\begin{lemma}\label{lem:Mf-cancels}
+At an interior optimum, $|\partial\bar\omega_1 / \partial N_1|$ is proportional to $1/M_1^f$, with the factor of proportionality depending only on $\ell$ and $\bar\omega_1(\ell)$.  Consequently, equation~\eqref{eq:sys_default} reduces to a single equation in $\ell$ alone.
+\end{lemma}
+
+\begin{proof}
+From~\eqref{eq:domega_dn}, write
+\[
+    \left|\frac{\partial\bar\omega_1}{\partial N_1}\right| = \frac{1}{M_1^f}\,\cdot\,\frac{\Gamma'(\bar\omega_1)\,\bar\omega_1}{(1 - \ell)^2\,\mathcal{D}(\ell)},
+\]
+where $\mathcal{D}(\ell) \equiv \Gamma'(\bar\omega_1)(1 - \ell) + \ell\bigl[\Gamma''(\bar\omega_1)\,\bar\omega_1 + \Gamma'(\bar\omega_1)\bigr]$ depends on $\ell$ through $\bar\omega_1(\ell)$.
+
+Substituting into~\eqref{eq:sys_default}, the factor $M_1^f$ on the right-hand side of~\eqref{eq:sys_default} (from the market-clearing term) absorbs the $1/M_1^f$ in $|\partial\bar\omega_1/\partial N_1|$, and the remaining $M_1^f$ terms appear only through ratios $N_1/M_1^f = \ell$.  The resulting equation is
+\begin{equation}\label{eq:F-ell}
+    \mathcal{F}(\ell) \;\equiv\; \Psi\bigl(\bar\omega_1(\ell)\bigr)^2 - \gamma R^*\bigl(1 - \mu G(\bar\omega_1(\ell))\bigr)\left[\frac{\Psi(\bar\omega_1(\ell))}{1} + (1 - \ell)\,\Psi'(\bar\omega_1(\ell))\,\frac{\Gamma'(\bar\omega_1)\,\bar\omega_1}{(1-\ell)^2\,\mathcal{D}(\ell)}\right] = 0,
+\end{equation}
+which depends only on $\ell$ and parameters.%
+\footnote{Equation~\eqref{eq:F-ell} is written schematically.  The exact form follows from substituting the expressions for $p_{m,1}$, $m_1^f$, and $|\partial\bar\omega_1/\partial N_1|$ into~\eqref{eq:sys_default} and cancelling $M_1^f$.  The essential point is that every appearance of $M_1^f$ cancels, a consequence of the homogeneity of the intermediary problem in $(N_1, M_1^f)$.}
+\end{proof}
+
+\begin{proposition}[Period 1 Equilibrium Existence]\label{prop:P1-exist}
+Under Assumption~\ref{ass:interior} and the intermediary second-order condition, there exists a unique interior equilibrium $(\ell^*, \bar\omega_1^*, M_1^{f*})$ solving the system~\eqref{eq:sys_leverage}--\eqref{eq:sys_default}.
+\end{proposition}
+
+\begin{proof}
+The proof proceeds in three stages.
+
+\emph{Stage (i): unique $(\ell^*, \bar\omega_1^*)$.}\quad
+By Lemma~\ref{lem:omega-ell}, $\bar\omega_1(\ell)$ is well-defined and strictly decreasing.  By Lemma~\ref{lem:Mf-cancels}, the interior default condition reduces to $\mathcal{F}(\ell) = 0$.
+
+Consider the boundary behaviour of $\mathcal{F}$.  As $\ell \to 1^{-}$ (high capitalisation), $\bar\omega_1 \to 0$, $\Psi \to 0$, and $\Psi' \to 1 - \mu G'(0)$.  The left-hand side of~\eqref{eq:F-ell} vanishes while the right-hand side remains bounded away from zero, so $\mathcal{F}(\ell) < 0$ near $\ell = 1$.  As $\ell \to 0^{+}$ (extreme leverage), $\bar\omega_1$ is large, $\Psi(\bar\omega_1) \to 1 - \mu$ from below, and the penalty terms grow without bound as $\mathcal{D}(\ell) \to 0^+$.%
+\footnote{The behaviour as $\ell \to 0^+$ requires that the intermediary SOC is \emph{binding} at extreme leverage, so that $\mathcal{D}(\ell) \to 0$.  Under the log-normal specification, this can be verified numerically for the relevant parameter range.  \textbf{[Verify: need a formal argument or sufficient condition for $\mathcal{F}(\ell) > 0$ as $\ell \to 0^+$.  The log-normal hazard rate properties likely suffice, but this warrants explicit verification.]}}  Hence $\mathcal{F}(\ell) > 0$ for $\ell$ sufficiently small.
+
+By continuity and the intermediate value theorem, a solution $\ell^*$ exists.  Uniqueness follows from Proposition~\ref{prop:convexity}: the convexity of the default penalty in $D$ implies that the marginal cost of default crosses the marginal benefit at most once in $\ell$-space, so $\mathcal{F}$ has a unique root.%
+\footnote{\textbf{[Needed: a formal proof that convexity of $p_{m,1}$ in $D$ translates to single-crossing of $\mathcal{F}$ in $\ell$.  This is immediate if $\mathcal{F}'(\ell) > 0$ throughout $(0,1)$, which requires signing $d\mathcal{F}/d\ell$.  Under the calibration $(\bar n = 0.03, \gamma = 0.6, \sigma_\omega = 0.35, \mu = 0.25)$, this holds numerically; a sufficient analytical condition would strengthen the result.]}}
+
+Set $\bar\omega_1^* = \bar\omega_1(\ell^*)$.
+
+\emph{Stage (ii): unique $M_1^{f*}$.}\quad
+Given $(\ell^*, \bar\omega_1^*)$, the import price is $p_{m,1}^* = R^* (1 - \ell^*) / \Psi(\bar\omega_1^*)$, and net worth is $N_1 = \bar n + \gamma(b_1 - D)$.  The identity $\ell^* = N_1(D) / M_1^f$ ties $D$ and $M_1^f$ together:
+\[
+    M_1^f = \frac{\bar n + \gamma(b_1 - D)}{\ell^*}.
+\]
+Substituting into the foreign input market clearing condition~\eqref{eq:sys_clearing} yields a single equation in $D$:
+\begin{equation}\label{eq:G-D}
+    \mathcal{G}(D) \;\equiv\; \frac{N_1(D)}{\ell^*}\bigl(1 - \mu G(\bar\omega_1^*)\bigr)\left[\left(\frac{\alpha\, p_{m,1}^*}{1 - \alpha}\right)^{\!\sigma} + p_{m,1}^*\right]^{-1} - \bigl[y_1 - (b_1 - D) + (1 - \Gamma(\bar\omega_1^*))\,p_{m,1}^*\,M_1^f(D)\bigr] = 0.
+\end{equation}
+
+As $D \to 0$, $N_1$ is maximised and import supply is large.  As $D \to b_1$, $N_1 = \bar n$ and supply contracts to its minimum, while disposable income $y_1 + \Pi_1$ remains bounded.  A sign change in $\mathcal{G}$ is guaranteed provided the budget constraint is slack at $D = 0$ and binding at $D = b_1$, which holds for $b_1$ sufficiently large relative to $y_1$.%
+\footnote{\textbf{[Needed: sufficient conditions for the sign change.  The complementarity restriction $\eta < 0$ helps here---because the household cannot substitute away from imports, excess demand for imports is more sensitive to supply contractions, strengthening the sign change.  A formal proof would bound $\mathcal{G}(0)$ and $\mathcal{G}(b_1)$ under the CES demand structure.]}}
+
+Uniqueness of $D^*$ (and hence $M_1^{f*} = N_1(D^*)/\ell^*$) follows from monotonicity of $\mathcal{G}$.  Higher $D$ simultaneously reduces import supply (through lower $M_1^f$) and raises disposable income (through debt relief).  Under $\eta < 0$, the supply contraction dominates the demand expansion, ensuring $\mathcal{G}$ is monotone.%
+\footnote{\textbf{[Needed: this monotonicity claim requires a formal argument.  The mechanism is intuitive---complementarity prevents substitution away from imports---but the proof must account for the dividend term $(1 - \Gamma)\,p_{m,1}\,M_1^f$ on the income side, which moves in the same direction as $M_1^f$.  Sufficient conditions on $\alpha$ and $\eta$ likely deliver it.]}}
+
+\emph{Stage (iii): recovery of remaining variables.}\quad
+Given $(D^*, \bar\omega_1^*, M_1^{f*})$, all remaining Period~1 variables are determined residually: $N_1$ from~\eqref{eq:nw1}, $p_{m,1}$ from~\eqref{eq:pm}, $m_1^f$ from~\eqref{eq:mc_foreign}, $\Pi_1$ from~\eqref{eq:Pi_agg}, $m_1^d$ from~\eqref{eq:bc1}, $C_1$ from~\eqref{eq:CES}, $Z_1$ from~\eqref{eq:efp}, and $K_1 = M_1^f - N_1$.
+\end{proof}

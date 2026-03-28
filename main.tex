@@ -1,8 +1,21 @@
-\documentclass{article}
+\documentclass[11pt]{article}
 
 % Language setting
 \usepackage[english]{babel}
 \usepackage[toc,page]{appendix}
+
+% Set page size and margins
+\usepackage[a4paper,top=2cm,bottom=2cm,left=3cm,right=3cm,marginparwidth=1.75cm]{geometry}
+
+% Packages
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{mathtools}
+\usepackage{setspace}
+\usepackage[colorlinks=true, allcolors=blue]{hyperref}
+\usepackage{cleveref}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage{graphicx}
 
 \usepackage[
     style=authoryear,
@@ -14,456 +27,567 @@
     isbn=false,
     url=false
 ]{biblatex}
+
 \addbibresource{references.bib}
 \usepackage{csquotes}
 
-
-% Set page size and margins
-% Replace `letterpaper' with`a4paper' for UK/EU standard size
-\usepackage[letterpaper,top=2cm,bottom=2cm,left=3cm,right=3cm,marginparwidth=1.75cm]{geometry}
-
-% Useful packages
-\usepackage{amsmath,amssymb}
-\usepackage{graphicx}
-\usepackage{booktabs}
-\usepackage[colorlinks=true, allcolors=blue]{hyperref}
-
 \DeclareMathOperator{\E}{\mathbb{E}}
+% Theorem environments
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}
+\theoremstyle{plain}
+\newtheorem{proposition}{Proposition}
+\newtheorem{lemma}{Lemma}
+\newtheorem{corollary}{Corollary}
+\theoremstyle{remark}
+\newtheorem{remark}{Remark}
+\newtheorem{assumption}{Assumption}
+
+% Spacing
+\onehalfspacing
 \setlength\parindent{0pt}
 
-\title{MPhil Thesis Progress - Two-Period Model of Partial Sovereign Default
-\author{Sam Blundell}}
+% Custom commands
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\mf}{m^{f}}
+\newcommand{\md}{m^{d}}
+\newcommand{\Mf}{M^{f}}
+\newcommand{\Rstar}{R^{*}}
+
+\title{Two-Period Model of Partial Sovereign Default \\ \large MPhil Thesis Progress}
+\author{Sam Blundell}
+\date{\today}
 
 \begin{document}
-
 \maketitle
 
-\section{The Model}
-
-I present an endowment economy inhabited by three distinct agents: a Representative Household (the sovereign), a continuum of risk-neutral Domestic Import Intermediaries (Domestic Banks) indexed by $i\in[0,1]$, and a risk-neutral International Lender. 
-
-\subsection{Sequence of Events}
-The discrete-time model spans two periods, $t \in \{0,1\}$, with the following sub-period timeline:
-\begin{itemize}
-    \item \textbf{Period 0:} 
-    \begin{enumerate}
-        \item The household receives endowment $y_0$.
-        \item The household issues intertemporal bonds $b_1$ at price $q_0$. A fraction $\gamma$ is purchased by domestic intermediaries; the rest by the international lender.
-        \item Intermediaries borrow working capital $\kappa_0$ from the international lender to intermediate foreign inputs $m^f_0$.
-        \item The household produces and consumes final aggregate $C_0$.
-    \end{enumerate}
-    \item \textbf{Period 1:}
-    \begin{enumerate}
-        \item The aggregate endowment shock $g_1$ is realised, determining $y_1$.
-        \item The household chooses the partial default level $D \in [0, b_1]$.
-        \item Domestic intermediaries' net worth $n_{i,1}$ is updated based on the post-default value of their bond holdings.
-        \item Intermediaries borrow working capital $\kappa_1$ subject to a Costly State Verification (CSV) contract, determining the domestic price of foreign inputs $p_{m,1}$.
-        \item The idiosyncratic shock $\omega_{i,1}$ is realised; solvent intermediaries deliver inputs.
-        \item The household produces and consumes final aggregate $C_1$.
-    \end{enumerate}
-\end{itemize}
-
-
-\subsection{Domestic Household}
-
-The representative household acts as a consumer and final goods producer, aggregating domestic ($m^d_t$) and foreign ($m^f_t$) inputs to produce a final consumption good $C_t$. They take the internal price of foreign inputs, $p_{m,t}$, as given in each period $t$. The price of domestic inputs acts as a the world numéraire, with $p_{m,t}$ defined as the relative price expressed in units of domestic inputs $m^d$. \\
-
-The Household funds its consumption via its per-period endowment $y_t$, and by issuing one-period bonds $b_t$ to intertemporally smooth consumption, acting as claims on future consumption. As an important departure from models of sovereign default such as \citet{arellano_default_2008}, the household does not internalise the effect their defaulting decision has on the price of debt. Rather, default in this model occurs in equilibrium as households internalise the impact of default on import prices. The sovereign in this setting can be thought of as being subject to a coordination failure in the issuance of new debt \citep{goodhart_debt_2018}.
-
-\subsubsection*{Period 0}
-The Domestic Household seeks to maximise lifetime utility $V_0$,
-\begin{equation} \label{eq: lifetime utility}
-    V_0 = \max_{m^d_0, \, m^f_0, \, b_1} \quad u(C_0) + \beta \mathbb{E}_0 [u(C_1)],
-\end{equation}
-subject to the Period 0 budget constraint,
-\begin{equation} \label{eq: period 0 bc}
-    m^d_0 + p_{m,0} m^f_0 = y_0 - b_0 + q_0 b_1,
-\end{equation}
-where $q_0$ is the price of household bonds, set by the international lender in Period 0, and the CES production aggregator,
-\begin{equation} \label{eq: CES aggregator}
-    C_t = \left[ \alpha (m^d_t)^\eta + (1-\alpha) (m^f_t)^\eta \right]^{\frac{1}{\eta}}, \quad 
-    \text{for } t \in \{0,1\}, \text{ where } \eta<0,
-\end{equation}
-where $\alpha$ is the Armington weight of domestic inputs, and $\eta$ is the Armington elasticity of substitution between domestic and foreign inputs. It is worth noting that the two inputs are strictly complementary; the household should not be able to substitute away from foreign inputs to avoid punitive price increases in these inputs.
-
-\subsubsection*{Period 1}
-
-The economy is subject to an aggregate endowment shock in Period 1, the growth of which is governed by an auto-regressive process of order one,
-\begin{equation} \label{eq: endowment shock}
-    \log(g_1) = (1-\rho)\log(\mu_g) + \rho\log(g_0) + \varepsilon, \quad \varepsilon \sim \mathcal{N}(0,\sigma^2_{g}),
-\end{equation}
-where,
-\begin{equation} \label{eq: period 1 endowment}
-    y_1 = g_1 y_0.
-\end{equation}
-
-Upon realisation of $y_1$, the sovereign household chooses continuous partial default $D$, interpreted as the haircut the household receives from the international lender, and Period 1 inputs to maximise utility:
-\begin{equation} \label{eq: period 1 default problem}
-    \max_{D \in [0, b_1], \, m^d_1 \geq 0, \, m^f_1 \geq 0} \quad u(C_1),
-\end{equation}
-subject to the Period 1 budget constraint:
-\begin{equation} \label{eq: period 1 bc}
-    m^d_1 + p_{m,1}(D) \cdot m^f_1 = y_1 - (b_1 - D).
-\end{equation}
-In order for default to occur in equilibrium, the household must internalise the effect its defaulting decision has on the price of imported inputs.
-
-
-\subsection{Domestic Intermediary}
-
-A continuum of ex-ante identical domestic intermediaries $i\in[0,1]$ exist in a perfectly competitive market to intermediate imports $m^f$ in periods $t \in \{0,1\}$. These intermediaries fund the purchase of imports which they proceed to sell to the representative household. They also possess a time-variant level of net-worth $n_{i,t}$, which is centred around an exogenous long-run net-worth $\bar{n}$. \\
-
-Each period, the intermediaries are subject to a 'cash-in-advance' constraint when purchasing foreign inputs, requiring that they hold enough interest bearing foreign assets, working capital $\kappa_{i,t}$, to cover the entirety of their import bill less their net-worth. They contract with the international lender to borrow this working capital at a gross lending rate of $Z_{i,t}$, with repayment due at the end of the same period the contract was initiated.\\
-
-
-Thus, an intermediary balance sheet in period $t$ is thereby given by:
-\begin{equation} \label{eq: intermediary balance sheet}
-    p^f m^f_{i,t} = n_{i,t} + \kappa_{i,t}, \quad \text{for } t\in\{0,1\}.
-\end{equation}
-
-where $p^f$ is the exogenous time-invariant price of foreign inputs, defined in terms of the price of the domestic goods. Under this formulation $p^f$ can be interpreted as the real terms-of-trade.\footnote{In this small open-economy, the uncovered interest-rate parity condition implies that the domestic risk-free interest rate is identical to the world rate $R^*$.} \\
-
-Crucially, the domestic intermediary purchases a portion of the Domestic Household's intertemporal debt to supplement its long-run equity $\bar{n}$. Thus, the intermediary's net-worth depends precisely on the period and the sovereign's default choice:
-\begin{align}
-    \text{Period 0:} \quad n_{i,0} &= \bar{n} + \gamma b_0 -\gamma q_0 b_1\\
-    \label{eq: net worth evolution}
-    \text{Period 1:} \quad n_{i,1} &= \bar{n} + \gamma (b_1 - D) 
-\end{align}
-where $\gamma$ is an exogenous parameter defines the proportion of the household's debt the intermediary holds. This fixed exogenous holding of domestic bonds can be interpreted as banks being subject to a regulatory liquidity mandate requiring them to hold a fraction $\gamma$ of outstanding sovereign bonds as part of their eligible liquid asset portfolio. This captures the well-documented home bias in sovereign debt holdings across emerging market banking sectors \citep{gennaioli_sovereign_2014}. The parameter $\gamma$ is therefore institutional and exogenous to the intermediary's optimisation problem.\\
-
-Following \citet{christiano_risk_2014}, before they can deliver these inputs to the household, the domestic intermediary is subject to an idiosyncratic shock $\omega_{i,t}$, reducing or expanding the effective aggregate amount of inputs available to sell to the Domestic Household:
-\begin{equation} \label{eq: intermediary effective inputs}
-    M^f_t = \int^1_0 \omega_{i,t} m^f_{i,t} di,
-\end{equation}
-where $M^f_t$ is defined as the aggregate effective foreign inputs available for sale to the Domestic Household. This shock $\omega_{i,t}$ is drawn independently each period from a log-normal distribution $F(\omega)$ with mean 1 and variance $\sigma^2_{\omega}$.\\
-
-Because the realised idiosyncratic shock $\omega_{i,t}$ is private information to the intermediary, the financial contract is subject to a Costly State Verification (CSV) friction \citep{bernanke_chapter_1999}. If the intermediary's realised revenue is insufficient to cover their debt obligation, they become insolvent. I define the cutoff threshold $\bar{\omega}_{i,t}$ as the exact realisation of the shock where the intermediary's revenue equals their debt repayment $Z_{i,t} \kappa_{i,t}$:
-\begin{equation} \label{eq: intermediary cutoff threshold}
-    \bar{\omega}_{i,t} p_{m,t} m^f_{i,t} = Z_{i,t}(p^f m^f_{i,t} -  n_{i,t}).
-\end{equation}
-
-If $\omega_{i,t} \geq \bar{\omega}_{i,t}$, the intermediary repays the loan in full and retains the surplus. However, if $\omega_{i,t} < \bar{\omega}_{i,t}$, the intermediary defaults. The international lender must pay an auditing cost to observe the true realisation of $\omega_{i,t}$, destroying a fraction $\mu\in(0,1)$ of the realised assets, leaving the lender with $(1-\mu)\omega_{i,t} p_{m,t} m_{i,t}^f$. \\
-
-As intermediaries exist in a perfectly competitive market for foreign inputs, with free entry and exits, they choose the level of inputs to supply to maximise their per-period profits:
-
-\begin{equation} \label{eq: intermediary problem}
-    \max_{m^f_{i,t}} \quad [1-\Gamma(\bar{\omega}_{i,t})] p_{m,t}m^f_{i,t},
-\end{equation}
-
-which once solved yields the intermediary's optimality condition, requiring  the expected marginal surplus from scaling up supply equals the marginal cost of a higher default threshold,
-
-\begin{equation} \label{eq: intermediary optimality condition}
-    [1-\Gamma(\bar{\omega}_{i,t})]p_{m,t}m^f_{i,t}=\Gamma'(\bar{\omega}_{i,t})Z_{i,t}n_{i,t}.
-\end{equation}\\
-
-Unlike the bilateral optimal contract in \cite{christiano_risk_2014}, intermediaries in this model take the lending rate $Z_{i,t}$ as given in a competitive credit market. This implies that intermediaries do not internalise the marginal auditing costs when choosing their scale of intermediation, generating a steeper external finance premium for a given level of net worth than is the case in the joint-contracting case. This departure can be considered to reflect the competitive and fragmented nature of the domestic banking sector.
-
-\subsection{The International Lender}
-
-The International Lender acts as a risk-neutral, infinitely funded lender in both the intertemporal bond market $b$ to the Domestic Household and the working capital market $\kappa$ to the Domestic Intermediary.
-
-\subsubsection*{Working Capital Market}
-
-Because the international lender operates in a competitive market, they must break even in expectation. The lender's participation constraint equates the expected payoff of the loan to the opportunity cost of lending at the risk-free rate $R^*$:
-\begin{equation} \label{eq: lender expected return integral}
-    \left[ \int_{\bar{\omega}_{i,t}}^\infty \bar{\omega}_{i,t} dF(\omega) + (1-\mu) \int_0^{\bar{\omega}_{i,t}} \omega dF(\omega) \right] p_{m,t} m^f_{i,t} = R^* \kappa_{i,t}.
-\end{equation}
-
-
-Let $\Gamma(\bar{\omega}_{i,t}) \equiv \int_0^{\bar{\omega}_{i,t}} \omega dF(\omega) + \bar{\omega}_{i,t} [1 - F(\bar{\omega}_{i,t})]$ denote the expected gross share of revenue going to the lender, and $\mu G(\bar{\omega}_{i,t}) \equiv \mu \int_0^{\bar{\omega}_{i,t}} \omega dF(\omega)$ as the expected auditing costs. The zero-profit condition simplifies to:
-\begin{equation} \label{eq: participation constraint}
-    \left[ \Gamma(\bar{\omega}_{i,t}) - \mu G(\bar{\omega}_{i,t}) \right] p_{m,t} m^f_{i,t} = R^* p^f m^f_{i,t} - n_{i,t}.
-\end{equation}
-
-\paragraph{Financial Friction}
-
-By dividing the intermediary's threshold definition \eqref{eq: intermediary cutoff threshold} by the lender's participation constraint \eqref{eq: participation constraint}, we can isolate the relationship between intermediary net-worth and the contractually-optimal gross lending rate $Z_{i,t}$:
-\begin{equation} \label{eq: endogenous pm}
-    Z_{i,t}=R^*\underbrace{\frac{\bar{\omega}_{i,t}}{\Gamma(\bar{\omega}_{i,t})-\mu G(\bar{\omega}_{i,t})}}_{\text{external finance premium}}.
-\end{equation}
-
-%By substituting the intermediary's balance sheet identity ($\kappa_{i,t} = $) into the participation constraint, we can isolate the domestic wholesale price of imports $p_{m,t}$ as a markup over the world price $p^f$. \\
-
-% I assume that in Period 0, prior to any sovereign default, intermediaries are sufficiently capitalised ($n_{i,0}$ is high) such that the external finance premium is negligible ($p_{m,0} \approx p^f_0 R^*$). \\
-
-%However, in Period 1, the sovereign's default choice $D$ directly erodes bank net worth $n_{i,1}$. The Period 1 domestic price of working capital is therefore dictated by a strictly convex external finance premium:
-%\begin{equation} \label{eq: endogenous pm}
-%    p_{m,1} = p^f_1 R^* \underbrace{ \left[ \frac{1 - \frac{n_{i,1}}{p^f_1 m^f_{i,1}}}{\Gamma(\bar{\omega}_{i,1}) - \mu G(\bar{\omega}_{i,1})} \right]. }_{\text{External Finance Premium}}
-%\end{equation}
-% From \eqref{eq: endogenous pm}, it is evident that the wedge within the domestic price of imports is strictly decreasing in the domestic intermediaries' net worth. All else equal, a greater default rate $D$ lowers $n_{i,1}$, forcing intermediaries to operate with higher leverage. Crucially, the magnitude of this wedge increases convexly with default. As net worth falls and the required repayment threshold $\bar{\omega}_{i,1}$ rises, the expected deadweight auditing costs $\mu G(\bar{\omega}_{i,1})$ in the denominator accelerate. To compensate for these expected auditing losses and satisfy their participation constraint, the international lender demands an exponentially higher gross return, causing the domestic price $p_{m,1}$ to spike. \\
-
-% This working capital friction ensures that the macroeconomic penalty of sovereign default is endogenously pro-cyclical (Mendoza and Yue, 2012). Because domestic and foreign inputs are complements in the CES aggregator ($\eta < 0$), the efficiency loss caused by an increase in $p_{m,1}$ depends on the demand for foreign inputs $m^f_1$, and thus is pro-cyclical in the aggregate state $y_1$.
-
-Dividing the intermediary's optimal supply condition \eqref{eq: intermediary optimality condition} by the lender's participation constraint \eqref{eq: participation constraint}, and substituting in the external finance premium \eqref{eq: endogenous pm} yields the relationship between net-worth and $\bar{\omega}_{i,t}$ that pins down $\bar{\omega}_{i,t}$ as a function of the intermediary's leverage ratio:
-\begin{equation} \label{eq: omega leverage}
-    1 - \Gamma(\bar{\omega}_{i,t}) = \Gamma'(\bar{\omega}_{i,t}) \, \bar{\omega}_{i,t} 
-    \cdot \frac{n_{i,t}}{p^fm_{i,t}^f - n_{i,t}}.
-\end{equation}
-
-Solving \eqref{eq: participation constraint} for $p_{m,t}$ illustrates how the CSV friction is passed on to the Domestic Household via the price of foreign inputs:
-\begin{equation} \label{eq: pm friction}
-    p_{m,t} = p^fR^* \cdot 
-    \underbrace{\left(1 - \frac{n_{i,t}}{p^fm_{i,t}^f}\right)}_{\text{leverage}} 
-    \cdot 
-    \underbrace{\frac{1}{\Gamma(\bar{\omega}_{i,t}) - \mu G(\bar{\omega}_{i,t})}}_{\text{CSV friction}}.
-\end{equation}
-
-I assume intermediaries are sufficiently capitalised in Period 0 to result in a negligible Period 0 external finance premium, $p_{m,0} \approx p^fR^*$.
-
-\subsubsection*{Intertemporal Bond Market}
-The Lender is also risk-neutral in its pricing of household debt. The payoff, and as such the Lender's price $q_0$, depends on the expected Period 1 post-default recovery rate:
-\begin{equation}
-    q_0(y_0, b_1) = \frac{1}{R^*} \mathbb{E}_0 \left[ 1 - \frac{D(y_1, b_1)}{b_1} \right].
-\end{equation}
-
-\subsection{Equilibrium and Market Clearing}
-
-A competitive equilibrium in this economy is defined as a sequence of prices $\{q_0, p_{m,0}, p_{m,1}, \bar{\omega}_0, \bar{\omega}_1, Z_t\},$ and allocations $\{C_t, m^d_t, m^f_t, M^f_t, b_1, D, N_t, K_t\}$ such that: 
-\begin{itemize}
-    \item (i) the Representative Household optimises their lifetime utility $V_0$,
-    \item (ii) the Domestic Intermediaries selects $m^f$, given their working-capital loan contract $Z_{i,t}$, that maximises expected returns on net-worth,
-    \item (iii) the International Lender prices $b_t$ at the risk-neutral rate and its zero-profit participation constraint holds, and 
-    \item (iv) the sovereign debt market ($b$), the foreign input market ($m^f$) and the domestic input market ($m^d$) all clear.
-\end{itemize}
-
-Because all domestic intermediaries $i \in [0,1]$ are ex-ante identical, they all hold the same net worth in Period 0 ($n_{i,0} = N_0$), purchase the same volume of raw imports ($m^f_{i,0} = M^f_0$), borrow the same working capital ($\kappa_{i,0} = K_0$), and face the same default threshold ($\bar{\omega}_{i,0} = \bar{\omega}_0$). 
-
-\subsubsection*{Sovereign Debt Market}
-The aggregate sovereign debt issued in Period 0, $B_1$, must equal the total amount demanded by the domestic intermediaries and the international lender. The domestic banking sector demands a fixed fraction $\gamma$, leaving the International Lender to hold the remainder:
-\begin{equation} \label{eq: bond market clearing}
-    B_1 = \gamma B_1 + (1-\gamma) B_1 = b_1.
-\end{equation}
-
-\subsubsection*{Foreign Inputs Market}
-
-The total effective foreign inputs available for the domestic household to use in production ($m^f_t$) is equal to the aggregate raw imports purchased by the intermediaries ($M^f_t$) minus the goods destroyed by the international lender's auditing process during intermediary bankruptcies:
-\begin{equation} \label{eq: import market clearing}
-    m^f_t = M^f_t \left( 1 - \mu \int_0^{\bar{\omega}_t} \omega dF(\omega) \right) = M^f_t \big[ 1 - \mu G(\bar{\omega}_t) \big].
-\end{equation}
-
-The internal price of foreign inputs $p_{m,t}$ clears the market via the household's demand function equaling the intermediary supply, net of auditing losses \eqref{eq: import market clearing}.
-
-\subsubsection*{Aggregate Resource Constraints}
-In Period 0, the economy issues debt to the RoW to finance excess consumption and raw imports:
-\begin{equation}
-    m_0^d + R^* p^f M_0^f - (R^* - 1)N_0 = y_0 + \bar{n} - (1-\gamma)(b_0 - q_0 b_1)
-    \label{eq:arc-p0}
-\end{equation}
-
-In Period 1, the economy must service its externally held debt out of its domestic endowment, while funding its new intra-period raw imports. The Period 1 Balance of Payments is:
-\begin{equation}
-    m_1^d + R^* p^f M_1^f - (R^* - 1)N_1 = y_1 + \bar{n} - (1-\gamma)(b_1 - D)
-    \label{eq:arc-p1}
-\end{equation}
-
-\section{Optimisation Policies}
-
-\subsection{Domestic Household}
-
-\subsubsection*{Period 1}
-
-Setting up the Domestic Household's Period 1 Lagrangian,
-%
-\begin{equation}
-    \mathcal{L}_1 = u(C_1) + \lambda_1 \left[ y_1 - (b_1 - D) - m_1^d - p_{m,1}(D) m_1^f \right],
-    \label{eq:lagrangian-p1}
-\end{equation}
-%
-where $\lambda_1$ denotes the Period 1 Lagrange multiplier for the household's budget constraint.
-
-\paragraph{Intratemporal Optimality: }
-The first-order conditions with respect to $m_1^d$ and $m_1^f$ yield
-%
-\begin{align}
-    \frac{\partial \mathcal{L}_1}{\partial m_t^d} &= u'(C_t) \frac{\partial C_t}{\partial m_t^d} - \lambda_t = 0, 
-    \label{eq:foc-md} \\[6pt]
-    \frac{\partial \mathcal{L}_1}{\partial m_t^f} &= u'(C_t) \frac{\partial C_t}{\partial m_t^f} - \lambda_t p_{m,t} = 0.
-    \label{eq:foc-mf}
-\end{align}
-%
-From the CES aggregator \eqref{eq: CES aggregator}, the marginal products are
-%
-\begin{equation}
-    \frac{\partial C_t}{\partial m_t^d} = \alpha \left( \frac{C_t}{m_t^d} \right)^{1-\eta}, \qquad
-    \frac{\partial C_t}{\partial m_t^f} = (1-\alpha) \left( \frac{C_t}{m_t^f} \right)^{1-\eta}.
-\end{equation}
-%
-Dividing \eqref{eq:foc-mf} by \eqref{eq:foc-md}
-%
-\begin{equation}
-    \frac{1-\alpha}{\alpha} \left( \frac{m_t^d}{m_t^f} \right)^{1-\eta} = p_{m,t},
-\end{equation}
-%
-which, solving for $m_t^f$, gives the standard intratemporal demand function for foreign inputs:
-%
-\begin{equation}
-    m_t^f = m_t^d \left( \frac{1-\alpha}{\alpha \, p_{m,t}} \right)^{\frac{1}{1-\eta}}.
-    \label{eq:demand-mf}
-\end{equation}
-%
-Note also that the shadow value of income can be written as
-%
-\begin{equation}
-    \lambda_t = u'(C_t) \frac{\partial C_t}{\partial m_t^d}, \quad \text{for } t \in \{0,1\}.
-    \label{eq:lambda}
-\end{equation}
-
-\paragraph{Optimal Default: }
-The household's first-order condition with respect to $D \in [0, b_1]$ is
-%
-\begin{equation}
-    \frac{\partial \mathcal{L}_1}{\partial D} = \lambda_1 \left[ 1 - m_1^f \frac{\partial p_{m,1}}{\partial D} \right].
-\end{equation}
-%
-The marginal benefit of an additional unit of default is the relief to the budget constraint of one unit of numéraire. The marginal cost is the induced increase in the domestic price of foreign inputs, weighted by the quantity of imports demanded. The full KKT conditions, incorporating both bounds on $D$, are
-%
-\begin{equation}
-    \begin{cases}
-        D = 0 
-            & \text{if } \; 1 \leq m_1^f 
-              \dfrac{\partial p_{m,1}}{\partial D}\bigg|_{D=0}
-            \hfill \text{(no default),} \\[12pt]
-        1 = m_1^f \dfrac{\partial p_{m,1}}{\partial D} 
-            & \text{if } \; D \in (0,\, b_1)
-            \hfill \text{(partial default),} \\[12pt]
-        D = b_1 
-            & \text{if } \; 1 \geq m_1^f 
-              \dfrac{\partial p_{m,1}}{\partial D}\bigg|_{D=b_1}
-            \hfill \text{(full default).}
-    \end{cases}
-    \label{eq:default-kkt}
-\end{equation}
-%
-At an interior solution (partial default), the household equates the marginal budgetary gain from one extra unit of default with the marginal cost through the external finance premium.
-
-\paragraph{Transmission of Default to Import Prices: }
-From the intermediary's net-worth equation \eqref{eq: net worth evolution}:
-%
-\begin{equation}
-    \frac{\partial p_{m,1}}{\partial D} = -\gamma \frac{\partial p_{m,1}}{\partial n_{i,1}}.
-    \label{eq:dpm-dD}
-\end{equation}
-%
-An increase in $D$ erodes intermediary net worth $n_{i,1}$, which raises intermediary leverage. Higher leverage pushes up the default threshold $\bar{\omega}_{i,1}$, which in turn increases the external finance premium $Z_{i,1}/R^*$ via equation \eqref{eq: endogenous pm}. Competitive intermediaries pass this higher lending cost through to the domestic price of imports $p_{m,1}$:
-%
-\begin{equation*}
-    D \uparrow \;\;\xrightarrow{\eqref{eq: net worth evolution}}\;\; n_{i,1} \downarrow \;\;\xrightarrow{\eqref{eq: omega leverage}}\;\; \bar{\omega}_{i,1} \uparrow \;\;\xrightarrow{\eqref{eq: endogenous pm}}\;\; \frac{Z_{i,1}}{R^*} \uparrow \;\;\xrightarrow{\eqref{eq: pm friction}}\;\; p_{m,1} \uparrow \;\;\xrightarrow{\eqref{eq:demand-mf}}\;\; m_1^f \downarrow \;\;\Rightarrow\;\; C_1 \downarrow
-\end{equation*}
-
-To derive $\partial p_{m,1} / \partial n_{i,1}$, differentiate the price equation \eqref{eq: pm friction} with respect to $n_{i,1}$, holding $m_{i,1}^f$ fixed:
-%
-\begin{equation}
-    \frac{\partial p_{m,1}}{\partial n_{i,1}} = p^f R^* \left( 
-    \frac{
-        -\dfrac{1}{p^f m_{i,1}^f} \left[ \Gamma(\bar{\omega}_{i,1}) - \mu G(\bar{\omega}_{i,1}) \right] 
-        - \left( 1 - \dfrac{n_{i,1}}{p^f m_{i,1}^f} \right) 
-          \left[ \Gamma'(\bar{\omega}_{i,1}) - \mu G'(\bar{\omega}_{i,1}) \right] 
-          \dfrac{\partial \bar{\omega}_{i,1}}{\partial n_{i,1}}
-    }{
-        \left[ \Gamma(\bar{\omega}_{i,1}) - \mu G(\bar{\omega}_{i,1}) \right]^2
-    }
-    \right).
-    \label{eq:dpm-dn}
-\end{equation}
-%
-An increase in net worth reduces the domestic import price. The first term in the numerator captures the direct reduction in leverage. The second term captures the indirect effect through the lowering of $\bar{\omega}_{i,1}$, which reduces expected auditing costs and thereby compresses the CSV friction. The denominator $[\Gamma - \mu G]^2$ is the source of the convexity in the default penalty the household is subject to - as net worth falls in default and $\bar{\omega}$ rises, $\Gamma - \mu G$ shrinks, causing the denominator to contract and the magnitude of $\partial p_{m,1}/\partial n_{i,1}$ to accelerate.
-
-\paragraph{Derivation of $\partial \bar{\omega}_{i,1} / \partial n_{i,1}$: }
-The threshold $\bar{\omega}_{i,1}$ is pinned down by equation \eqref{eq: omega leverage}, which determines $\bar{\omega}$ as a function of the leverage ratio:
-%
-\begin{equation*}
-    1 - \Gamma(\bar{\omega}_{i,t}) = \Gamma'(\bar{\omega}_{i,t}) \, \bar{\omega}_{i,t} \cdot \frac{n_{i,t}}{p^f m_{i,t}^f - n_{i,t}}.
-\end{equation*}
-%
-Define $\phi \equiv n_{i,t} / (p^f m_{i,t}^f - n_{i,t})$ as the equity-to-debt ratio. Implicitly differentiating with respect to $n_{i,t}$, holding $m_{i,t}^f$ fixed:
-%
-\begin{equation}
-    -\Gamma'(\bar{\omega}) \frac{\partial \bar{\omega}}{\partial n} 
-    = \left[ \Gamma''(\bar{\omega}) \, \bar{\omega} + \Gamma'(\bar{\omega}) \right] 
-      \frac{\partial \bar{\omega}}{\partial n} \cdot \phi 
-    + \Gamma'(\bar{\omega}) \, \bar{\omega} \cdot \frac{\partial \phi}{\partial n},
-    \label{eq:domega-dn-step1}
-\end{equation}
-%
-where:
-%
-\begin{equation}
-    \frac{\partial \phi}{\partial n_{i,t}} = \frac{p^f m_{i,t}^f}{(p^f m_{i,t}^f - n_{i,t})^2} > 0.
-\end{equation}
-%
-Collecting terms on $\partial \bar{\omega} / \partial n$:
-%
-\begin{equation}
-    \frac{\partial \bar{\omega}_{i,t}}{\partial n_{i,t}} 
-    = \frac{
-         \dfrac{-\Gamma'(\bar{\omega}) \, \bar{\omega} \cdot p^f m_{i,t}^f}{(p^f m_{i,t}^f - n_{i,t})^2}
-    }{
-        \Gamma'(\bar{\omega}) + \left[ \Gamma''(\bar{\omega}) \, \bar{\omega} + \Gamma'(\bar{\omega}) \right] \phi
-    },
-    \label{eq:domega-dn}
-\end{equation}
-%
-which is always negative. A higher net worth therefore lowers the default threshold. The numerator is negative because $\Gamma' > 0$ and $\bar{\omega} > 0$. The denominator is positive provided the second-order conditions of the intermediary's problem are satisfied.\footnote{Specifically, the denominator's sign requires $\Gamma'(\bar{\omega}) + [\Gamma''(\bar{\omega})\bar{\omega} + \Gamma'(\bar{\omega})]\phi > 0$, which holds when the intermediary's profit function is concave in $m_{i,t}^f$ at the optimum.} \\
-
-Crucially, as leverage increases ($n_{i,t}$ falls relative to $p^f m_{i,t}^f$), the denominator contracts, while the numerator grows in magnitude through the $(p^f m^f - n)^2$ term. This means $|\partial \bar{\omega} / \partial n|$ is increasing in leverage, meaning the sensitivity of the default threshold to net worth accelerates as intermediaries become more leveraged. Combined with the shrinking denominator $[\Gamma - \mu G]^2$ in equation \eqref{eq:dpm-dn}, this generates the convexity of the external finance premium: a linear increase in sovereign default triggers a more-than-proportional increase in the domestic import price $p_{m,1}$.
-
-\paragraph{Log-Normal Derivatives: }
-Given $\omega \sim LN(-\sigma_\omega^2/2, \, \sigma_\omega^2)$, the derivatives of $\Gamma$ and $G$ take closed-form expressions:
-%
-\begin{equation}
-    \Gamma'(\bar{\omega}_{i,1}) = 1 - \Phi\!\left( \frac{\ln(\bar{\omega}_{i,1}) + \sigma_\omega^2/2}{\sigma_\omega} \right), \qquad
-    \mu G'(\bar{\omega}_{i,1}) = \frac{\mu}{\sigma_\omega} \varphi\!\left( \frac{\ln(\bar{\omega}_{i,1}) + \sigma_\omega^2/2}{\sigma_\omega} \right),
-    \label{eq:lognormal-derivs}
-\end{equation}
-%
-where $\Phi$ and $\varphi$ denote the standard-normal CDF and PDF, respectively. 
-
-% As $\bar{\omega}$ rises into the right tail of the log-normal distribution, $\Gamma'(\bar{\omega})$ falls (the lender's marginal gain from raising the threshold diminishes) while $\mu G'(\bar{\omega})$ peaks and declines. The net effect is that $\Gamma' - \mu G'$ decreases monotonically over the relevant range, amplifying $|\partial \bar{\omega}/\partial n|$ and thereby the convexity of $p_{m,1}$ in default.
-
-
-\subsubsection*{Period 0}
-
-In Period 0, the household takes their Period 1 default decision as given when determining the optimal issuance of intertemporal bonds, selecting optimal allocations of $m_0^f$, $m_0^d$ and $b_1$, whilst acting as a price-taker in their own debt issuance. The household's Period 0 Lagrangian is:
-%
-\begin{equation}
-    \mathcal{L}_0 = u(C_0) + \beta \mathbb{E}_0[V_1(y_1, b_1)] + \lambda_0 \left[ y_0 - b_0 + q_0 b_1 - m_0^d - p_{m,0} m_0^f \right],
-    \label{eq:lagrangian-p0}
-\end{equation}
-%
-where $V_1(y_1, b_1)$ is the household's optimised Period 1 value function. \\
-
-The intratemporal first-order conditions with respect to $m_0^d$ and $m_0^f$ are identical in structure to the Period 1 conditions, yielding the same demand function \eqref{eq:demand-mf} evaluated at Period 0 prices.
-
-\paragraph{Euler Equation: }
-The first-order condition with respect to $b_1$ yields the intertemporal Euler equation. Using the envelope theorem, the marginal value of an additional unit of debt carried into Period 1 is:
-%
-\begin{equation}
-    \frac{\partial V_1}{\partial b_1} = \lambda_1 \left[ -1 - m_1^f \frac{\partial p_{m,1}}{\partial b_1} \right],
-\end{equation}
-%
-where the first term is the direct repayment burden (net of the marginal default response) and the second captures the indirect effect of higher debt on import prices through intermediary net worth. Since $n_{i,1} = \bar{n} + \gamma(b_1 - D)$, and the household takes $D$ as given at the time of issuance:
-%
-\begin{equation}
-    \frac{\partial p_{m,1}}{\partial b_1} = \gamma \frac{\partial p_{m,1}}{\partial n_{i,1}}.
-\end{equation}
-%
-It is worth noting an increase in $b_1$ raises intermediary net worth, since intermediaries hold $\gamma b_1$ in sovereign bonds, and more issuance means a larger asset for the bank in Period 1, conditional on a given default level $D$. \\
-
-Combining with the Period 0 first-order condition:
-%
-\begin{equation}
-    \lambda_0 q_0 = \beta \mathbb{E}_0 \left[ \lambda_1 \left( 1 + \gamma m_1^f \frac{\partial p_{m,1}}{\partial n_{i,1}} \right) \right].
-    \label{eq:euler}
-\end{equation}
-%
-The left-hand side is the marginal utility cost of purchasing one unit of debt at price $q_0$ in Period 0. The right-hand side is the discounted expected marginal benefit, which comprises two components: the direct repayment of one unit of resources, and the improvement in Period 1 import prices from the additional net worth that $\gamma$ units of bond holdings deliver to intermediaries. \\
-
-As $\partial p_{m,1}/\partial n_{i,1} < 0$, higher debt issuance, while strengthening bank balance sheets, also increases the household's future repayment burden. In equilibrium, the household balances the Period 0 consumption benefit of additional borrowing against both the direct repayment cost and the indirect effect on import prices.
-
-%\paragraph{Remark on Price-Taking.}
-%The Euler equation \eqref{eq:euler} is derived under the assumption that the household takes $q_0$ as parametric --- that is, they do not internalise the effect of their issuance decision on the bond price schedule $q_0(y_0, b_1)$. This is in contrast to the standard Eaton-Gersovitz framework, where the sovereign internalises the bond price schedule and the Euler equation would include an additional term $b_1 \, \partial q_0 / \partial b_1$ on the left-hand side. The price-taking assumption here can be interpreted as a coordination failure in the issuance of new debt \citep{goodhart2018}, where the sovereign does not account for the impact of marginal borrowing on its risk premium. The equilibrium bond price \eqref{eq:bond-price} therefore holds as a fixed-point condition rather than a constraint the household optimises over.
+\tableofcontents
 
 \newpage
 
+%========================================================================
+\section{The Model Environment}
+%========================================================================
+
+I present an endowment economy inhabited by three distinct agents: a representative household (the sovereign), a continuum of risk-neutral domestic import intermediaries (domestic banks) indexed by $i \in [0,1]$, and a risk-neutral international lender. The discrete-time model spans two periods, $t \in \{0,1\}$.
+
+\subsection{Primitives}
+
+The representative household has time-separable expected utility over consumption:
+\begin{equation}\label{eq:V0}
+V_0 = u(C_0) + \beta \, \E_0\bigl[u(C_1)\bigr],
+\end{equation}
+where $u$ is strictly increasing, strictly concave, and satisfies Inada conditions, and $\beta \in (0,1)$ is the subjective discount factor.
+
+The household produces the final consumption good $C_t$ from domestic inputs $\md_t$ and foreign inputs $\mf_t$ via a CES aggregator:
+\begin{equation}\label{eq:CES}
+C_t = \bigl[\alpha (\md_t)^{\eta} + (1-\alpha)(\mf_t)^{\eta}\bigr]^{1/\eta}, \qquad t \in \{0,1\},
+\end{equation}
+where $\alpha \in (0,1)$ is the Armington weight on domestic inputs and $\eta < 0$ governs the elasticity of substitution $\sigma = 1/(1-\eta) \in (0,1)$. The restriction $\eta < 0$ ensures the two inputs are strict gross complements: the household cannot substitute away from foreign inputs to avoid punitive price increases.
+
+The household receives a per-period endowment $y_t$ of domestic inputs. Period 1 endowment growth $g_1 \equiv y_1/y_0$ follows an AR(1) process in logs:
+\begin{equation}\label{eq:endowgrowth}
+\log(g_1) = (1-\rho)\log(\mu_g) + \rho \log(g_0) + \varepsilon, \qquad \varepsilon \sim \mathcal{N}(0, \sigma_g^2).
+\end{equation}
+
+There exists an exogenous risk-free gross world interest rate $R^*>1$. Following \citet{eaton_debt_1981}, the international lender has access to a frictionless world capital market at this rate. As such, the lender will only participate in lending activities, both interperiod and intraperiod, which guarantee them a rate of return at least as high as this market rate.
+
+\subsection{Nominal Structure and Exchange Rate} \label{sec:nominal}
+Let $P_t$ denote the domestic-currency price of domestic goods, and $e_t$ the exchange rate, expressed as units of domestic currency per unit of foreign currency. The real exchange rate is defined as
+\begin{equation} \label{eq:real-exch}
+    RER_t \equiv \frac{e_t}{P_t},
+\end{equation}
+where foreign input prices are normalised to one. I assume that bonds within the domestic economy are issued in real-terms, representing a fixed quantity of domestic output, as to ensure the real net-of-default payoff for the household is invariant to domestic price levels. \\
+
+Domestic input purchases are subject to a cash-in-advance constraint that pins down domestic price levels:
+\begin{equation} \label{eq:cash-in-advance}
+    MS_t=P_t \cdot m^d_t,
+\end{equation}
+where $MS_t$ denotes the domestic money supply. \\
+
+Proposition \ref{prop:neutrality} below establishes that, given neutrality assumptions, the real exchange rate reduces to $\bar{RER}=1$, with one unit of foreign input exchanging for one unit of domestic input on the (frictionless) world market. The remainder of the analysis proceeds in real terms.
+
+\subsection{Financial Instruments and the CSV Friction}\label{sec:csv}
+
+The household issues one-period, non-contingent bonds $b_1$ at price $q_0$ in Period 0. Each bond promises one unit of the domestic num\'{e}raire at maturity. A fraction $\gamma \in (0,1)$ of outstanding bonds is held by the domestic intermediary sector; the remainder $(1-\gamma)$ is held by the international lender. The parameter $\gamma$ is exogenous and institutional, reflecting a regulatory liquidity mandate requiring domestic banks to hold a fraction of outstanding sovereign bonds as eligible liquid assets. This captures the well-documented home bias in sovereign debt holdings across emerging market banking sectors \citep{gennaioli_sovereign_2014}.
+
+Upon realisation of the Period 1 endowment, the sovereign household chooses a continuous partial default $D \in [0, b_1]$, interpreted as a haircut on outstanding debt. As an important departure from \citet{arellano_default_2008}, the household does not internalise the effect of its default decision on the price of debt. Rather, default occurs in equilibrium as the household internalises the impact of default on import prices. The sovereign in this setting can be thought of as being subject to a coordination failure in the issuance of new debt \citep{goodhart_debt_2018}.
+
+Each intermediary is subject to an idiosyncratic productivity shock $\omega_{i,t}$, drawn independently each period from a log-normal distribution with mean one and variance $\sigma_\omega^2$:
+\begin{equation}\label{eq:omega_dist}
+\log(\omega_{i,t}) \sim \mathcal{N}\!\left(-\tfrac{\sigma_\omega^2}{2},\, \sigma_\omega^2\right).
+\end{equation}
+Let $F(\omega)$ and $f(\omega)$ denote the CDF and PDF of this distribution. Because the realised shock is private information to the intermediary, the financial contract between the intermediary and the international lender is subject to a costly state verification (CSV) friction, following \citet{bernanke_chapter_1999}.
+
+The CSV friction is characterised by two functions of the default threshold $\bar{\omega} \geq 0$ that appear throughout the analysis. The expected gross share of intermediary revenue accruing to the lender under the optimal debt contract is:
+\begin{equation}\label{eq:Gammadef}
+\Gamma(\bar{\omega}) \equiv \int_0^{\bar{\omega}} \omega \, dF(\omega) + \bar{\omega}\bigl[1 - F(\bar{\omega})\bigr],
+\end{equation}
+and the expected revenue share from defaulting intermediaries is:
+\begin{equation}\label{eq:Gdef}
+G(\bar{\omega}) \equiv \int_0^{\bar{\omega}} \omega \, dF(\omega),
+\end{equation}
+so that $\mu G(\bar{\omega})$ is the expected deadweight auditing cost, where $\mu \in (0,1)$ is the monitoring cost parameter. These functions satisfy $\Gamma(0) = 0$, $\Gamma'(\bar{\omega}) = 1 - F(\bar{\omega}) > 0$, and $G'(\bar{\omega}) = \bar{\omega} f(\bar{\omega}) \geq 0$. Under the log-normal specification \eqref{eq:omega_dist}, the derivatives admit the closed forms:
+\begin{align}
+\Gamma'(\bar{\omega}) &= 1 - \Phi\!\left(\frac{\ln(\bar{\omega}) + \sigma_\omega^2/2}{\sigma_\omega}\right), \label{eq:Gammaprime}\\[4pt]
+\mu G'(\bar{\omega}) &= \frac{\mu}{\sigma_\omega}\,\varphi\!\left(\frac{\ln(\bar{\omega}) + \sigma_\omega^2/2}{\sigma_\omega}\right), \label{eq:muGprime} \\
+\Gamma''(\bar{\omega}) &= -\frac{1}{\bar{\omega}\,\sigma_\omega}\,
+\varphi\!\left(\frac{\ln\bar{\omega}
++ \sigma_\omega^2/2}{\sigma_\omega}\right), \label{eq:Gammapp}
+\end{align}
+where $\Phi$ and $\varphi$ denote the standard normal CDF and PDF. It is worth noting that $\Gamma''$ is strictly negative for all $\bar{\omega} > 0$.
+
+\subsection{Sequence of Events}
+
+The within-period timing is as follows.
+
+\paragraph{Period 0:}
+\begin{enumerate}[label=(\alph*)]
+\item The household receives endowment $y_0$.
+\item The household issues bonds $b_1$ at price $q_0$; fraction $\gamma$ purchased by intermediaries, remainder by the international lender.
+\item Intermediaries borrow working capital $\kappa_0$ from the international lender and intermediate foreign inputs $\mf_0$.
+\item Idiosyncratic shocks $\omega_{i,0}$ are realised; solvent intermediaries deliver inputs and distribute surplus $\Pi_0$ to the household.
+\item The household produces and consumes $C_0$.
+\end{enumerate}
+
+\paragraph{Period 1:}
+\begin{enumerate}[label=(\alph*)]
+\item The aggregate endowment shock $g_1$ is realised, determining $y_1 = g_1 y_0$.
+\item The household chooses partial default $D \in [0, b_1]$.
+\item Intermediary net worth $n_1$ is updated.
+\item Intermediaries borrow working capital $\kappa_1$ subject to the CSV contract, determining the domestic price of foreign inputs $p_{m,1}$.
+\item Idiosyncratic shocks $\omega_{i,1}$ are realised; solvent intermediaries deliver inputs and distribute surplus $\Pi_1$ to the household.
+\item The household produces and consumes $C_1$.
+\end{enumerate}
+
+%========================================================================
+\section{Agents}
+%========================================================================
+
+\subsection{Domestic Household}
+
+The representative household acts as both a consumer and a final-goods producer, aggregating domestic and foreign inputs via \eqref{eq:CES}. It takes the internal price of foreign inputs, $p_{m,t}$ - the relative price expressed in units of domestic inputs - as given in each period.
+
+\paragraph{Period 0.} The household chooses domestic inputs $\md_0$, foreign inputs $\mf_0$, and bond issuance $b_1$ to maximise \eqref{eq:V0} subject to:
+\begin{equation}\label{eq:bc0}
+\md_0 + p_{m,0}\,\mf_0 = y_0 - b_0 + q_0 b_1 + \Pi_0,
+\end{equation}
+where $b_0$ denotes pre-existing debt obligations and $\Pi_t$ is a lump-sum dividend received from the domestic intermediary sector, defined below. The household acts as a price-taker in its own debt issuance.
+
+\paragraph{Period 1.} After $y_1$ is realised, the household chooses default $D \in [0, b_1]$ and inputs $(\md_1, \mf_1)$ to solve:
+\begin{equation}\label{eq:hh_p1}
+\max_{D \in [0,b_1],\; \md_1 \geq 0,\; \mf_1 \geq 0} \; u(C_1),
+\end{equation}
+subject to:
+\begin{equation}\label{eq:bc1}
+\md_1 + p_{m,1}(D) \cdot \mf_1 = y_1 - (b_1 - D) + \Pi_1.
+\end{equation}
+The import price $p_{m,1}$ depends on $D$ through the intermediary balance sheet channel described below. In order for default to occur in equilibrium, the household must internalise this effect. Crucially, while the household internalises the dependence of $p_{m,1}$ on $D$, it treats the dividends $\Pi_0, \Pi_1$ as lump sums, that is, it does not internalise $\partial \Pi_t / \partial D$ when choosing default. This asymmetry reflects the fact that import prices are directly observable and contractually relevant to the household's purchasing decisions, whereas the dividend is a residual claim on aggregate intermediary surplus that the atomistic households do not perceive to depend on their own actions.
+
+\subsection{Domestic Intermediary}\label{sec:intermediary}
+
+A continuum of ex-ante identical domestic intermediaries $i \in [0,1]$ operate in a perfectly competitive market with free entry and exit to intermediate foreign inputs $\mf$ in each period. Each intermediary purchases imports using a combination of its own net worth $n_{i,t}$ and working capital $\kappa_{i,t}$ borrowed from the international lender at gross intra-period rate $Z_{i,t}$, with repayment due within the same period. The intermediary's intra-period balance sheet is:
+\begin{equation}\label{eq:balsheet}
+ \mf_{i,t} = n_{i,t} + \kappa_{i,t}, \qquad t \in \{0,1\}.
+\end{equation}
+It is worth emphasising that $\kappa_{i,t}$ is an intra-period contract---borrowing and repayment occur within the same period $t$---distinct from the inter-period sovereign bond $b_1$ issued in Period 0 and maturing in Period 1. The international lender's opportunity cost is $\Rstar$ for both contracts, but the two markets clear independently.
+
+The intermediary's net worth is centred around an exogenous long-run level $\bar{n} > 0$ and depends on the period and the sovereign's default choice:
+\begin{align}
+n_{i,0} &= \bar{n} + \gamma b_0 - \gamma q_0 b_1, \label{eq:nw0}\\
+n_{i,1} &= \bar{n} + \gamma(b_1 - D). \label{eq:nw1}
+\end{align}
+
+Before delivering inputs to the household, intermediary $i$ is subject to the idiosyncratic shock $\omega_{i,t}$, so that aggregate effective foreign inputs available for sale are:
+\begin{equation}\label{eq:agg_supply}
+\Mf_t = \int_0^1 \omega_{i,t}\,\mf_{i,t}\,di.
+\end{equation}
+
+The cutoff threshold $\bar{\omega}_{i,t}$ is the exact shock realisation at which the intermediary just breaks even:
+\begin{equation}\label{eq:threshold}
+\bar{\omega}_{i,t}\, p_{m,t}\, \mf_{i,t} = Z_{i,t}\,\kappa_{i,t} = Z_{i,t}\bigl( \mf_{i,t} - n_{i,t}\bigr).
+\end{equation}
+If $\omega_{i,t} \geq \bar{\omega}_{i,t}$, the intermediary repays in full and retains the surplus. If $\omega_{i,t} < \bar{\omega}_{i,t}$, the intermediary defaults; the lender pays the auditing cost, destroying a fraction $\mu$ of realised assets and recovering $(1-\mu)\omega_{i,t}\,p_{m,t}\,\mf_{i,t}$.
+
+Each intermediary chooses $\mf_{i,t}$ to maximise expected profits:
+\begin{equation}\label{eq:int_obj}
+\max_{\mf_{i,t}} \; \bigl[1 - \Gamma(\bar{\omega}_{i,t})\bigr]\,p_{m,t}\,\mf_{i,t},
+\end{equation}
+yielding the first-order condition:
+\begin{equation}\label{eq:int_foc}
+\bigl[1 - \Gamma(\bar{\omega}_{i,t})\bigr]\,p_{m,t}\,\mf_{i,t} = \Gamma'(\bar{\omega}_{i,t})\,Z_{i,t}\,n_{i,t}.
+\end{equation}
+Unlike the bilateral optimal contract in \citet{christiano_risk_2014}, intermediaries here take $Z_{i,t}$ as given in a competitive credit market. They do not internalise the marginal auditing costs when choosing their scale of intermediation, generating a steeper external finance premium for a given level of net worth. This departure reflects the competitive and fragmented nature of the domestic banking sector.
+
+\paragraph{Intermediary dividends.} All intermediaries are owned by the representative household, who acts as the residual claimant on any surplus they generate. Once the idiosyncratic shock is realised and obligations to the international lender are settled, solvent intermediaries distribute their surplus revenue as a lump-sum dividend. The per-unit surplus of intermediary $i$, net of working-capital repayment, is:
+\begin{equation}\label{eq:pi_i}
+\pi_{i,t} = \begin{cases} (\omega_{i,t} - \bar{\omega}_t)\,p_{m,t}\,\mf_{i,t} & \text{if } \omega_{i,t} \geq \bar{\omega}_t, \\ 0 & \text{otherwise}. \end{cases}
+\end{equation}
+Aggregating across the continuum of intermediaries and applying the law of large numbers:
+\begin{equation}\label{eq:Pi_agg}
+\Pi_t = \int_{\bar{\omega}_t}^{\infty} (\omega - \bar{\omega}_t)\,p_{m,t}\,\Mf_t\,dF(\omega) = \bigl[1 - \Gamma(\bar{\omega}_t)\bigr]\,p_{m,t}\,\Mf_t.
+\end{equation}
+This is the aggregate dividend $\Pi_t$ that enters the household's budget constraints \eqref{eq:bc0}--\eqref{eq:bc1}.
+
+\subsection{International Lender}
+
+The international lender is risk-neutral, infinitely funded, and prices all contracts at the risk-free rate $\Rstar$.
+
+\paragraph{Working capital market.} The lender's zero-profit participation constraint equates the expected payoff to the opportunity cost:
+\begin{equation}\label{eq:lender_zp}
+\left[\int_{\bar{\omega}_{i,t}}^{\infty} \bar{\omega}_{i,t}\,dF(\omega) + (1-\mu)\!\int_0^{\bar{\omega}_{i,t}} \omega\,dF(\omega)\right] p_{m,t}\,\mf_{i,t} = \Rstar \kappa_{i,t}.
+\end{equation}
+Using the CSV functions from \Cref{sec:csv}, this simplifies to:
+\begin{equation}\label{eq:lender_zp_compact}
+\bigl[\Gamma(\bar{\omega}_{i,t}) - \mu G(\bar{\omega}_{i,t})\bigr]\,p_{m,t}\,\mf_{i,t} = \Rstar\bigl( \mf_{i,t} - n_{i,t}\bigr).
+\end{equation}
+
+\paragraph{Intertemporal bond market.} The lender prices household debt at the risk-neutral expected recovery rate:
+\begin{equation}\label{eq:bondprice}
+q_0(y_0, b_1) = \frac{1}{\Rstar}\,\E_0\!\left[1 - \frac{D(y_1, b_1)}{b_1}\right].
+\end{equation}
+
+%========================================================================
+\section{Equilibrium Definitions}
+%========================================================================
+
+\subsection{Aggregation and Market Clearing}
+
+Because all intermediaries are ex-ante identical, in any symmetric equilibrium they hold the same net worth ($n_{i,t} = N_t$), purchase the same raw imports ($\mf_{i,t} = \Mf_t$), borrow the same working capital ($\kappa_{i,t} = K_t$), and face the same default threshold ($\bar{\omega}_{i,t} = \bar{\omega}_t$). Henceforth all intermediary-level variables are written without the $i$ subscript.
+
+Three markets must clear in equilibrium. The sovereign debt market requires that total issuance equals total demand:
+\begin{equation}\label{eq:mc_debt}
+b_1 = \gamma b_1 + (1-\gamma)b_1.
+\end{equation}
+The foreign inputs market requires that the household's demand for effective foreign inputs equals aggregate intermediary supply net of auditing losses:
+\begin{equation}\label{eq:mc_foreign}
+\mf_t = \Mf_t\bigl[1 - \mu G(\bar{\omega}_t)\bigr].
+\end{equation}
+The domestic inputs market clears by Walras' law given the first two conditions and the household budget constraint.
+
+Aggregating across agents and imposing market clearing, the economy's balance-of-payments constraints are:
+\begin{align}
+\md_0 + \Rstar  \Mf_0 - (\Rstar - 1)N_0 &= y_0 + \bar{n} - (1-\gamma)(b_0 - q_0 b_1), \label{eq:bop0}\\
+\md_1 + \Rstar  \Mf_1 - (\Rstar - 1)N_1 &= y_1 + \bar{n} - (1-\gamma)(b_1 - D). \label{eq:bop1}
+\end{align}
+
+\subsection{Equilibrium Definition}
+
+\begin{definition}[Competitive Equilibrium]\label{def:equil}
+Given initial debt $b_0$, long-run net worth $\bar{n}$, exogenous global parameter $R^*$ and realised aggregate endowments $(y_0, y_1)$, a competitive equilibrium is defined as a collection of prices $\{q_0,\, p_{m,0},\, p_{m,1},\, Z_0,\, Z_1\}$, thresholds $\{\bar{\omega}_0,\, \bar{\omega}_1\}$, and allocations $\{C_t,\, \md_t,\, \mf_t,\, \Mf_t,\, b_1,\, D,\, N_t,\, K_t,\, \Pi_t\}_{t=0,1}$ such that:
+\begin{enumerate}[label=(\roman*)]
+\item The representative household optimises lifetime utility, choosing $(\md_t, \mf_t, b_1, D)$ given prices $(q_0, p_{m,0}, p_{m,1})$;
+\item Each domestic intermediary selects $\mf_{i,t}$ to maximise expected profit \eqref{eq:int_obj}, given the lending rate $Z_t$;
+\item The international lender prices sovereign bonds via \eqref{eq:bondprice} and the working capital zero-profit condition \eqref{eq:lender_zp_compact} holds;
+\item The sovereign debt, foreign input, and domestic input markets clear;
+\item Net worth satisfies \eqref{eq:nw0}--\eqref{eq:nw1}, working capital is consistent: $K_t =  \Mf_t - N_t$, and aggregate dividends satisfy \eqref{eq:Pi_agg}.
+\end{enumerate}
+\end{definition}
+
+\subsection{Nominal Neutrality}
+
+Under the nominal structure defined in Section \ref{sec:nominal}, the following result establishes that the real equilibrium is self-contained:
+
+\begin{lemma}[Nominal Neutrality]\label{prop:neutrality}
+Suppose that:
+\begin{enumerate}[label=(\roman*)]
+    \item sovereign bonds are denominated in units of the domestic good, so that the real payoff $(b_1 - D)$ is independent of $P_t$;
+    \item domestic goods prices are fully flexible; and
+    \item the real exchange rate is constant: $RER_t = \bar{RER}$ for all $t$.
+\end{enumerate}
+Then the real allocation $\{C_t,\, m^d_t,\, m^f_t,\, M^f_t,\, b_1,\, D,\, \bar{\omega}_t,\, Z_t,\, \Pi_t\}_{t=0,1}$ and the real prices \\
+$\{q_0,\, p_{m,0},\, p_{m,1}\}$ are determined by the system of equations \emph{\eqref{eq:CES}}--\emph{\eqref{eq:euler}}  independently of the domestic money supply $MS_t$, the nominal exchange rate $e_t$, and the domestic price level $P_t$. The nominal variables are determined residually by:
+\begin{equation}\label{eq:price-level}
+    P_t = \frac{MS_t}{m^d_t}, \qquad e_t = P_t \cdot \bar{RER},
+\end{equation}
+where $\bar{RER} = 1$.
+\end{lemma}
+
+\begin{proof}
+Express each agent's budget constraint and optimality condition in nominal terms, then deflate by $P_t$. The household's Period 1 nominal budget
+constraint is
+\begin{equation*}
+    P_1 \cdot m^d_1 + P^{\text{nom}}_{m,1} \cdot m^f_1
+    = P_1 \cdot y_1 - P_1 \cdot (b_1 - D) + P_1 \cdot \Pi_1,
+\end{equation*}
+where $P^{\text{nom}}_{m,1}$ is the nominal domestic-currency price of foreign inputs. Dividing by $P_1$ and letting $p_{m,1} \equiv P^{\text{nom}}_{m,1}/P_1$ recovers \eqref{eq:bc1}. The relative price $p_{m,t}$ thus captures the full real cost of foreign inputs to the domestic household, inclusive of both the underlying terms of trade and the friction-based markup, detailed in Section \ref{sec:csv}. 
+
+The same exercise can be conducted for Period 0 equilibrium, recovering the stated real system by deflation as above.
+
+The intermediary balance sheet in nominal terms is $e_t \cdot m^f_{i,t} = P_t \cdot n_{i,t} + e_t \cdot \kappa_{i,t}$. Dividing by $P_t$ and noting $e_t/P_t = 1$ under assumption (iii) yields \eqref{eq:balsheet}.
+
+The CSV functions $\Gamma(\bar{\omega})$ and $G(\bar{\omega})$ are unit-free ratios, so the threshold condition \eqref{eq:threshold}, the lender's zero-profit condition \eqref{eq:lender_zp}, and the import price equation \eqref{eq:pm} are invariant to the choice of num\'{e}raire.
+
+Since every equilibrium condition in the real system is recovered by deflation, the real allocation is independent of $MS_t$. Given the equilibrium values of $m^d_t$, the price level follows from (\ref{eq:cash-in-advance}) and the nominal exchange rate from (\ref{eq:price-level}).
+
+\end{proof}
+
+Let $i_t$ denote the domestic nominal interest rate. Under satisfaction of the uncovered interest rate parity condition, the nominal rate can be expressed as
+\begin{equation}
+    (1+i_t)=R^*\E_t\left[\frac{e_{t+1}}{e_t}\right].
+\end{equation}
+
+Under the assumption of nominal neutrality, with domestic prices being pinned down by \eqref{eq:cash-in-advance}, this becomes
+\begin{equation}
+    (1+i_t)=R^*\E_t\left[\frac{MS_{t+1}/m^d_{t+1}}{MS_t/m^d_t}\right].
+\end{equation}
+The domestic nominal rate therefore depends on monetary policy and the real allocation of domestic inputs, but is determined residually and does not feed back into the real equilibrium.
+
+Following the Fisher equation, the domestic real interest rate $R_t$ is expressed as
+\begin{equation}
+    R_t=(1+i_t)\frac{P_t}{\E_t[P_{t+1}]}=R^*,
+\end{equation}
+with the domestic rate equalising each period to the time-invariant world gross rate $R^*$.
+
+%========================================================================
+\section{Optimality Conditions}
+%========================================================================
+
+\subsection{The Financial Friction}
+
+Three key relationships emerge from the intermediary and lender optimality conditions. Aggregating across intermediaries and dividing the threshold condition \eqref{eq:threshold} by the zero-profit condition \eqref{eq:lender_zp_compact}, the equilibrium lending rate satisfies:
+\begin{equation}\label{eq:efp}
+Z_t = \Rstar \cdot \underbrace{\frac{\bar{\omega}_t}{\Gamma(\bar{\omega}_t) - \mu G(\bar{\omega}_t)}}_{\text{external finance premium}}.
+\end{equation}
+The ratio $Z_t / \Rstar$ exceeds unity whenever $\bar{\omega}_t > 0$ and is increasing in $\bar{\omega}_t$.
+
+Dividing the intermediary FOC \eqref{eq:int_foc} by the zero-profit condition \eqref{eq:lender_zp_compact} and substituting \eqref{eq:efp}, the threshold $\bar{\omega}_t$ is pinned down by the leverage ratio alone:
+\begin{equation}\label{eq:omega_leverage}
+1 - \Gamma(\bar{\omega}_t) = \Gamma'(\bar{\omega}_t)\,\bar{\omega}_t \cdot \frac{N_t}{ \Mf_t - N_t}.
+\end{equation}
+For given $\Mf_t$, a decrease in $N_t$ raises leverage and increases $\bar{\omega}_t$.
+
+Solving the zero-profit condition \eqref{eq:lender_zp_compact} for $p_{m,t}$ yields the import price equation:
+\begin{equation}\label{eq:pm}
+p_{m,t} =  \Rstar \cdot \underbrace{\left(1 - \frac{N_t}{ M^f_t}\right)}_{\text{leverage}} \cdot \underbrace{\frac{1}{\Gamma(\bar{\omega}_t) - \mu G(\bar{\omega}_t)}}_{\text{CSV friction}}.
+\end{equation}
+I assume intermediaries are sufficiently well capitalised in Period 0 that the external finance premium is negligible, so $p_{m,0} \approx  \Rstar$.
+
+\subsection{Household Intratemporal Optimality}
+
+The first-order conditions with respect to $\md_t$ and $\mf_t$ from the CES aggregator \eqref{eq:CES} yield the standard intratemporal demand function:
+\begin{equation}\label{eq:mf_demand}
+\mf_t = \md_t \left(\frac{1-\alpha}{\alpha\, p_{m,t}}\right)^{\!\frac{1}{1-\eta}},
+\end{equation}
+and the shadow value of income:
+\begin{equation}\label{eq:shadow}
+\lambda_t = u'(C_t)\,\frac{\partial C_t}{\partial \md_t} = u'(C_t)\,\alpha\!\left(\frac{C_t}{\md_t}\right)^{\!1-\eta}.
+\end{equation}
+
+\subsection{Optimal Default}
+
+\begin{lemma}[Optimal Default Policy]\label{lem:default}
+The household's first-order condition with respect to $D \in [0, b_1]$ is:
+\begin{equation}\label{eq:foc_D}
+\frac{\partial \mathcal{L}_1}{\partial D} = \lambda_1\!\left(1 - \mf_1 \frac{\partial p_{m,1}}{\partial D}\right).
+\end{equation}
+The marginal benefit of an additional unit of default is one unit of budget relief. The marginal cost is the induced increase in the domestic import price, weighted by import demand. The full Karush--Kuhn--Tucker conditions are:
+\begin{equation}\label{eq:KKT}
+\begin{cases}
+D = 0 & \text{if } 1 \leq \mf_1 \dfrac{\partial p_{m,1}}{\partial D}\bigg|_{D=0} \quad \text{\emph{(no default)}},\\[10pt]
+1 = \mf_1 \dfrac{\partial p_{m,1}}{\partial D} & \text{if } D \in (0, b_1) \quad \text{\emph{(partial default)}},\\[10pt]
+D = b_1 & \text{if } 1 \geq \mf_1 \dfrac{\partial p_{m,1}}{\partial D}\bigg|_{D=b_1} \quad \text{\emph{(full default)}}.
+\end{cases}
+\end{equation}
+At an interior solution, the household equates the marginal budgetary gain from one extra unit of default with the marginal cost through the external finance premium.
+\end{lemma}
+
+\subsection{Transmission of Default to Import Prices}
+
+The mechanism by which sovereign default raises import prices can be traced through the intermediary balance sheet. From the net-worth equation \eqref{eq:nw1}:
+\begin{equation}\label{eq:dpm_dD}
+\frac{\partial p_{m,1}}{\partial D} = -\gamma \frac{\partial p_{m,1}}{\partial N_1}.
+\end{equation}
+An increase in $D$ erodes intermediary net worth, raising leverage, pushing up the default threshold, increasing the external finance premium, and passing through to the import price:
+\[
+D \uparrow \;\xrightarrow{\eqref{eq:nw1}}\; N_1 \downarrow \;\xrightarrow{\eqref{eq:omega_leverage}}\; \bar{\omega}_1 \uparrow \;\xrightarrow{\eqref{eq:efp}}\; \frac{Z_1}{\Rstar} \uparrow \;\xrightarrow{\eqref{eq:pm}}\; p_{m,1} \uparrow \;\xrightarrow{\eqref{eq:mf_demand}}\; \mf_1 \downarrow \;\Longrightarrow\; C_1 \downarrow.
+\]
+
+Differentiating \eqref{eq:pm} with respect to $N_1$ at fixed $\Mf_1$:
+\begin{equation}\label{eq:dpm_dn}
+\frac{\partial p_{m,1}}{\partial N_1} =  \Rstar \cdot \frac{-\dfrac{1}{ \Mf_1}\bigl[\Gamma(\bar{\omega}_1) - \mu G(\bar{\omega}_1)\bigr] - \left(1 - \dfrac{N_1}{ \Mf_1}\right)\!\bigl[\Gamma'(\bar{\omega}_1) - \mu G'(\bar{\omega}_1)\bigr]\dfrac{\partial \bar{\omega}_1}{\partial N_1}}{\bigl[\Gamma(\bar{\omega}_1) - \mu G(\bar{\omega}_1)\bigr]^2}.
+\end{equation}
+This is strictly negative. The first term in the numerator captures the direct reduction in leverage; the second captures the indirect effect through the lowering of $\bar{\omega}_1$, which reduces expected auditing costs. The denominator $[\Gamma - \mu G]^2$ is the source of convexity in the default penalty: as net worth falls in default and $\bar{\omega}$ rises, $\Gamma - \mu G$ shrinks, causing the denominator to contract and the magnitude of $\partial p_{m,1}/\partial N_1$ to accelerate.
+
+To complete the derivation, implicitly differentiating \eqref{eq:omega_leverage} with respect to $N_1$ at fixed $\Mf_1$:
+\begin{equation}\label{eq:domega_dn}
+\frac{\partial \bar{\omega}_1}{\partial N_1} = \frac{-\Gamma'(\bar{\omega}_1)\,\bar{\omega}_1 \cdot \dfrac{ \Mf_1}{( \Mf_1 - N_1)^2}}{\Gamma'(\bar{\omega}_1) + \bigl[\Gamma''(\bar{\omega}_1)\,\bar{\omega}_1 + \Gamma'(\bar{\omega}_1)\bigr]\frac{N_1}{M^f_1-N_1}},
+\end{equation}
+which is strictly negative provided the second-order conditions of the intermediary's problem are satisfied. Higher net worth lowers the default threshold. The numerator is negative because $\Gamma' > 0$ and $\bar{\omega} > 0$; the denominator is positive by the second-order conditions.
+
+\begin{proposition}[Convexity of the Default Penalty]\label{prop:convexity}
+The penalty to the Representative Household of default is convex in $D$: a linear increase in sovereign default triggers a more-than-proportional increase in the domestic import price $p_{m,1}$. This follows from two reinforcing effects as leverage increases:
+\begin{enumerate}[label=(\roman*)]
+\item $|\partial\bar{\omega}_t / \partial N_t|$ grows, since the numerator of \eqref{eq:domega_dn} expands via the $( \Mf_t - N_t)^2$ term while the denominator contracts;
+\item $[\Gamma(\bar{\omega}_t) - \mu G(\bar{\omega}_t)]^2$ in the denominator of \eqref{eq:dpm_dn} shrinks as $\bar{\omega}_t$ rises.
+\end{enumerate}
+Together, $\partial p_{m,1}/\partial D$ is increasing in $D$.
+\end{proposition}
+
+% Worth stating here that, whilst convexity pushes against total default, it does not rule it out.
+
+\begin{proposition}[Default increases in the ratio of debt-to-endowment]\label{prop:inv-debt-gdp}
+Assume an interior default equilibrium where $D\in(0,b_1)$ and the second-order condition for utility maximization is strictly satisfied. The optimal sovereign default volume $D(y_1, b_1)$ is:
+\begin{enumerate}[label=(\roman*)]
+    \item Strictly decreasing in the realised Period 1 endowment $y_1$.
+    \item Strictly increasing in the Period 1 debt issuance $b_1$.
+\end{enumerate}
+Consequently, the optimal haircut is governed by the household's capacity to pay, increasing alongside the debt-to-endowment ratio $b_1/y_1$.
+\begin{proof}
+    Let $F(D;y_1,b_1)$ denote the first-order condition for optimal default \eqref{eq:KKT}, under an interior equilibrium. Also, let $W_1\equiv y_1-(b_1-D)+\Pi_1$ denote the household's Period 1 wealth. By Proposition \ref{prop:convexity}, the derivative of $F(.)$ the  with respect to $D$ is strictly negative. Applying the Implicit Function Theorem, the comparative statics of optimal default with respect to the state variable $y_1$ is given by
+    \begin{equation*}
+        \frac{\partial F(D;y_1,b_1)}{\partial y_1}=-\left( \frac{\partial m^f_1}{\partial W_1} \frac{\partial W_1}{\partial y_1} \right)\frac{\partial p_{m,1}}{\partial D}.
+    \end{equation*}
+    Since $\frac{\partial W_1}{\partial y_1}=1$, $\frac{\partial p_{m,1}}{\partial D}>0$ and, as $\eta<0$, $\frac{\partial m^f_1}{\partial W_1}>0$, it follows that $\frac{\partial F(D;y_1,b_1)}{\partial y_1}<0$. Therefore $\frac{\partial D}{\partial y_1}<0$.
+
+    Differentiating $F(.)$ with respect to $b_1$ yields
+    \begin{equation*}
+        \frac{\partial F(D;y_1,b_1)}{\partial b_1} = -\left( \frac{\partial m^f_1}{\partial W_1} \frac{\partial W_1}{\partial b_1} \right)\frac{\partial p_{m,1}}{\partial D}+m^f_1\left( \frac{\partial}{\partial b_1} \frac{\partial p_{m,1}}{\partial D} \right).
+    \end{equation*}
+    Due to the construction of claims made in Period 0, $\frac{\partial W_1}{\partial b_1}=-1$, in turn guaranteeing $\frac{\partial m^f_1}{\partial b_1}<0$. As $b_1$ enters positively into the Domestic Intermediary's Period 1 net-worth \eqref{eq:bc1}, from \eqref{eq:domega_dn} we can see that $\frac{\partial}{\partial b_1}\frac{\partial p_{m,1}}{\partial D}<0$. These two derivatives mean that $\frac{\partial F}{\partial b_1}>0$, implying $\frac{\partial D}{\partial b_1}>0$.
+\end{proof}
+
+% Implication of this here
+
+\end{proposition}
+
+\subsection{Intertemporal Optimality}
+
+\begin{lemma}[Euler Equation]\label{lem:euler}
+The household's first-order condition with respect to $b_1$, applying the envelope theorem to $V_1$, yields:
+\begin{equation}\label{eq:euler}
+\lambda_0\, q_0 = \beta\,\E_0\!\left[\lambda_1\!\left(1 + \gamma\,\mf_1 \frac{\partial p_{m,1}}{\partial N_1}\right)\right].
+\end{equation}
+\end{lemma}
+
+\begin{proof}
+By the envelope theorem, the marginal value of an additional unit of debt carried into Period 1 is:
+\[
+\frac{\partial V_1}{\partial b_1} = \lambda_1\!\left(-1 - \mf_1 \frac{\partial p_{m,1}}{\partial b_1}\right).
+\]
+Since $N_1 = \bar{n} + \gamma(b_1 - D)$ and default $D$ is taken as given at the time of issuance:
+\[
+\frac{\partial p_{m,1}}{\partial b_1} = \gamma \frac{\partial p_{m,1}}{\partial N_1}.
+\]
+Note the sign: higher $b_1$ raises intermediary net worth (since banks hold $\gamma b_1$ in bonds), so $\partial p_{m,1}/\partial b_1 < 0$. Combining with the Period 0 first-order condition $\lambda_0 q_0 = \beta \E_0[-\partial V_1 / \partial b_1]$ and simplifying yields \eqref{eq:euler}.
+\end{proof}
+
+The left-hand side of \eqref{eq:euler} is the marginal utility cost of purchasing one unit of debt at price $q_0$ in Period 0. The right-hand side comprises two components: the direct repayment of one unit of resources, and the improvement in Period 1 import prices from the additional net worth that $\gamma$ units of bond holdings deliver to intermediaries. Since $\partial p_{m,1}/\partial N_1 < 0$, the term $\gamma \mf_1 (\partial p_{m,1}/\partial N_1)$ is negative. Higher debt issuance strengthens bank balance sheets but also increases the household's future repayment burden. In equilibrium, the household balances the Period 0 consumption benefit of additional borrowing against both the direct repayment cost and the indirect effect on import prices.
+
+\section{Characterisation of Equilibrium}
+
+\subsection{Period 1 Equilibrium}
+
+Take as given the states $(y_1, b_1)$ and the parameter $R^*$. 
+Define the following shorthand, which depend only on 
+$(D, \bar{\omega}_1, M^f_1)$ and parameters:
+\begin{align*}
+N_1(D) &\equiv \bar{n} + \gamma(b_1 - D), \\
+\ell_1(D, M^f_1) &\equiv 1 - \frac{N_1(D)}{M^f_1}, \\
+\Psi(\bar{\omega}_1) &\equiv \Gamma(\bar{\omega}_1) - \mu G(\bar{\omega}_1), \\
+p_{m,1}(D, \bar{\omega}_1, M^f_1) &= R^* \cdot 
+  \frac{\ell_1}{\Psi(\bar{\omega}_1)}.
+\end{align*}
+The Period~1 equilibrium values of $(D, \bar{\omega}_1, M^f_1)$ 
+solve the following nonlinear system.
+
+\medskip
+\textit{Leverage--threshold condition} 
+[from \eqref{eq:omega_leverage} and \eqref{eq:nw1}]:
+\begin{equation}\label{eq:sys_leverage}
+1 - \Gamma(\bar{\omega}_1) 
+= \Gamma'(\bar{\omega}_1)\,\bar{\omega}_1 
+  \cdot \frac{N_1(D)}{M^f_1 - N_1(D)}.
+\end{equation}
+
+\textit{Foreign input market clearing} 
+[from \eqref{eq:mf_demand}, \eqref{eq:bc1}, 
+\eqref{eq:mc_foreign}, and \eqref{eq:Pi_agg}]:
+\begin{equation}\label{eq:sys_clearing}
+M^f_1 \bigl[1 - \mu G(\bar{\omega}_1)\bigr]
+\left[
+  \left(\frac{\alpha\, p_{m,1}}{1 - \alpha}\right)^{\!\sigma} 
+  + p_{m,1}
+\right]
+= y_1 - (b_1 - D) 
+  + \bigl[1 - \Gamma(\bar{\omega}_1)\bigr]\, p_{m,1}\, M^f_1.
+\end{equation}
+
+\textit{Interior default condition} 
+[from \eqref{eq:KKT}, \eqref{eq:dpm_dD}, 
+and \eqref{eq:dpm_dn}]:
+\begin{equation}\label{eq:sys_default}
+\Psi(\bar{\omega}_1)^2 
+= \gamma R^* M^f_1 \bigl[1 - \mu G(\bar{\omega}_1)\bigr]
+\left(
+  \frac{\Psi(\bar{\omega}_1)}{M^f_1}
+  + \ell_1 
+    \Psi'(\bar{\omega}_1)
+    \left\lvert
+      \frac{\partial \bar{\omega}_1}{\partial N_1}
+    \right\rvert
+\right),
+\end{equation}
+where
+\begin{equation*}
+\frac{\partial \bar{\omega}_1}{\partial N_1}
+= \frac{
+  -\Gamma'(\bar{\omega}_1)\,\bar{\omega}_1\, M^f_1
+}{
+  (M^f_1 - N_1)
+  \Bigl[
+    \Gamma'(\bar{\omega}_1)(M^f_1 - N_1)
+    + N_1 \bigl[\Gamma''(\bar{\omega}_1)\,\bar{\omega}_1 
+      + \Gamma'(\bar{\omega}_1)\bigr]
+  \Bigr]
+}.
+\end{equation*} \\
+
+At corner solutions, \eqref{eq:sys_default} is replaced by $D = 0$ or $D = b_1$ with the corresponding inequality 
+from the KKT conditions \eqref{eq:KKT}. \\
+
+All other Period~1 variables are determined residually: $N_1$ from 
+\eqref{eq:nw1}, $p_{m,1}$ from \eqref{eq:pm}, $m^f_1$ from \eqref{eq:mc_foreign}, $\Pi_1$ from \eqref{eq:Pi_agg}, $m^d_1$ from \eqref{eq:bc1}, $C_1$ from \eqref{eq:CES}, $Z_1$ from \eqref{eq:efp}, and $K_1 = M^f_1 - N_1$. \\
+
+\subsection{Period 0 Equilibrium}
+
+Given Period 1 policy functions $D(y_1,b_1)$, and the associated Period 1 equilibrium mappings, the Period 0 equilibrium values of $(b_1, q_0)$ solve the following system. \\
+
+\textit{Euler equation} [from \eqref{eq:euler}]:
+\begin{equation}
+\lambda_0\, q_0 = \beta\,\E_0\!\left[\lambda_1\!\left(1 + \gamma\,\mf_1 \frac{\partial p_{m,1}}{\partial N_1}\right)\right],
+\end{equation}
+where $\lambda_t$ is derived in \eqref{eq:shadow}.\\
+
+\textit{Intertemporal bond pricing equation} [from \eqref{eq:bondprice}]:
+\begin{equation}
+    q_0 = \frac{1}{\Rstar}\,\E_0\!\left[1 - \frac{D(y_1, b_1)}{b_1}\right].
+\end{equation}
+
+Given a solution, the remaining Period~0 objects are recovered as: $N_0$ from \eqref{eq:nw0}, $\mf_0$ from 
+\eqref{eq:mf_demand}, $\md_0$ from \eqref{eq:bc0}, $C_0$ from \eqref{eq:CES}, $\Pi_0$ from 
+\eqref{eq:Pi_agg}, and $K_0 = M^f_0 - N_0$. Under the maintained assumption that Period~0 intermediaries are sufficiently capitalised, $\bar{\omega}_0$ and $Z_0$ are pinned down by \eqref{eq:omega_leverage} and \eqref{eq:efp} at negligible values of the external finance premium.
+
+\paragraph{Ruling out no-trade equilibrium} For the rest of the paper, attention will be restricted to the non-trivial interior partial default equilibrium, in which $q_0>0$ and $D\in (0,b_1)$;
+
+\begin{assumption}\label{ass:interior}
+Parameters $(\bar{n}, \gamma, \sigma_\omega, \mu, \eta, \alpha, R^*)$ and states $(y_1, b_1)$ are such that the KKT conditions~\eqref{eq:KKT} admit an interior solution $D \in (0, b_1)$.
+\end{assumption}
+
+The model admits a second class of equilibria in which the international lender anticipates full default, sets $q_0=0$, and the household is indifferent between not borrowing and borrowing for free with the intention of defaulting upon all claims, as identified by \citet{dubey_default_2005} in models of default with non-contingent debt. The two-period setting presented in this model, without a continuation value from market access, means that the household is exactly indifferent between these two equilibria. I choose to omit the analysis of such an equilibrium, following the practice of \citet{arellano_default_2008}, \citet{peiris_capital_2025} and others, to focus upon the borrowing, default, and intermediary channels that are of primary interest to this thesis.
+
+\section{Quantitative Analysis}
+
+I now move to examine the quantitative implications of the model by conducting numerical simulations. Under the model's two-period setting, each period is set to a length of five years. This setting seeks to strike a balance between temporal realism and calibration feasibility. Periods shorter than this length do not allow for a realistic time frame we would reasonably expect sovereign renegotiation to occur within. Five years allows Period 1 to capture equilibrium following complete conclusion of refinancing. On the other hand, longer period settings would lead to issues of liquidity in our chosen instrument of calibration - CDS Swaps. 5 year sovereign bond CDS contracts are generally more widely traded than 10 year, thus ensuring implied default probability is adequately captured in price data. Thus, the discount rate and risk-free rate are calibrated to their respective five year compounded values.
+
+\subsection{Baseline Calibration: The Case of Sri Lanka}
+
+
+
+%========================================================================
+\newpage
 \printbibliography
+%========================================================================
+
 
 \end{document}
