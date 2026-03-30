@@ -16,6 +16,7 @@
 \usepackage{booktabs}
 \usepackage{enumitem}
 \usepackage{graphicx}
+\usepackage{lipsum}
 
 \usepackage[
     style=authoryear,
@@ -54,12 +55,47 @@
 \newcommand{\Mf}{M^{f}}
 \newcommand{\Rstar}{R^{*}}
 
-\title{Two-Period Model of Partial Sovereign Default \\ \large MPhil Thesis Progress}
-\author{Sam Blundell}
-\date{\today}
-
 \begin{document}
-\maketitle
+
+\begin{titlepage}
+    \begin{center}
+        \vspace*{1.5cm} % Top padding
+        
+        % Main Title
+        {\LARGE \bfseries A Model of Partial Sovereign Default in General Equilibrium with a Banking Sector:\\[0.2cm] The Case of Sri Lanka \par}
+        
+        \vspace{1.5cm}
+        
+        % Author (using small caps)
+        {\large \textsc{Sam Blundell}\textsuperscript{*} \par}
+        \vspace{0.2cm}
+        
+        % Institution & Degree (using small caps)
+        {\large \textsc{University of Oxford} \par}
+        \vspace{0.2cm}
+        {\large \textsc{MPhil Thesis in Economics} \par}
+        
+        \vspace{1cm}
+        
+        % Date (using small caps)
+        {\normalsize \textsc{This Version:} \today \par}
+    \end{center}
+
+\vspace{1cm}
+
+% Abstract Section
+\begin{abstract}
+    \noindent \lipsum[1]
+    
+    %\vspace{1cm} % Space between abstract text and keywords
+    
+    % Keywords and JEL Codes
+    %\noindent \textbf{Keywords:} Sovereign Default, General Equilibrium, Banking Sector, Costly State Verification, Sovereign-Bank Nexus, Sri Lanka. \\[0.2cm]
+    %\textbf{JEL Classification:} F34, F41, G21, O53
+\end{abstract}
+
+\clearpage
+\end{titlepage}
 
 \tableofcontents
 
@@ -113,7 +149,7 @@ The household issues one-period, non-contingent bonds $b_1$ at price $q_0$ in Pe
 
 Upon realisation of the Period 1 endowment, the sovereign household chooses a continuous partial default $D \in [0, b_1]$, interpreted as a haircut on outstanding debt. As an important departure from \citet{arellano_default_2008}, the household does not internalise the effect of its default decision on the price of debt. Rather, default occurs in equilibrium as the household internalises the impact of default on import prices. The sovereign in this setting can be thought of as being subject to a coordination failure in the issuance of new debt \citep{goodhart_debt_2018}.
 
-Each intermediary is subject to an idiosyncratic productivity shock $\omega_{i,t}$, drawn independently each period from a log-normal distribution with mean one and variance $\sigma_\omega^2$:
+Following the structure proposed by \citet{christiano_risk_2014}, each intermediary is subject to an idiosyncratic productivity shock $\omega_{i,t}$, drawn independently each period from a log-normal distribution with mean one and variance $\sigma_\omega^2$:
 \begin{equation}\label{eq:omega_dist}
 \log(\omega_{i,t}) \sim \mathcal{N}\!\left(-\tfrac{\sigma_\omega^2}{2},\, \sigma_\omega^2\right).
 \end{equation}
@@ -582,6 +618,99 @@ I now move to examine the quantitative implications of the model by conducting n
 
 \subsection{Baseline Calibration: The Case of Sri Lanka}
 
+\begin{table}[htbp]
+    \centering
+    \renewcommand{\arraystretch}{1.2}
+    \makebox[\textwidth][c]{%
+        \begin{tabular}{@{}ccccccccc@{}}
+                \begin{tabular}{@{}lcll@{}}
+                    \toprule
+                    \textbf{Parameter} & \textbf{Value} & \textbf{Description} & \textbf{Source / Target} \\
+                    \midrule
+                    \multicolumn{4}{@{}l}{\textit{Preferences}} \\
+                    $\beta$ & 0.815 & Subjective discount factor (5-year) & \\
+                    $\sigma_u$ & 2.000 & Coefficient of relative risk aversion & \\
+                    \addlinespace
+                    
+                    \multicolumn{4}{@{}l}{\textit{Technology and Trade}} \\
+                    $\alpha$ & 0.700 & Armington weight on domestic inputs & Import share (World Bank)\\
+                    $\eta$ & -1.000 & CES substitution parameter & \\ 
+                    \addlinespace
+                    
+                    \multicolumn{4}{@{}l}{\textit{Financial Sector and Frictions}} \\
+                    $\bar{n}$ & 0.650 & Long-run intermediary net worth & CBSL Monetary Survey \\
+                    $\gamma$ & 0.320 & Home bias share of sovereign debt & CBSL Monetary Survey \\
+                    $\sigma_\omega$ & 0.250 & Idiosyncratic shock volatility & \citet{christiano_risk_2014} \\
+                    $\mu$ & 0.400 & CSV monitoring / auditing cost & \citet{christiano_risk_2014} \\
+                    \addlinespace
+                    
+                    \multicolumn{4}{@{}l}{\textit{International Market}} \\
+                    $R^*$ & 1.104 & World gross risk-free interest rate & \\ 
+                    \addlinespace
+                    
+                    \multicolumn{4}{@{}l}{\textit{Endowment and Debt Process}} \\
+                    $y_0$ & 1.000 & Period 0 endowment & Normalisation \\
+                    $b_0$ & 0.180 & Pre-existing debt (Implied debt-to-GDP) & CBSL Annual Report \\
+                    $\rho$ & 0.600 & AR(1) persistence of endowment growth &  \\
+                    $\mu_g$ & 1.200 & Unconditional mean growth rate & World Bank WDI (2015-2019 Avg) \\
+                    $\sigma_g$ & 0.150 & Growth shock standard deviation & Scaled from \citet{arellano_default_2008} \\
+                    \bottomrule
+                \end{tabular}
+        \end{tabular}
+    }
+    \caption{Baseline Parameterisation}
+    \label{tab:calibration}
+\end{table}
+
+I chose to calibrate the expected haircut, $\E\left[ {D}/{b_1}\right]$, in the model to match the implied expected loss backed out of credit-default swap data. Specifically, I look at Sri Lankan 5 year CDS pricing data, with implied default probability generated from the standard ISDA model with an assumed recovery rate of 40\%. Following Sri Lanka's sovereign default episode in 2021-22, the average daily implied default probability rose to $\approx 78\%$, from $\approx 22\%$ the prior five years - resulting in an expected loss of $\approx0.468$. This expected loss serves as the primary empirical moment targeted by the model's expected haircut.
+
+\begin{table}[htbp]
+    \centering
+    \renewcommand{\arraystretch}{1.2}
+    \begin{tabular}{@{}lrlr@{}}
+        \toprule
+        \multicolumn{2}{@{}l}{\textbf{Period 0 Allocations}} & \multicolumn{2}{l@{}}{\textbf{Expected Summary Statistics}} \\
+        \midrule
+        Debt Issued ($b_1$) & 0.4296 & Expected Default ($\E[D]$) & 0.3216 \\
+        Bond Price ($q_0$) & 0.2277 & Expected Haircut ($\E[D/b_1]$) & 0.7487 \\
+        Domestic Goods ($m_{d,0}$) & 0.9178 & Expected Recovery ($\E[1 - D/b_1]$) & 0.2513 \\
+        Imported Goods ($m_{f,0}$) & 0.5718 & Expected Consumption ($\E[C_1]$) & 0.5137 \\
+        Consumption ($C_0$) & 0.7768 & & \\
+        Yield ($R^*/q_0$) & 4.8495 & & \\
+        Spread (bps) & 37,455 & & \\
+        \bottomrule
+    \end{tabular}
+    \caption{Period 0 Equilibrium and Expected Macroeconomic Moments}
+    \label{tab:period0_summary}
+\end{table}
+
+\begin{table}[htbp]
+    \centering
+    \renewcommand{\arraystretch}{1.2}
+    \small 
+    \makebox[\textwidth][c]{%
+        \begin{tabular}{@{}ccccccccc@{}}
+            \begin{tabular}{@{}ccccccccc@{}}
+                \toprule
+                \textbf{Endowment} & \textbf{Default} & \textbf{Haircut} & \textbf{Bank Default} & \textbf{Bank} & \textbf{Import} & \textbf{Imports} & \textbf{Consumption} & \textbf{Finance} \\
+                \textbf{Shock} & \textbf{Level} & \textbf{Fraction} & \textbf{Threshold} & \textbf{Assets} & \textbf{Price} & & & \textbf{Premium} \\
+                $y_1$ & $D$ & $D/b_1$ & $\bar{\omega}_1$ & $M^f_1$ & $p_{m,1}$ & $m_{f,1}$ & $C_1$ & $Z/R^*$ \\
+                \midrule
+                0.4927 & 0.4296 & 1.0000 & 0.7290 & 0.2120 & 1.1231 & 0.2041 & 0.2787 & 1.0697 \\
+                0.6497 & 0.4233 & 0.9855 & 0.8388 & 0.2755 & 1.1691 & 0.2502 & 0.3457 & 1.1736 \\
+                0.8280 & 0.3796 & 0.8836 & 0.8388 & 0.3331 & 1.1691 & 0.3026 & 0.4180 & 1.1736 \\
+                1.0431 & 0.3268 & 0.7608 & 0.8388 & 0.4026 & 1.1691 & 0.3656 & 0.5052 & 1.1736 \\
+                1.3139 & 0.2603 & 0.6060 & 0.8388 & 0.4901 & 1.1691 & 0.4451 & 0.6150 & 1.1736 \\
+                1.6745 & 0.1718 & 0.3999 & 0.8388 & 0.6065 & 1.1691 & 0.5509 & 0.7611 & 1.1736 \\
+                2.2083 & 0.0408 & 0.0949 & 0.8388 & 0.7790 & 1.1691 & 0.7076 & 0.9775 & 1.1736 \\
+                \bottomrule
+            \end{tabular}
+
+        \end{tabular}
+    }
+    \caption{State-Contingent Equilibrium Outcomes in Period 1}
+    \label{tab:period1_states}
+\end{table}
 
 
 %========================================================================
