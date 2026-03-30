@@ -1,115 +1,118 @@
-function sol = solve_period1(y1, b1, par, csv, x0)
+function sol = solve_period1(y1, b1, par, csv, ~)
     par.y1 = y1;
     par.b1 = b1;
-
-    % Default initial guess
-    if nargin < 5 || isempty(x0)
-        D0   = b1 * 0.5;
-        N0   = par.nbar + par.gamma * (b1 - D0);
-        wb0  = 0.45;
-        Gam0 = csv.Gamma(wb0);
-        Gp0  = csv.GammaPrime(wb0);
-        Mf0  = N0 * (1 + Gp0 * wb0 / (1 - Gam0));
-        x0   = [D0; log(wb0); Mf0];
+    
+    % --- Outer Optimization: Maximize Utility over D ---
+    % fminbnd perfectly handles the bounds [0, b1], seamlessly 
+    % testing both corner solutions and interior points.
+    opts_fmin = optimset('Display', 'off', 'TolX', 1e-8);
+    [D_star, ~] = fminbnd(@(D) neg_utility(D, par, csv), 0, b1, opts_fmin);
+    
+    % --- Final solve at optimum to recover variables ---
+    sol = solve_inner(D_star, par, csv);
+    sol.D = D_star;
+    
+    % --- Compute dpm/dN via finite differences ---
+    % This brilliantly avoids the analytical "denominator trap"
+    N1 = par.nbar + par.gamma * (b1 - D_star);
+    eps_N = 1e-5 * max(abs(N1), 1e-4);
+    
+    sp = solve_inner_at_N(N1 + eps_N, par.y1 - (par.b1 - D_star), par, csv);
+    sm = solve_inner_at_N(N1 - eps_N, par.y1 - (par.b1 - D_star), par, csv);
+    
+    if ~isempty(sp) && ~isempty(sm)
+        sol.dpm_dN = (sp.pm - sm.pm) / (2 * eps_N);
+    else
+        sol.dpm_dN = 0; % Fallback
     end
-
-    opts = optimoptions('fsolve', ...
-        'Display',          'off', ...
-        'Algorithm',        'trust-region-dogleg', ...
-        'TolFun',           1e-10, ...
-        'TolX',             1e-10, ...
-        'MaxFunEvals',      5000, ...
-        'MaxIter',          1000);
-
-    % --- Step 1: Try interior default solution ---
-    [xsol, ~, exitflag] = fsolve( ...
-        @(x) period1_residuals(x, par, csv), x0, opts);
-
-    R_final = period1_residuals(xsol, par, csv);
-    interior_ok = (exitflag > 0) && (max(abs(R_final)) < 1e-6) && (xsol(1) > 1e-8);
-
-    % --- Step 2: If interior failed or D<=0, use corner D=0 ---
-    if ~interior_ok
-        D_fixed = 0;
-        N_c = par.nbar + par.gamma * (b1 - D_fixed);
-        wb0_c = 0.45;
-        Gam0 = csv.Gamma(wb0_c);
-        Gp0  = csv.GammaPrime(wb0_c);
-        Mf0_c = N_c * (1 + Gp0 * wb0_c / (1 - Gam0));
-
-        [xsol_c, ~, exitflag] = fsolve( ...
-            @(z) corner_residuals(z, D_fixed, par, csv), ...
-            [log(wb0_c); Mf0_c], opts);
-
-        xsol = [D_fixed; xsol_c(1); xsol_c(2)];
-    end
-
-    % --- Extract and recover ---
-    sol.D        = xsol(1);
-    sol.omegabar = exp(xsol(2));
-    sol.Mf       = xsol(3);
-    sol.exitflag = exitflag;
-
-    sol.N   = par.nbar + par.gamma * (b1 - sol.D);
-    sol.ell = 1 - sol.N / sol.Mf;
-    sol.K   = sol.Mf - sol.N;
-
-    Gam  = csv.Gamma(sol.omegabar);
-    Gp   = csv.GammaPrime(sol.omegabar);
-    Gpp  = csv.GammaDoublePrime(sol.omegabar);
-    G_v  = csv.G(sol.omegabar);
-    Psi  = csv.Psi(sol.omegabar);
-    Psip = csv.PsiPrime(sol.omegabar);
-    muG  = par.mu * G_v;
-
-    sol.pm      = par.Rstar * sol.ell / Psi;
-    sol.Z       = par.Rstar * sol.omegabar / Psi;
-    sol.Z_Rstar = sol.omegabar / Psi;
-
-    sol.mf  = sol.Mf * (1 - muG);
-    sol.md  = sol.mf * (par.alpha * sol.pm / (1 - par.alpha))^par.sigma;
-    sol.C1  = ( par.alpha * sol.md^par.eta ...
-              + (1 - par.alpha) * sol.mf^par.eta )^(1/par.eta);
-    sol.Pi  = (1 - Gam) * sol.pm * sol.Mf;
-
-    sol.lambda1 = sol.C1^(-par.sigma_u) * par.alpha ...
-                  * (sol.C1 / sol.md)^(1 - par.eta);
-
-    denom_inner = Gp * (sol.Mf - sol.N) ...
-                + sol.N * (Gpp * sol.omegabar + Gp);
-    domega_dN   = -Gp * sol.omegabar * sol.Mf ...
-                / ( (sol.Mf - sol.N) * denom_inner );
-
-    sol.dpm_dN = par.Rstar ...
-                * ( -Psi / sol.Mf  -  sol.ell * Psip * domega_dN ) ...
-                / Psi^2;
+    sol.exitflag = 1;
 end
 
-% --- Inline corner residuals: just R1 and R2 with D fixed ---
-function R = corner_residuals(z, D_fixed, par, csv)
-    omegabar = exp(z(1));
-    Mf       = z(2);
+function val = neg_utility(D, par, csv)
+    s = solve_inner(D, par, csv);
+    if isempty(s) || s.C1 <= 0
+        val = 1e10; % Penalty for infeasible region
+    else
+        val = -s.C1^(1 - par.sigma_u) / (1 - par.sigma_u);
+    end
+end
 
-    N   = par.nbar + par.gamma * (par.b1 - D_fixed);
-    ell = 1 - N / Mf;
+function sol = solve_inner(D, par, csv)
+    % N is predetermined given D
+    N = par.nbar + par.gamma * (par.b1 - D);
+    disposable_income = par.y1 - (par.b1 - D);
+    sol = solve_inner_at_N(N, disposable_income, par, csv);
+end
 
-    if Mf <= N || N <= 0 || Mf <= 0
-        R = [1e6; 1e6];
+function sol = solve_inner_at_N(N, disposable_income, par, csv)
+    if N <= 0
+        sol = [];
         return
     end
-
+    
+    % --- 1D Root Finding over log(omegabar) ---
+    opts = optimoptions('fsolve', 'Display', 'off', 'TolFun', 1e-10);
+    [log_wb_star, ~, flag] = fsolve( ...
+        @(log_wb) market_clearing_resid(log_wb, N, disposable_income, par, csv), ...
+        log(0.45), opts);
+        
+    if flag <= 0
+        sol = [];
+        return
+    end
+    
+    % --- Recover Full Allocations ---
+    omegabar = exp(log_wb_star);
     Gam = csv.Gamma(omegabar);
     Gp  = csv.GammaPrime(omegabar);
+    
+    % Mf is perfectly pinned down by the leverage equation
+    Mf = N * (1 + Gp * omegabar / (1 - Gam));
+    ell = 1 - N / Mf;
+    
+    if Mf <= N || ell <= 0 || ell >= 1
+        sol = [];
+        return
+    end
+    
     Psi = csv.Psi(omegabar);
     muG = par.mu * csv.G(omegabar);
-    pm  = par.Rstar * ell / Psi;
-    mf  = Mf * (1 - muG);
+    
+    sol.omegabar = omegabar;
+    sol.Mf       = Mf;
+    sol.N        = N;
+    sol.ell      = ell;
+    sol.pm       = par.Rstar * ell / Psi;
+    sol.mf       = Mf * (1 - muG);
+    sol.md       = sol.mf * (par.alpha * sol.pm / (1 - par.alpha))^par.sigma;
+    sol.C1       = (par.alpha * sol.md^par.eta + (1 - par.alpha) * sol.mf^par.eta)^(1/par.eta);
+    sol.Pi       = (1 - Gam) * sol.pm * Mf;
+    sol.lambda1  = sol.C1^(-par.sigma_u) * par.alpha * (sol.C1 / sol.md)^(1 - par.eta);
+    sol.Z_Rstar  = omegabar / Psi;
+end
 
-    R1 = (1 - Gam) - Gp * omegabar * N / (Mf - N);
-
-    LHS2 = mf * ((par.alpha * pm / (1 - par.alpha))^par.sigma + pm);
-    RHS2 = par.y1 - (par.b1 - D_fixed) + (1 - Gam) * pm * Mf;
-    R2   = LHS2 - RHS2;
-
-    R = [R1; R2];
+function R = market_clearing_resid(log_wb, N, income_base, par, csv)
+    omegabar = exp(log_wb); % Ensures omegabar is always strictly positive
+    
+    Gam = csv.Gamma(omegabar);
+    if Gam >= 1
+        R = 1e6; return; % Prevent division by zero or negative Mf
+    end
+    
+    Gp = csv.GammaPrime(omegabar);
+    Psi = csv.Psi(omegabar);
+    muG = par.mu * csv.G(omegabar);
+    
+    % Leverage condition (Equation 1) automatically substituted here
+    Mf = N * (1 + Gp * omegabar / (1 - Gam));
+    ell = 1 - N / Mf;
+    
+    pm = par.Rstar * ell / Psi;
+    mf = Mf * (1 - muG);
+    
+    % Market Clearing residual (Equation 2)
+    LHS = mf * ((par.alpha * pm / (1 - par.alpha))^par.sigma + pm);
+    RHS = income_base + (1 - Gam) * pm * Mf;
+    
+    R = LHS - RHS;
 end

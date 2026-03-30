@@ -50,10 +50,10 @@ par.Rstar   = 1.104;        % world gross interest rate
 
 % Endowment process:  log(g1) = (1-rho) log(mu_g) + rho log(g0) + eps
 par.y0      = 1.0;          % Period 0 endowment (normalised)
-par.b0      = 0.22;         % pre-existing debt (Implied Pre-Default debt-to-gdp)
-par.rho     = 0.90;         % AR(1) persistence of growth
-par.mu_g    = 1.00;         % unconditional mean growth rate
-par.sigma_g = 0.10;         % growth shock std. dev.
+par.b0      = 0.18;         % pre-existing debt (Implied Pre-Default debt-to-gdp)
+par.rho     = 0.60;         % AR(1) persistence of growth
+par.mu_g    = 1.20;         % unconditional mean growth rate
+par.sigma_g = 0.20;         % growth shock std. dev.
 par.g0      = 0.95;         % initial growth rate
 
 fprintf('Parameters:\n');
@@ -89,23 +89,61 @@ fprintf('  Sum of weights = %.10f\n\n', sum(weights));
 %% ======================== SOLVE PERIOD 0 ==============================
 %  Find optimal bond issuance b1 from the Euler equation.
 
+%% ======================== SOLVE PERIOD 0 ==============================
 fprintf('============================================================\n');
-fprintf('  Solving for optimal b1 (Period 0 Euler equation)\n');
+fprintf('  Solving for optimal b1 (Direct V0 Maximization)\n');
 fprintf('============================================================\n\n');
 
-b1_init = 0.2;             % initial guess
+% We use fminbnd to directly maximize expected lifetime utility.
+% This completely bypasses the Euler residual trap and gracefully handles corners.
 
-% Use lsqnonlin to enforce b1 >= 0
-opts0 = optimoptions('lsqnonlin', 'Display', 'iter', 'TolFun', 1e-10, 'TolX', 1e-10);
+opts0 = optimset('Display', 'iter', 'TolX', 1e-6);
 
-% lsqnonlin minimizes the square of the residual, keeping b1 between 0 and infinity
-[b1_star, resnorm, fval0, exitflag0] = lsqnonlin( ...
-    @(b1) period0_euler(b1, par, csv, y1_nodes, weights), ...
-    b1_init, 0, Inf, opts0);
+% Search for optimal debt between 0 and a reasonable upper bound (e.g., 2.0)
+[b1_star, min_neg_V0, exitflag0] = fminbnd( ...
+    @(b1) neg_V0(b1, par, csv, y1_nodes, weights), ...
+    0.0, 2.0, opts0);
 
-fprintf('\n  b1*           = %.6f\n', b1_star);
-fprintf('  Euler residual = %.2e\n', fval0);
+fprintf('\n  b1* = %.6f\n', b1_star);
+fprintf('  Max Utility V0 = %.6f\n', -min_neg_V0);
 fprintf('  Exit flag      = %d\n\n', exitflag0);
+
+%% ======================================================================
+% Add this helper function at the very bottom of your solve_ge_model.m script:
+function val = neg_V0(b1, par, csv, y1_nodes, weights)
+    nq = length(y1_nodes);
+    D_vals = zeros(nq, 1);
+    C1_vals = zeros(nq, 1);
+    
+    for j = 1:nq
+        % Solve period 1 for each state
+        sol_j = solve_period1(y1_nodes(j), b1, par, csv, []);
+        D_vals(j) = sol_j.D;
+        C1_vals(j) = sol_j.C1;
+    end
+    
+    % Compute Period 0 bond price
+    q0 = (1 / par.Rstar) * sum(weights .* (1 - D_vals / b1));
+    
+    % Period 0 consumption (frictionless)
+    md0 = par.y0 - par.b0 + q0 * b1;
+    
+    % Guard against impossible b1 guesses
+    if md0 <= 0
+        val = 1e10; 
+        return;
+    end
+    
+    mf0 = md0 * ((1 - par.alpha) / (par.alpha * par.Rstar))^par.sigma;
+    C0 = (par.alpha * md0^par.eta + (1 - par.alpha) * mf0^par.eta)^(1/par.eta);
+    
+    % Calculate Expected V0
+    u_C0 = C0^(1 - par.sigma_u) / (1 - par.sigma_u);
+    E_u_C1 = sum(weights .* (C1_vals.^(1 - par.sigma_u) / (1 - par.sigma_u)));
+    
+    V0 = u_C0 + par.beta * E_u_C1;
+    val = -V0; % Negate because fminbnd minimizes
+end
 
 %% =================== RECOVER FULL EQUILIBRIUM =========================
 
@@ -113,32 +151,33 @@ fprintf('============================================================\n');
 fprintf('  Full Equilibrium\n');
 fprintf('============================================================\n\n');
 
-% --- Solve Period 1 for each state ---
+% --- Solve Period 1 for each state using the optimal b1_star ---
+nq = length(y1_nodes);
 D_vals  = zeros(nq, 1);
 sol1    = cell(nq, 1);
-x0      = [];
+
 for j = 1:nq
-    sol1{j}  = solve_period1(y1_nodes(j), b1_star, par, csv, x0);
+    % Calculate the Period 1 equilibrium for this specific state
+    sol1{j}  = solve_period1(y1_nodes(j), b1_star, par, csv, []);
     D_vals(j) = sol1{j}.D;
-    if sol1{j}.exitflag <= 0 || sol1{j}.omegabar < 1e-6
-        x0 = [];
-    else
-        x0 = [sol1{j}.D; log(sol1{j}.omegabar); sol1{j}.Mf];
-    end
 end
 
 % --- Bond price ---
 q0_star = (1 / par.Rstar) * sum( weights .* (1 - D_vals / b1_star) );
 
-% --- Period 0 allocations (frictionless intermediation) ---
+% --- Period 0 allocations ---
 md0 = par.y0 - par.b0 + q0_star * b1_star;
 mf0 = md0 * ( (1 - par.alpha) / (par.alpha * par.Rstar) )^par.sigma;
-C0  = ( par.alpha * md0^par.eta ...
-      + (1 - par.alpha) * mf0^par.eta )^(1/par.eta);
+C0  = ( par.alpha * md0^par.eta + (1 - par.alpha) * mf0^par.eta )^(1/par.eta);
 
 % Sovereign spread:  yield = R*/q0,  spread = yield - R*
-yield0  = par.Rstar / q0_star;
-spread_bp = (yield0 - par.Rstar) * 10000;
+if q0_star > 1e-8
+    yield0  = par.Rstar / q0_star;
+    spread_bp = (yield0 - par.Rstar) * 10000;
+else
+    yield0 = Inf;
+    spread_bp = Inf;
+end
 
 % --- Display Period 0 ---
 fprintf('--- Period 0 ---\n');
