@@ -42,7 +42,7 @@ function R = period0_euler(b1, par, csv, y1_nodes, weights)
         end
     end
 
-    % --- Bond price [eq:bondprice] ---
+    % --- Bond price ---
     q0 = (1 / par.Rstar) * sum( weights .* (1 - D_vals / b1) );
 
     % --- Period 0 allocations (frictionless intermediation) ---
@@ -61,10 +61,10 @@ function R = period0_euler(b1, par, csv, y1_nodes, weights)
     C0  = ( par.alpha * md0^par.eta ...
           + (1 - par.alpha) * mf0^par.eta )^(1/par.eta);
 
-    % Shadow value [eq:shadow]:  lambda0 = u'(C0) * alpha * (C0/md0)^(1-eta)
+    % Shadow value:  lambda0 = u'(C0) * alpha * (C0/md0)^(1-eta)
     lambda0 = C0^(-par.sigma_u) * par.alpha * (C0 / md0)^(1 - par.eta);
 
-    % --- Euler equation residual [eq:euler] ---
+    % --- Euler equation residual ---
     %
     %   lambda0 * q0  =  beta * E[ lambda1 * (1 + gamma * mf1 * dpm/dN) ]
     %

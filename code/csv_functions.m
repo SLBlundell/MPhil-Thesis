@@ -15,7 +15,7 @@ function csv = csv_functions(sigma_w, mu)
 %     csv.Psi(w)              - Gamma - mu*G  (net lender recovery)
 %     csv.PsiPrime(w)         - d Psi / d omegabar
 %
-%   Reference: Bernanke, Gertler & Gilchrist (1999), Appendix.
+%   Reference: Christiano et. al., 2014
 
     % Standardised normal argument: z(omegabar)
     z    = @(w) (log(w) + sigma_w^2/2) / sigma_w;

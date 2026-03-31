@@ -33,13 +33,13 @@ par.beta    = 0.815;        % discount factor
 par.sigma_u = 2;            % CRRA risk aversion
 
 % CES aggregator
-par.alpha   = 0.4;         % Armington weight on domestic inputs
+par.alpha   = 0.7;         % Armington weight on domestic inputs
 par.eta     = -1;           % CES parameter (eta < 0  =>  complements)
 par.sigma   = 1/(1-par.eta);% elasticity of substitution = 1/(1-eta)
 
 % Financial sector
-par.nbar    = 0.05;         % long-run intermediary net worth
-par.gamma   = 0.20;         % home bias share of sovereign debt
+par.nbar    = 0.065;         % long-run intermediary net worth
+par.gamma   = 0.320;         % home bias share of sovereign debt
 
 % Christiano et al. - sigma_w = 0.25, mu = 0.2 to 0.28
 par.sigma_w = 0.250;        % idiosyncratic shock volatility (sigma_omega)
@@ -49,7 +49,7 @@ par.mu      = 0.400;        % CSV monitoring cost
 par.Rstar   = 1.104;        % world gross interest rate
 
 % Endowment process:  log(g1) = (1-rho) log(mu_g) + rho log(g0) + eps
-par.y0      = 1.0;          % Period 0 endowment (normalised)
+par.y0      = 1.00;         % Period 0 endowment (normalised)
 par.b0      = 0.18;         % pre-existing debt (Implied Pre-Default debt-to-gdp)
 par.rho     = 0.60;         % AR(1) persistence of growth
 par.mu_g    = 1.20;         % unconditional mean growth rate
@@ -68,7 +68,9 @@ fprintf('  y0=%.2f  b0=%.2f  rho=%.2f  mu_g=%.2f  sigma_g=%.3f\n\n', ...
 
 csv = csv_functions(par.sigma_w, par.mu);
 
+
 %% ================== GAUSS-HERMITE QUADRATURE ==========================
+% Discretises the AR(1) income shock process into a discrete state space of "nq" nodes
 
 nq = 7;                     % number of quadrature nodes
 [xi, wi] = gauss_hermite(nq);
@@ -86,20 +88,20 @@ for j = 1:nq
 end
 fprintf('  Sum of weights = %.10f\n\n', sum(weights));
 
+
 %% ======================== SOLVE PERIOD 0 ==============================
 %  Find optimal bond issuance b1 from the Euler equation.
 
-%% ======================== SOLVE PERIOD 0 ==============================
 fprintf('============================================================\n');
 fprintf('  Solving for optimal b1 (Direct V0 Maximization)\n');
 fprintf('============================================================\n\n');
 
 % We use fminbnd to directly maximize expected lifetime utility.
-% This completely bypasses the Euler residual trap and gracefully handles corners.
+% This bypasses the Euler residual trap, handles corners.
 
 opts0 = optimset('Display', 'iter', 'TolX', 1e-6);
 
-% Search for optimal debt between 0 and a reasonable upper bound (e.g., 2.0)
+% Search for optimal debt between 0 and a non-binding upper bound (e.g., 2.0)
 [b1_star, min_neg_V0, exitflag0] = fminbnd( ...
     @(b1) neg_V0(b1, par, csv, y1_nodes, weights), ...
     0.0, 2.0, opts0);
@@ -108,42 +110,6 @@ fprintf('\n  b1* = %.6f\n', b1_star);
 fprintf('  Max Utility V0 = %.6f\n', -min_neg_V0);
 fprintf('  Exit flag      = %d\n\n', exitflag0);
 
-%% ======================================================================
-% Add this helper function at the very bottom of your solve_ge_model.m script:
-function val = neg_V0(b1, par, csv, y1_nodes, weights)
-    nq = length(y1_nodes);
-    D_vals = zeros(nq, 1);
-    C1_vals = zeros(nq, 1);
-    
-    for j = 1:nq
-        % Solve period 1 for each state
-        sol_j = solve_period1(y1_nodes(j), b1, par, csv, []);
-        D_vals(j) = sol_j.D;
-        C1_vals(j) = sol_j.C1;
-    end
-    
-    % Compute Period 0 bond price
-    q0 = (1 / par.Rstar) * sum(weights .* (1 - D_vals / b1));
-    
-    % Period 0 consumption (frictionless)
-    md0 = par.y0 - par.b0 + q0 * b1;
-    
-    % Guard against impossible b1 guesses
-    if md0 <= 0
-        val = 1e10; 
-        return;
-    end
-    
-    mf0 = md0 * ((1 - par.alpha) / (par.alpha * par.Rstar))^par.sigma;
-    C0 = (par.alpha * md0^par.eta + (1 - par.alpha) * mf0^par.eta)^(1/par.eta);
-    
-    % Calculate Expected V0
-    u_C0 = C0^(1 - par.sigma_u) / (1 - par.sigma_u);
-    E_u_C1 = sum(weights .* (C1_vals.^(1 - par.sigma_u) / (1 - par.sigma_u)));
-    
-    V0 = u_C0 + par.beta * E_u_C1;
-    val = -V0; % Negate because fminbnd minimizes
-end
 
 %% =================== RECOVER FULL EQUILIBRIUM =========================
 
@@ -214,3 +180,42 @@ fprintf('  E[C1]            = %10.6f\n', sum(weights .* C1_vals));
 fprintf('\n============================================================\n');
 fprintf('  Solver complete.\n');
 fprintf('============================================================\n');
+
+
+
+%% ======================================================================
+% Helper function
+function val = neg_V0(b1, par, csv, y1_nodes, weights)
+    nq = length(y1_nodes);
+    D_vals = zeros(nq, 1);
+    C1_vals = zeros(nq, 1);
+    
+    for j = 1:nq
+        % Solve period 1 for each state
+        sol_j = solve_period1(y1_nodes(j), b1, par, csv, []);
+        D_vals(j) = sol_j.D;
+        C1_vals(j) = sol_j.C1;
+    end
+    
+    % Compute Period 0 bond price
+    q0 = (1 / par.Rstar) * sum(weights .* (1 - D_vals / b1));
+    
+    % Period 0 consumption (frictionless)
+    md0 = par.y0 - par.b0 + q0 * b1;
+    
+    % Guard against impossible b1 guesses
+    if md0 <= 0
+        val = 1e10; 
+        return;
+    end
+    
+    mf0 = md0 * ((1 - par.alpha) / (par.alpha * par.Rstar))^par.sigma;
+    C0 = (par.alpha * md0^par.eta + (1 - par.alpha) * mf0^par.eta)^(1/par.eta);
+    
+    % Calculate Expected V0
+    u_C0 = C0^(1 - par.sigma_u) / (1 - par.sigma_u);
+    E_u_C1 = sum(weights .* (C1_vals.^(1 - par.sigma_u) / (1 - par.sigma_u)));
+    
+    V0 = u_C0 + par.beta * E_u_C1;
+    val = -V0; % Negate because fminbnd minimizes
+end
