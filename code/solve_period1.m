@@ -2,8 +2,8 @@ function sol = solve_period1(y1, b1, par, csv, ~)
     par.y1 = y1;
     par.b1 = b1;
     
-    % --- Outer Optimization: Maximize Utility over D ---
-    % fminbnd perfectly handles the bounds [0, b1], seamlessly 
+    % --- Outer Optimisation: Maximise Utility over D ---
+    % fminbnd handles the bounds [0, b1]
     % testing both corner solutions and interior points.
     opts_fmin = optimset('Display', 'off', 'TolX', 1e-8);
     [D_star, ~] = fminbnd(@(D) neg_utility(D, par, csv), 0, b1, opts_fmin);
@@ -13,7 +13,7 @@ function sol = solve_period1(y1, b1, par, csv, ~)
     sol.D = D_star;
     
     % --- Compute dpm/dN via finite differences ---
-    % This brilliantly avoids the analytical "denominator trap"
+    % This avoids the analytical "denominator trap"
     N1 = par.nbar + par.gamma * (b1 - D_star);
     eps_N = 1e-5 * max(abs(N1), 1e-4);
     
@@ -66,7 +66,7 @@ function sol = solve_inner_at_N(N, disposable_income, par, csv)
     Gam = csv.Gamma(omegabar);
     Gp  = csv.GammaPrime(omegabar);
     
-    % Mf is perfectly pinned down by the leverage equation
+    % Mf is pinned down by the leverage equation
     Mf = N * (1 + Gp * omegabar / (1 - Gam));
     ell = 1 - N / Mf;
     
@@ -103,7 +103,7 @@ function R = market_clearing_resid(log_wb, N, income_base, par, csv)
     Psi = csv.Psi(omegabar);
     muG = par.mu * csv.G(omegabar);
     
-    % Leverage condition (Equation 1) automatically substituted here
+    % Leverage condition (Equation 1) substituted here
     Mf = N * (1 + Gp * omegabar / (1 - Gam));
     ell = 1 - N / Mf;
     
