@@ -67,7 +67,7 @@
         \vspace{1.5cm}
         
         % Author (using small caps)
-        {\large \textsc{Sam Blundell}\textsuperscript{*} \par}
+        {\large \textsc{Sam Blundell} \par}
         \vspace{0.2cm}
         
         % Institution & Degree (using small caps)
@@ -84,15 +84,15 @@
 \vspace{1cm}
 
 % Abstract Section
-\begin{abstract}
-    \noindent \lipsum[1]
+%\begin{abstract}
+%     \lipsum[1]
     
     %\vspace{1cm} % Space between abstract text and keywords
     
     % Keywords and JEL Codes
-    %\noindent \textbf{Keywords:} Sovereign Default, General Equilibrium, Banking Sector, Costly State Verification, Sovereign-Bank Nexus, Sri Lanka. \\[0.2cm]
+    % \textbf{Keywords:} Sovereign Default, General Equilibrium, Banking Sector, Costly State Verification, Sovereign-Bank Nexus, Sri Lanka. \\[0.2cm]
     %\textbf{JEL Classification:} F34, F41, G21, O53
-\end{abstract}
+%\end{abstract}
 
 \clearpage
 \end{titlepage}
@@ -612,9 +612,89 @@ Parameters $(\bar{n}, \gamma, \sigma_\omega, \mu, \eta, \alpha, R^*)$ and states
 
 The model admits a second class of equilibria in which the international lender anticipates full default, sets $q_0=0$, and the household is indifferent between not borrowing and borrowing for free with the intention of defaulting upon all claims, as identified by \citet{dubey_default_2005} in models of default with non-contingent debt. The two-period setting presented in this model, without a continuation value from market access, means that the household is exactly indifferent between these two equilibria. I choose to omit the analysis of such an equilibrium, following the practice of \citet{arellano_default_2008}, \citet{peiris_capital_2025} and others, to focus upon the borrowing, default, and intermediary channels that are of primary interest to this thesis.
 
+\section{Comparative Statics and Testable Implications}\label{sec:implications}
+
+The competitive equilibrium of Definition~\ref{def:equil} features a pecuniary externality: the atomistic household treats the bond price $q_0$ parametrically and therefore does not internalise how its borrowing affects expected default and the cost of debt. To characterise this inefficiency, I define a constrained Ramsey planner's problem, under which there is no coordination failure and thus the effect of default on the cost of borrowing is fully internalised in allocation choices, and compare outcomes with the competitive equilibrium of Definition~\ref{def:equil}.
+
+\subsection{The Constrained Planner's Problem}\label{sec:planner}
+
+Consider a domestic Ramsey planner who chooses $b_1$ in Period~0 to maximise household welfare, subject to the same Period~1 equilibrium conditions as the competitive economy. That is, the planner takes as given the Period~1 default rule $D(y_1, b_1)$ and the associated competitive equilibrium mappings for $(\bar{\omega}_1, M^f_1, p_{m,1}, C_1)$, but internalises the bond price schedule.
+The planner solves:
+\begin{equation}\label{eq:planner}
+    \max_{b_1 \geq 0} \; u\!\bigl(C_0(b_1)\bigr) + \beta\,\E_0\!\bigl[u\!\bigl(C_1(y_1, b_1)\bigr)\bigr],
+\end{equation}
+where $C_0$ depends on $b_1$ through the budget constraint \eqref{eq:bc0} evaluated at $q_0(b_1)$:
+\[
+    m^d_0 = y_0 - b_0 + q_0(b_1)\cdot b_1 + \Pi_0.
+\]
+
+\begin{definition}[Constrained Planner's Equilibrium]\label{def:planner_equil}
+    A constrained planner's equilibrium is an allocation $\{b_1^{P}, q_0^{P}, D^{P}(y_1)\}$ and associated prices and quantities such that:
+    \begin{enumerate}[label=(\roman*)]
+        \item $b_1^{P}$ solves the planner's problem \eqref{eq:planner};
+        \item For each realisation $y_1$, the Period~1 equilibrium $(D, \bar{\omega}_1, M^f_1)$ satisfies the same system \eqref{eq:sys_leverage}--\eqref{eq:sys_default} as under the competitive equilibrium;
+        \item The bond price satisfies the \textit{schedule} \eqref{eq:bondprice}.
+    \end{enumerate}
+\end{definition}
+
+Whilst the planner's problem is identical to that of the atomistic household in Period 1, the critical distinction from the competitive equilibrium is that the planner perceives the total revenue from bond issuance as
+\[
+    \mathcal{R}(b_1) \equiv q_0(b_1)\cdot b_1,
+\]
+and therefore the marginal revenue from issuing an additional unit of debt is
+\begin{equation}\label{eq:marginal_revenue}
+    \mathcal{R}'(b_1) = q_0(b_1) + q_0'(b_1)\cdot b_1,
+\end{equation}
+where the competitive household perceives only the first term. The second term, $q_0'(b_1)\cdot b_1$, captures the debt-dilution externality: additional borrowing raises expected default, depresses the bond price, and erodes the revenue raised on \emph{all} outstanding issuance.
+
+
+\subsection{The Welfare Wedge}\label{sec:wedge}
+
+Differentiating \eqref{eq:planner} with respect to $b_1$ yields the planner's first-order condition:
+\begin{equation}\label{eq:planner_foc}
+    \lambda_0^{P}\,\mathcal{R}'(b_1) = \beta\,\E_0\!\left[\lambda_1\!\left(1 + \gamma\,m^f_1\,\frac{\partial p_{m,1}}{\partial N_1}\right) + u'(C_1)\frac{\partial C_1}{\partial D}\frac{\partial D}{\partial b_1}\right],
+\end{equation}
+where $\lambda_t$ denotes the shadow value of income \eqref{eq:shadow}. 
+
+At the competitive equilibrium allocation, the household's Euler equation \eqref{eq:euler} holds:
+\[
+    \lambda_0\,q_0 = \beta\,\E_0\!\left[\lambda_1\!\left(1 + \gamma\,m^f_1\,\frac{\partial p_{m,1}}{\partial N_1}\right)\right].
+\]
+The difference between the planner's and the household's Period~0 optimality conditions identifies a welfare wedge. Evaluating the planner's FOC at the competitive equilibrium allocation:
+\begin{equation}\label{eq:wedge}
+    \underbrace{\lambda_0\,q_0'(b_1)\cdot b_1}_{\text{debt-dilution externality}} + \beta\,\E_0\!\left[\underbrace{u'(C_1)\,\frac{\partial C_1}{\partial D}\frac{\partial D}{\partial b_1}}_{\text{insurance value of default}}\right] \neq 0.
+\end{equation}
+
+If the competitive equilibrium were constrained efficient, this expression would equal zero and the planner would have no desire to adjust $b_1$. The sign of \eqref{eq:wedge} determines the direction of the inefficiency. The first term is unambiguously negative: $q_0'(b_1) < 0$ because higher debt raises expected default, so the household overborrrows from the perspective of bond revenue. The second term captures the insurance value of partial default under incomplete markets: higher $b_1$ raises $D(y_1, b_1)$ in low-endowment states (Proposition~\ref{prop:inv-debt-gdp}), which, despite the convex cost from Proposition~\ref{prop:convexity}, provides state-contingent relief through the partial default margin.
+
+\begin{remark}
+    The net sign of \eqref{eq:wedge} is a quantitative question. In the framework of \citet{peiris_capital_2025}, which features partial default without the CSV friction, the insurance channel dominates and the competitive equilibrium exhibits underborrowing. In the present model, the CSV friction amplifies the cost of default through the doom loop (Proposition~\ref{prop:convexity}), potentially strengthening the overborrowing channel. The direction of the net inefficiency therefore depends on the calibrated strength of the financial accelerator - specifically, on the parameters $(\bar{n}, \gamma, \sigma_\omega, \mu)$ that govern the curvature of $p_{m,1}(D)$.
+\end{remark}
+
+The insurance term in \eqref{eq:wedge} reflects a deeper property of partial default under incomplete markets. We can think of partial default as expanding the effective asset span of the non-contingent bond. With partial default, the household can smooth its state-contingent repayment, making the non-contingent bond behave more like a portfolio of Arrow securities. The more responsive $D(y_1,b_1)$ is to the state, the better the insurance properties of the debt instrument. Under the CSV friction, however, households are subject to a convex cost associated with this insurance. Whether the insurance value exceeds this premium is what determines the sign of the overall wedge.
+
+
+\subsection{Testable Predictions}\label{sec:predictions}
+
+The welfare wedge in \eqref{eq:wedge} arises because partial default provides state-contingent insurance that the competitive household undervalues. The existence and structure of this insurance channel — absent from binary default frameworks — generates a set of testable implications for the cross-section of sovereign restructuring episodes. I posit five testable predictions; the first two follow directly from Propositions~\ref{prop:convexity} and~\ref{prop:inv-debt-gdp}; the remaining three exploit the interaction between partial default and the CSV friction. \\
+
+\textbf{Prediction 1} (Haircuts increase in debt-to-endowment). \emph{In a cross-section of sovereign restructuring episodes, realised haircuts are positively associated with the pre-default debt-to-GDP ratio.}\\
+
+\textbf{Prediction 2} (Convexity of the output--haircut relationship). \emph{The relationship between haircut severity and the post-default output decline is convex: larger haircuts are associated with disproportionately larger output losses, and this convexity is increasing in the share of sovereign debt held domestically.}\\
+
+\textbf{Prediction 3} (Direction of borrowing inefficiency depends on financial sector fragility). \emph{The sign of the welfare wedge \eqref{eq:wedge} is governed by the strength of the sovereign–intermediary linkage. For low values of $\gamma$, the insurance value of partial default dominates the debt-dilution externality, and the competitive equilibrium exhibits underborrowing relative to the constrained planner. As $\gamma$ increases, the convex cost of default through the intermediary balance sheet (Proposition~\ref{prop:convexity}) erodes the insurance value, and at sufficiently high $\gamma$ the debt-dilution externality dominates, generating overborrowing.} Empirically, countries with high domestic bank sovereign exposure should exhibit debt-to-GDP ratios that exceed the constrained-efficient level, whereas countries with low exposure should exhibit the opposite. \\
+ 
+\textbf{Prediction 4} (Import compression is continuous in haircuts). \emph{Across sovereign restructuring episodes, the magnitude of import compression is positively correlated with the realised haircut, and this gradient is steeper for countries with larger banking-sovereign linkages.} Import prices respond via $\partial p_{m,1}/\partial D = -\gamma\,(\partial p_{m,1}/\partial N_1) > 0$ from \eqref{eq:dpm_dD}, and the household's demand for foreign inputs $m^f_1$ is decreasing in $p_{m,1}$ via \eqref{eq:mf_demand}.\\
+
+\textbf{Prediction 5} (The external finance premium rises with haircut severity). \emph{Post-default corporate borrowing costs increase with the realised haircut, and the relationship is steeper for countries with higher domestic bank sovereign exposure.} The model's external finance premium is $Z_1/R^* = \ell_1/\Psi(\bar{\omega}_1)$ from \eqref{eq:efp} and \eqref{eq:pm}, which is increasing in the default volume $D$ through the intermediary balance sheet channel. A larger haircut erodes $N_1$, raises $\bar{\omega}_1$, and pushes up the premium.
+
 \section{Quantitative Analysis}
 
-I now move to examine the quantitative implications of the model by conducting numerical simulations. Under the model's two-period setting, each period is set to a length of five years. This setting seeks to strike a balance between temporal realism and calibration feasibility. Periods shorter than this length do not allow for a realistic time frame we would reasonably expect sovereign renegotiation to occur within. Five years allows Period 1 to capture equilibrium following complete conclusion of refinancing. On the other hand, longer period settings would lead to issues of liquidity in our chosen instrument of calibration - CDS Swaps. 5 year sovereign bond CDS contracts are generally more widely traded than 10 year, thus ensuring implied default probability is adequately captured in price data. Thus, the discount rate and risk-free rate are calibrated to their respective five year compounded values.
+I now move to examine the quantitative implications of the model by conducting numerical simulations. Under the model's two-period setting, each period is set to a length of five years. This setting seeks to strike a balance between temporal realism and calibration feasibility. Periods shorter than this length do not allow for a realistic time frame we would reasonably expect sovereign renegotiation to occur within. Five years allows Period 1 to capture equilibrium following complete conclusion of refinancing. On the other hand, longer period settings would lead to issues of liquidity in our chosen instrument of calibration - CDS Swaps. 5 year sovereign bond CDS contracts are generally more widely traded than 10 year, thus ensuring implied default probability is adequately captured in price data. Thus, the discount rate and risk-free rate are calibrated to their respective five year compounded values. For the remainder of the quantitative analysis, I set my utility function to a CRRA arrangement,
+\begin{equation*}
+    u(C_t)=\frac{C_t^{1-\sigma_u}}{1-\sigma_u},
+\end{equation*}
+where $\sigma_u$ is the coefficient of relative risk aversion.
 
 \subsection{Baseline Calibration: The Case of Sri Lanka}
 
@@ -638,7 +718,7 @@ I now move to examine the quantitative implications of the model by conducting n
                     \addlinespace
                     
                     \multicolumn{4}{@{}l}{\textit{Financial Sector and Frictions}} \\
-                    $\bar{n}$ & 0.650 & Long-run intermediary net worth & CBSL Monetary Survey \\
+                    $\bar{n}$ & 0.065 & Long-run intermediary net worth & CBSL Monetary Survey \\
                     $\gamma$ & 0.320 & Home bias share of sovereign debt & CBSL Monetary Survey \\
                     $\sigma_\omega$ & 0.250 & Idiosyncratic shock volatility & \citet{christiano_risk_2014} \\
                     $\mu$ & 0.400 & CSV monitoring / auditing cost & \citet{christiano_risk_2014} \\
