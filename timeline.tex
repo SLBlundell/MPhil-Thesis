@@ -1,0 +1,92 @@
+% Preamble: \usepackage{tikz} \usetikzlibrary{arrows.meta}
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+    >=Stealth,
+    every node/.style={font=\small},
+    known/.style={circle, draw=black, fill=black, inner sep=0pt, minimum size=5pt},
+    shock/.style={circle, draw=black, fill=white, inner sep=0pt, minimum size=5pt, thick},
+    agentlbl/.style={anchor=east, font=\small\itshape},
+    evlbl/.style={font=\footnotesize},
+    periodlbl/.style={font=\bfseries\small}
+]
+
+% Event x-positions
+\def\xzA{1.0}   \def\xzB{2.2}  \def\xzC{3.4}  \def\xzD{4.6}  \def\xzE{5.8}
+\def\xsep{6.7}
+\def\xoA{7.6}   \def\xoBC{8.8} \def\xoD{10.0} \def\xoE{11.2} \def\xoF{12.4}
+\def\xmax{13.2}
+
+% Agent y-positions
+\def\yH{0}     \def\yB{-1.5}  \def\yL{-3.0}
+\def\ytop{1.4}
+
+% Main timeline arrow
+\draw[->, thick] (0, \ytop) -- (\xmax, \ytop)
+    node[right, font=\small\itshape] {time};
+
+% Period separator
+\draw[dashed, gray] (\xsep, \ytop) -- (\xsep, \yL-0.3);
+
+% Period labels
+\node[periodlbl] at ({(\xzA+\xzE)/2}, \ytop+0.45) {Period 0 \;\; ($t=0$)};
+\node[periodlbl] at ({(\xoA+\xoF)/2}, \ytop+0.45) {Period 1 \;\; ($t=1$)};
+
+% Event tick marks and (a)-(f) labels on main timeline
+\foreach \x/\lab in {\xzA/{(a)}, \xzB/{(b)}, \xzC/{(c)}, \xzD/{(d)}, \xzE/{(e)},
+                     \xoA/{(a)}, \xoBC/{(b,c)}, \xoD/{(d)}, \xoE/{(e)}, \xoF/{(f)}} {
+  \draw (\x, \ytop-0.08) -- (\x, \ytop+0.08);
+  \node[evlbl, below] at (\x, \ytop-0.08) {\lab};
+}
+
+% Light vertical guidelines
+\foreach \x in {\xzA, \xzB, \xzC, \xzD, \xzE, \xoA, \xoBC, \xoD, \xoE, \xoF} {
+  \draw[gray!25, dotted] (\x, \ytop-0.3) -- (\x, \yL-0.15);
+}
+
+% Agent axes
+\draw[thick] (0.4, \yH) -- (\xmax-0.1, \yH);
+\draw[thick] (0.4, \yB) -- (\xmax-0.1, \yB);
+\draw[thick] (0.4, \yL) -- (\xmax-0.1, \yL);
+
+% Agent labels
+\node[agentlbl] at (0.3, \yH) {Households};
+\node[agentlbl] at (0.3, \yB) {Intermediaries};
+\node[agentlbl] at (0.3, \yL) {Int'l lender};
+
+% Households
+\node[known] at (\xzA, \yH) {};
+\node[known] at (\xzB, \yH) {};
+\node[shock] at (\xzD, \yH) {};
+\node[known] at (\xzE, \yH) {};
+\node[shock] at (\xoA, \yH) {};
+\node[known] at (\xoBC, \yH) {};
+\node[shock] at (\xoE, \yH) {};
+\node[known] at (\xoF, \yH) {};
+
+% Intermediaries
+\node[known] at (\xzB, \yB) {};
+\node[known] at (\xzC, \yB) {};
+\node[shock] at (\xzD, \yB) {};
+\node[known] at (\xoBC, \yB) {};
+\node[known] at (\xoD,  \yB) {};
+\node[shock] at (\xoE,  \yB) {};
+
+% International Lender
+\node[known] at (\xzB, \yL) {};
+\node[known] at (\xzC, \yL) {};
+\node[known] at (\xoD, \yL) {};
+
+% Legend
+\node[known] at (0.5, \yL-1.1) {};
+\node[anchor=west, font=\footnotesize] at (0.7, \yL-1.1)
+    {conditionally known ex~ante};
+\node[shock] at (6.2, \yL-1.1) {};
+\node[anchor=west, font=\footnotesize] at (6.4, \yL-1.1)
+    {shock drawn from known distribution};
+
+\end{tikzpicture}
+\caption{Within-period sequence of events by agent. Labels (a)--(f) correspond to those in Section~\ref{sec:timing}. Period~1 events (b) and (c) are merged because the partial default choice $D$ simultaneously pins down the update of intermediary net worth $n_1$.}
+\label{fig:timeline}
+\end{figure}
