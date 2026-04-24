@@ -35,7 +35,7 @@
 
 % Event tick marks and (a)-(f) labels on main timeline
 \foreach \x/\lab in {\xzA/{(a)}, \xzB/{(b)}, \xzC/{(c)}, \xzD/{(d)}, \xzE/{(e)},
-                     \xoA/{(a)}, \xoBC/{(b,c)}, \xoD/{(d)}, \xoE/{(e)}, \xoF/{(f)}} {
+                     \xoA/{(a)}, \xoBC/{(b)}, \xoD/{(c)}, \xoE/{(d)}, \xoF/{(e)}} {
   \draw (\x, \ytop-0.08) -- (\x, \ytop+0.08);
   \node[evlbl, below] at (\x, \ytop-0.08) {\lab};
 }
@@ -51,9 +51,9 @@
 \draw[thick] (0.4, \yL) -- (\xmax-0.1, \yL);
 
 % Agent labels
-\node[agentlbl] at (0.3, \yH) {Households};
+\node[agentlbl] at (0.3, \yH) {Household};
 \node[agentlbl] at (0.3, \yB) {Intermediaries};
-\node[agentlbl] at (0.3, \yL) {Int'l lender};
+\node[agentlbl] at (0.3, \yL) {International Lender};
 
 % Households
 \node[known] at (\xzA, \yH) {};
@@ -87,6 +87,6 @@
     {shock drawn from known distribution};
 
 \end{tikzpicture}
-\caption{Within-period sequence of events by agent. Labels (a)--(f) correspond to those in Section~\ref{sec:timing}. Period~1 events (b) and (c) are merged because the partial default choice $D$ simultaneously pins down the update of intermediary net worth $n_1$.}
+\caption{Within-period sequence of events by agent. Labels (a)--(e) correspond to those in Section~\ref{sec:timings}.}
 \label{fig:timeline}
 \end{figure}
