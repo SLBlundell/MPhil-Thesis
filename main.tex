@@ -47,7 +47,7 @@
 
 % Spacing
 \onehalfspacing
-\setlength\parindent{0pt}
+% \setlength\parindent{0pt}
 
 % Custom commands
 \newcommand{\R}{\mathbb{R}}
@@ -61,14 +61,17 @@
 \begin{titlepage}
     \begin{center}
         \vspace*{1.5cm} % Top padding
+
+        \renewcommand*{\thefootnote}{\fnsymbol{footnote}}
+
         
         % Main Title
-        {\LARGE \bfseries A Model of Partial Sovereign Default in General Equilibrium with a Banking Sector:\\[0.2cm] The Case of Sri Lanka \par}
+        {\LARGE \bfseries Fragile Economies: A General Equilibrium Model of Partial Default with a Banking Sector \par}
         
         \vspace{1.5cm}
         
         % Author (using small caps)
-        {\large \textsc{Sam Blundell} \par}
+        {\large \textsc{Sam Blundell}\footnote{{I would like to thank Dimitrios Tsomocos and Fatih Kansoy for their invaluable supervision, and Udara Peiris for his countless advice and guidance.}} \par}
         \vspace{0.2cm}
         
         % Institution & Degree (using small caps)
@@ -80,20 +83,25 @@
         
         % Date (using small caps)
         {\normalsize \textsc{This Version:} \today \par}
+
+        \renewcommand*{\thefootnote}{\arabic{footnote}}
+        \setcounter{footnote}{0}
     \end{center}
 
 \vspace{1cm}
 
 % Abstract Section
-%\begin{abstract}
-%     \lipsum[1]
+\begin{abstract}
+     Whilst examination of historical evidence following the 2008 financial crisis demonstrated the often antecedental role of domestic banking crisis in periods of sovereign default, much of the discussion on the so-called sovereign-bank diabolical loop posits an opposing mechanism, where a banking crisis is induced by the erosion of bank balance sheets through sovereign debt holdings. I propose a two-period general equilibrium model of partial default in which idiosyncratic banking-sector risk propagates through a costly state verification friction. I show that the real costs of default increase nonlinearly in financial fragility, generating import compression via higher external finance premia. Partial default is central to this mechanism, with larger haircuts amplifying the pass-through from sovereign default to intermediary net worth, import prices, and decreased consumption. Over-borrowing precedes these episodes, driven by a pecuniary externality in debt issuance: the sovereign fails to internalise how its borrowing impacts the price of borrowing. The model is calibrated to Sri Lanka's 2021–22 default.
     
-    %\vspace{1cm} % Space between abstract text and keywords
+    \vspace{1cm} % Space between abstract text and keywords
     
     % Keywords and JEL Codes
-    % \textbf{Keywords:} Sovereign Default, General Equilibrium, Banking Sector, Costly State Verification, Sovereign-Bank Nexus, Sri Lanka. \\[0.2cm]
-    %\textbf{JEL Classification:} F34, F41, G21, O53
-%\end{abstract}
+    \noindent\textbf{Keywords:} Debt, Renegotiation, Open economy, Banking sector, Costly State Verification, Sovereign-Bank Nexus, Sri Lanka. \\[0.2cm]
+    \textbf{JEL Classification:} F34, F41, G21, G28
+\end{abstract}
+  
+
 
 \clearpage
 \end{titlepage}
@@ -102,8 +110,71 @@
 
 \newpage
 
+
 %========================================================================
-\section{The Model Environment}
+\section{Introduction} \label{sec:intro}
+%========================================================================
+
+% Key stylized facts:
+% Reinhart and Rogof (2011):
+%   - As the larger emerging markets developed a financial sector in the late       1800s, these economies joined the serial-banking-crisis club.
+%    - Ahead of banking crises, private debts (external debt, broader private       capital inflows, domestic bank debt) also display a repeated cycle of boom      and bust—the run-up in debts accelerates as the crisis nears
+%   - the pattern of borrowing ahead of banking crises is NONLINEAR
+%   - for the 22 advanced economies in our sample over the decade leading to        the global financial crisis which began with the subprime debacle in the        United States in 2007. In effect, the average external debt/GDP ratio           doubles during this period.
+%   - Banking crises most often either PRECEDE or coincide with sovereign debt crises.
+
+% The issue of "temporal precedence"
+
+The experiences of Iceland in 2008 and Turkey in 2018 underscore the often antecedental nature of banking crises in periods of sovereign default. The co-movement of domestic bank CDS and sovereign spreads is a well-documented relationship \citep{acharya_pyrrhic_2014}, yet existing literature on the "doom loop" relationship between banks and sovereigns fails to rationalise the empirical regularity that, across history, banking crises more often than not induce sovereign default, rather than the inverse \citep{reinhart_financial_2011}. Public debt rises by roughly 86 percent in the three years following a banking crisis. These patterns are especially salient for emerging economies, where the development of domestic financial sectors has historically coincided with the emergence of serial default.
+
+% OPPOSING VIEW - sovereign default induced bank-crisis
+% Brunnermeier et al, 2016
+%   - In Greece, Ireland, Italy, Portugal, and Spain,     the deterioration of sovereign creditworthiness     reduced the market value of banks’ holdings of      domestic sovereign debt
+%   - We show that a “sunspot-driven” repricing of the country’s sovereign risk can result in bailouts of banks or other systemic financial institutions, which can lead to sovereign default when the primary surplus turns out to be low. In the absence of such repricing, the government never defaults. Effectively, the sunspot acts as a selection device among two equilibria.
+%   - When observing sun-spot, investors under rationale expectations believe that 
+%   - Proposition 1: (i) To avoid the diabolic loop, the ratio of bank equity to sovereign exposure must be at least ... (ii) The maximum amount of safe assets available to banks is ... Equivalently, ... is the minimum ratio of aggregate bank equity to sovereign exposure.
+
+% Fahri and Triole, 2017:
+%   -As banks use sovereign bonds as a store of value, holding them until they need the resources to invest, the solvency of the Sovereign is reduced for two reasons when the economy suffers an adverse shock. First, there is a direct negative effect of the shock on economic activity, and thus on the fiscal revenues of the Sovereign. Secondly, there is an indirect effect of the shock that operates through the balance sheets of banks. The initial fall in the price of public debt hurts the net worth of banks and thus their investment. If the Sovereign attaches a sufficiently high value to investment, it bails out the banks.
+
+The dominant approach to modelling the sovereign-bank nexus relies upon the assumption that sovereign distress is the originating shock. \citet{brunnermeier_sovereign-bank_2016} utilise a sunspot to select an equilibrium that devalues sovereign bonds, prompting investors to anticipate, correctly, the erosion of bank balance sheets that hold sovereign debt. Building upon this mechanism, \citet{farhi_deadly_2018}'s model uses an aggregate-demand shock that induces sovereign default, followed by a bailout of the subsequently damaged balanced sheets of domestic banks, conditional on the level of oversight the sovereign has over these banks. \citet{bocola_pass-through_2016} demonstrates this transmission quantitatively, showing that elevated sovereign default risk raises domestic bank funding costs and contracts private lending. These existing models of the sovereign-bank nexus typically emphasise how sovereign distress weakens domestic banks through their sovereign bond holdings. Less attention has been paid to how the structure of the domestic banking system shapes the sovereign’s default problem itself. In particular, in the context of a domestic banking system that intermediates the real economy, the size of a haircut affects not only repayment and bank-net worth but also external finance premia, import prices, and consumption. This thesis studies this \textit{intensive margin} of sovereign default.
+% MY MODEL:
+%   - home bias/financial repression induced holdings of sovereign bonds (as a single risky asset)
+%   - Bank insolvency brought on by idiosyncratic shock rather than aggregate -> the level of insolvency maps on to default cost
+%   - we can think of the cost of default increasing as brought about by the real economic costs of a contraction of banks from their intermediation in the real economy; in lending, issuance activity etc.
+% aggregate shocks bring about larger haircuts
+
+This thesis provides a theoretical grounding for the channels in which domestic banking fragility shapes the real costs and equilibrium severity of sovereign default. It does so whilst rationalising key stylised facts that remain empirical regularities:
+
+\begin{enumerate}[label=(\roman*)]
+    \item Default is associated with a deep recession in GDP and consumption \citep{yeyati_elusive_2011};
+    \item Prior to defaulting episodes, there is typically a large, non-linear increase in external debt as a share of GDP \citep{reinhart_financial_2011};
+    \item The output costs associated with default are amplified in the banking sector's exposure to domestic sovereign debt \citep{sosa-padilla_sovereign_2018};
+    \item Larger partial defaults (haircuts) co-move with higher sovereign spreads, higher debt, and lower output \citep{arellano_partial_2023}.
+\end{enumerate}
+
+Although the mechanism is not specific to emerging economies, the thesis focuses on this group because the model’s assumptions are especially salient in this setting. Emerging economies are more exposed to financial market fragility \citep{fostel_leverage_2008} and banking crises \citep{kaminsky_twin_1999, deghi_sovereign-bank_2022}, and domestic banks frequently hold large quantities of sovereign debt \citep{gennaioli_sovereign_2014}, making them ideal candidates to study in a small open-economy setting.
+
+My framework consists of two periods, zero and one, with a small open economy populated by three agent types: a sovereign, a continuum of domestic banks and an international investor. The setup adopts the strategic-default framework of \citet{eaton_debt_1981}, with the sovereign choosing default after observing the period-one state and lacking commitment to repay, but with two key departures: default is continuous (partial) rather than binary, and the cost of default arises endogenously through the financial sector rather than as an exogenous output loss. In period zero, the sovereign issues bonds that mature at period one, which both the banks and the international investor purchase. This bond is risky, and is priced accordingly by the risk-neutral investor, who anticipates that in period one the sovereign will choose what proportion of its outstanding debt to default upon. Partial default erodes the net-worth of the banks via their domestic bond holdings. A representative household consumes an aggregate of home and foreign goods with limited substitutability, and it is the household, acting as the sovereign, that determines both borrowing in period zero and default in period one. The household's period-zero borrowing decision is subject to a pecuniary externality, following \citet{goodhart_debt_2018}: atomistic households take the bond price as given and do not internalise how their collective borrowing depresses it, generating overborrowing relative to a constrained-efficient benchmark and elevating the debt levels at which default becomes severe. The domestic banks intermediate these foreign goods, for which they borrow intra-period working capital from the international lender to purchase. Crucially, the banks are subject to idiosyncratic risk in this intermediated goods market; as it is costly for the international lender to observe the state of the banks (costly-state verification, henceforth CSV), this risk raises the external finance premium charged on these working capital loans. This higher premium is passed on to the household via the price of imported goods and depresses household consumption. The idiosyncratic risk steepens the import-price function in default, as the convex CSV penalty becomes more sensitive to net-worth erosion when the financial friction is severe. Banking fragility therefore raises the marginal real cost of default and amplifies the output and import-compression consequences conditional on any realised haircut. Beyond this contribution on financial fragility, the model delivers a constrained-inefficiency result: under partial default, the atomistic household over-borrows, generating a role for macroprudential intervention through capital-flow taxes or borrowing limits.
+
+The remainder of the thesis proceeds as follows. Sections~\ref{sec:environment}--\ref{sec:agents} set out the model environment and the three agents populating the economy. A sequence of events is available in Section \ref{sec:timings}. Section~\ref{sec:equilibrium} defines the competitive equilibrium and establishes nominal neutrality, allowing the analysis to proceed in real terms. Section~\ref{sec:optimality} derives the model's optimality conditions, focusing on the transmission of sovereign default to import prices through intermediary balance sheets, and Section~\ref{sec:chareq} characterises the resulting Period~0 and Period~1 equilibria. Section~\ref{sec:implications} introduces a constrained Ramsey planner as a normative benchmark, establishing an over-borrowing result relative to this benchmark, and tracing the model's key comparative statics in idiosyncratic banking risk and the share of sovereign debt held domestically. Section~\ref{sec:quantitative} simulates the model, utilising Sri Lanka's 2021--22 default episode as a calibration anchor, and Section~\ref{sec:discussion} develops resulting testable predictions and concludes.
+
+% Literature Review
+%   - Douglas Diamond and Philip Dybvig’s (1983):       offers seminal view that short-term illiquid        asset holdings are vulnerable to "confidence        runs"
+%   - mulitple-equilibriia models: Sachs (1984)...      "Unfortunately, multiple equilibria models have     their limitations. Absent a model of the            underlying sunspots, it is difficult to assess      the degree of risk across different                 economies... senstive to difficult-to-confirm       assumptions".
+
+% Bias: 
+%   - For example, Alberto Alesina and Guido Tabellini (1990) as well as Torsten Persson and Lars E. O. Svensson (1989) develop models where incumbents tend to run large deficits essentially because the temporary nature of their term in office raises their effective discount rate.
+%   ^ This can broadly be interpretted as a coordination failiure, as in The Greek Dilemma
+
+% Fostel, Ana, and John Geanakoplos. 2008. “Leverage Cycles and the Anxious Economy.” American Economic Review, 98(4): 1211–44. ??
+
+% Leonello (2018), which I mentioned in the citation list earlier, is explicitly bidirectional via bank runs feeding back into sovereign solvency through guarantees — and there the bank-side originating shock is a bank run, which is a coordination failure on the bank side, 
+
+The approach posed within this thesis connects with a number of areas within the literature on sovereign default. It builds on the canonical sovereign default framework of \citet{eaton_debt_1981} and \citet{arellano_default_2008} where the sovereign lacks commitment in repayment of debt, following the realisation of an aggregate state. By endogenising the default penalty, the model connects closely to the work of \citet{mendoza_general_2012}, where imports and working-capital frictions are central to the real effects of default. In contrast to these approaches, however, my framework models default partially, as a continuous haircut, adhering to the observations of \citet{arellano_partial_2023} and building upon \citet{goodhart_debt_2018, peiris_capital_2025}. As discussed, this thesis connects to the sovereign-bank nexus literature, stemming from \citet{diamond_bank_1983}, including \citet{acharya_pyrrhic_2014, brunnermeier_sovereign-bank_2016, bocola_pass-through_2016, farhi_deadly_2018, gennaioli_sovereign_2014, sosa-padilla_sovereign_2018}, by showing how domestic bank exposure to sovereign debt shapes the marginal cost and macroeconomic consequences of partial default. Outside of the sovereign default literature, the costly-state verification framework follows \citet{bernanke_chapter_1999, christiano_risk_2014}, delivering a macroprudential overborrowing result through a pecuniary externality in debt issuance.
+
+%========================================================================
+\section{The Model Environment} \label{sec:environment}
 %========================================================================
 
 I present an endowment economy inhabited by three distinct agents: a representative household (the sovereign), a continuum of risk-neutral domestic import intermediaries (domestic banks) indexed by $i \in [0,1]$, and a risk-neutral international lender. The discrete-time model spans two periods, $t \in \{0,1\}$.
@@ -146,11 +217,11 @@ Proposition \ref{prop:neutrality} below establishes that, given neutrality assum
 
 \subsection{Financial Instruments and the CSV Friction}\label{sec:csv}
 
-The household issues one-period, non-contingent bonds $b_1$ at price $q_0$ in Period 0. Each bond promises one unit of the domestic num\'{e}raire at maturity. A fraction $\gamma \in (0,1)$ of outstanding bonds is held by the domestic intermediary sector; the remainder $(1-\gamma)$ is held by the international lender. The parameter $\gamma$ is exogenous and institutional, reflecting a regulatory liquidity mandate requiring domestic banks to hold a fraction of outstanding sovereign bonds as eligible liquid assets. This captures the well-documented home bias in sovereign debt holdings across emerging market banking sectors \citep{gennaioli_sovereign_2014}.
+The household issues one-period, non-contingent bonds $b_1$ at price $q_0$ in Period 0. Each bond promises one unit of the domestic num\'{e}raire at maturity. A fraction $\gamma \in (0,1)$ of outstanding bonds is held by the domestic intermediary sector; the remainder $(1-\gamma)$ is held by the international lender. The parameter $\gamma$ is exogenous and institutional, reflecting a regulatory liquidity mandate requiring domestic banks to hold a fraction of outstanding sovereign bonds as eligible liquid assets. This captures the well-documented home bias in sovereign debt holdings across emerging market banking sectors \citep{gennaioli_sovereign_2014}. 
 
-Upon realisation of the Period 1 endowment, the sovereign household chooses a continuous partial default $D \in [0, b_1]$, interpreted as a haircut on outstanding debt. As an important departure from \citet{arellano_default_2008}, the household does not internalise the effect of its default decision on the price of debt. Rather, default occurs in equilibrium as the household internalises the impact of default on import prices. The sovereign in this setting can be thought of as being subject to a coordination failure in the issuance of new debt \citep{goodhart_debt_2018}.
+Upon realisation of the Period 1 endowment, the sovereign household chooses a continuous partial default $D \in [0, b_1]$, interpreted as a haircut on outstanding debt. As an important departure from \citet{arellano_default_2008}, the household does not internalise the effect of its default decision on the price of debt. Rather, default occurs in equilibrium as the household internalises the impact of default on import prices. The sovereign in this setting can be thought of as being subject to a coordination failure in the issuance of new debt \citep{goodhart_debt_2018}. \\
 
-Following the structure proposed by \citet{christiano_risk_2014}, each intermediary is subject to an idiosyncratic productivity shock $\omega_{i,t}$, drawn independently each period from a log-normal distribution with mean one and variance $\sigma_\omega^2$:
+Following the risk-shock structure proposed by \citet{christiano_risk_2014}, each intermediary is subject to an idiosyncratic productivity shock $\omega_{i,t}$, drawn independently each period from a log-normal distribution with mean one and variance $\sigma_\omega^2$:
 \begin{equation}\label{eq:omega_dist}
 \log(\omega_{i,t}) \sim \mathcal{N}\!\left(-\tfrac{\sigma_\omega^2}{2},\, \sigma_\omega^2\right).
 \end{equation}
@@ -172,37 +243,16 @@ so that $\mu G(\bar{\omega})$ is the expected deadweight auditing cost, where $\
 \varphi\!\left(\frac{\ln\bar{\omega}
 + \sigma_\omega^2/2}{\sigma_\omega}\right), \label{eq:Gammapp}
 \end{align}
-where $\Phi$ and $\varphi$ denote the standard normal CDF and PDF. It is worth noting that $\Gamma''$ is strictly negative for all $\bar{\omega} > 0$.
+where $\Phi$ and $\varphi$ denote the standard normal CDF and PDF. It is worth noting that $\Gamma''$ is strictly negative for all $\bar{\omega} > 0$. \\
 
-\subsection{Sequence of Events} \label{sec:timings}
+The "risk shocks" introduced by $\sigma_{\omega}$ within the model capture the cross-sectional idiosyncratic risk in the banking sector, shown to be a dominant driver of US business-cycle fluctuations \citep{christiano_risk_2014}. This risk is the main point of fragility within the domestic banking sector from which the model's default premium propagates from, and is the subject of this thesis' main comparative statics in Section \ref{sec:comp_stat_sigma_omega}.
 
-The within-period timing is as follows.
-
-\paragraph{Period 0:}
-\begin{enumerate}[label=(\alph*)]
-\item The household receives endowment $y_0$.
-\item The household issues bonds $b_1$ at price $q_0$; fraction $\gamma$ purchased by intermediaries, remainder by the international lender.
-\item Intermediaries borrow working capital $\kappa_0$ from the international lender and intermediate foreign inputs $\mf_0$.
-\item Idiosyncratic shocks $\omega_{i,0}$ are realised; solvent intermediaries deliver inputs and distribute surplus $\Pi_0$ to the household.
-\item The household produces and consumes $C_0$.
-\end{enumerate}
-
-\paragraph{Period 1:}
-\begin{enumerate}[label=(\alph*)]
-\item The aggregate endowment shock $g_1$ is realised, determining $y_1 = g_1 y_0$.
-\item The household chooses partial default $D \in [0, b_1]$, the Intermediaries' net worth $n_1$ is updated.
-\item Intermediaries borrow working capital $\kappa_1$ subject to the CSV contract, determining the domestic price of foreign inputs $p_{m,1}$.
-\item Idiosyncratic shocks $\omega_{i,1}$ are realised; solvent intermediaries deliver inputs and distribute surplus $\Pi_1$ to the household.
-\item The household produces and consumes $C_1$.
-\end{enumerate}
-
-\input{timeline}
 
 %========================================================================
-\section{Agents}
+\section{Agents} \label{sec:agents}
 %========================================================================
 
-\subsection{Domestic Household}
+\subsection{Domestic Household} \label{sec:household}
 
 The representative household acts as both a consumer and a final-goods producer, aggregating domestic and foreign inputs via \eqref{eq:CES}. It takes the internal price of foreign inputs, $p_{m,t}$ - the relative price expressed in units of domestic inputs - as given in each period.
 
@@ -222,19 +272,24 @@ subject to:
 \end{equation}
 The import price $p_{m,1}$ depends on $D$ through the intermediary balance sheet channel described below. In order for default to occur in equilibrium, the household must internalise this effect. Crucially, while the household internalises the dependence of $p_{m,1}$ on $D$, it treats the dividends $\Pi_0, \Pi_1$ as lump sums, that is, it does not internalise $\partial \Pi_t / \partial D$ when choosing default. This asymmetry reflects the fact that import prices are directly observable and contractually relevant to the household's purchasing decisions, whereas the dividend is a residual claim on aggregate intermediary surplus that the atomistic households do not perceive to depend on their own actions.
 
-\subsection{Domestic Intermediary}\label{sec:intermediary}
+\subsection{Domestic Intermediaries}\label{sec:intermediary}
 
 A continuum of ex-ante identical domestic intermediaries $i \in [0,1]$ operate in a perfectly competitive market with free entry and exit to intermediate foreign inputs $\mf$ in each period. Each intermediary purchases imports using a combination of its own net worth $n_{i,t}$ and working capital $\kappa_{i,t}$ borrowed from the international lender at gross intra-period rate $Z_{i,t}$, with repayment due within the same period. The intermediary's intra-period balance sheet is:
 \begin{equation}\label{eq:balsheet}
  \mf_{i,t} = n_{i,t} + \kappa_{i,t}, \qquad t \in \{0,1\}.
 \end{equation}
-It is worth emphasising that $\kappa_{i,t}$ is an intra-period contract---borrowing and repayment occur within the same period $t$---distinct from the inter-period sovereign bond $b_1$ issued in Period 0 and maturing in Period 1. The international lender's opportunity cost is $\Rstar$ for both contracts, but the two markets clear independently.
+It is worth emphasising that $\kappa_{i,t}$ is an intra-period contract, with borrowing and repayment occuring within the same period $t$, distinct from the inter-period sovereign bond $b_1$ issued in Period 0 and maturing in Period 1. The international lender's opportunity cost is $\Rstar$ for both contracts, but the two markets clear independently.
 
-The intermediary's net worth is centred around an exogenous long-run level $\bar{n} > 0$ and depends on the period and the sovereign's default choice:
+The intermediary's net worth depends on the period and the sovereign's default choice:
 \begin{align}
-n_{i,0} &= \bar{n} + \gamma b_0 - \gamma q_0 b_1, \label{eq:nw0}\\
-n_{i,1} &= \bar{n} + \gamma(b_1 - D). \label{eq:nw1}
+n_{i,0} &= \bar{n}(\gamma) + \gamma b_0 - \gamma q_0 b_1, \label{eq:nw0}\\
+n_{i,1} &= \bar{n}(\gamma) + \gamma(b_1 - D). \label{eq:nw1}
 \end{align}
+The sovereign-independent component $\bar{n}(\gamma) > 0$ represents the intermediary sector's exogenous capitalisation. To distinguish the portfolio composition role of $\gamma$ from a mechanical balance-sheet size effect, ex-ante total intermediary assets at the start of Period 0 are $\gamma$-invariant:
+\begin{equation}\label{eq:nbar_rescale}
+\bar{n}(\gamma) + \gamma b_0 \;\equiv\; \bar{A},
+\end{equation}
+where $\bar{A}$ is a calibrated constant pinned down by the baseline values $(\bar{n}_{\text{base}}, \gamma)$ in Table~\ref{tab:calibration}. Holding $\bar{A}$ fixed when varying $\gamma$ ensures that comparative statics in $\gamma$ isolate how exposed banks are to sovereign risk, rather than how large their balance sheet is.
 
 Before delivering inputs to the household, intermediary $i$ is subject to the idiosyncratic shock $\omega_{i,t}$, so that aggregate effective foreign inputs available for sale are:
 \begin{equation}\label{eq:agg_supply}
@@ -267,7 +322,7 @@ Aggregating across the continuum of intermediaries and applying the law of large
 \end{equation}
 This is the aggregate dividend $\Pi_t$ that enters the household's budget constraints \eqref{eq:bc0}--\eqref{eq:bc1}.
 
-\subsection{International Lender}
+\subsection{International Lender} \label{sec:lender}
 
 The international lender is risk-neutral, infinitely funded, and prices all contracts at the risk-free rate $\Rstar$.
 
@@ -286,7 +341,33 @@ q_0(y_0, b_1) = \frac{1}{\Rstar}\,\E_0\!\left[1 - \frac{D(y_1, b_1)}{b_1}\right]
 \end{equation}
 
 %========================================================================
-\section{Equilibrium Definitions}
+\section{Sequence of Events} \label{sec:timings}
+%========================================================================
+
+The within-period timing of decisions, shock realisations, and settlements is set out below; Figure~\ref{fig:timeline} summarises the sequence diagrammatically.
+
+\paragraph{Period 0:}
+\begin{enumerate}[label=(\alph*), itemsep=2pt, topsep=4pt]
+    \item The household receives the deterministic endowment $y_0$.
+    \item The sovereign issues one-period bonds $b_1$ at the equilibrium price $q_0$; a fraction $\gamma$ is absorbed by domestic intermediaries, composing their pre-haircut Period 1 net worth, with the remaining $1-\gamma$ held by the international lender.
+    \item Intermediaries borrow working capital $\kappa_0$ from the international lender under the CSV contract and use it to purchase foreign inputs $\mf_0$.
+    \item Idiosyncratic productivity shocks $\omega_{i,0}$ are realised. Solvent intermediaries deliver inputs to the household and distribute the aggregate surplus $\Pi_0$; insolvent intermediaries are monitored at cost.
+    \item The household produces and consumes $C_0$.
+\end{enumerate}
+
+\paragraph{Period 1:}
+\begin{enumerate}[label=(\alph*), itemsep=2pt, topsep=4pt]
+    \item The aggregate growth shock $g_1$ is realised, determining $y_1 = g_1 y_0$.
+    \item The household chooses partial default $D \in [0, b_1]$; the resulting haircut on intermediaries' bond holdings pins down their Period 1 post-haircut net worth $n_1$.
+    \item Conditional on $n_1$, intermediaries contract working capital $\kappa_1$ under the CSV contract, and the equilibrium external finance premium determines the domestic price of foreign inputs $p_{m,1}$.
+    \item Idiosyncratic shocks $\omega_{i,1}$ are realised. Solvent intermediaries deliver inputs and distribute surplus $\Pi_1$; insolvent intermediaries are monitored at cost.
+    \item The household produces and consumes $C_1$, and the non-defaulted portion $b_1 - D$ of sovereign debt is settled.
+\end{enumerate}
+
+\input{timeline}
+
+%========================================================================
+\section{Equilibrium Definitions} \label{sec:equilibrium}
 %========================================================================
 
 \subsection{Aggregation and Market Clearing}
@@ -377,8 +458,10 @@ Following the Fisher equation, the domestic real interest rate $R_t$ is expresse
 \end{equation}
 with the domestic rate equalising each period to the time-invariant world gross rate $R^*$.
 
+
+
 %========================================================================
-\section{Optimality Conditions}
+\section{Optimality Conditions} \label{sec:optimality}
 %========================================================================
 
 \subsection{The Financial Friction}
@@ -393,13 +476,17 @@ Dividing the intermediary FOC \eqref{eq:int_foc} by the zero-profit condition \e
 \begin{equation}\label{eq:omega_leverage}
 1 - \Gamma(\bar{\omega}_t) = \Gamma'(\bar{\omega}_t)\,\bar{\omega}_t \cdot \frac{N_t}{ \Mf_t - N_t}.
 \end{equation}
-For given $\Mf_t$, a decrease in $N_t$ raises leverage and increases $\bar{\omega}_t$.
+For given $\Mf_t$, a decrease in $N_t$ raises leverage and increases $\bar{\omega}_t$. \\
 
 Solving the zero-profit condition \eqref{eq:lender_zp_compact} for $p_{m,t}$ yields the import price equation:
 \begin{equation}\label{eq:pm}
 p_{m,t} =  \Rstar \cdot \underbrace{\left(1 - \frac{N_t}{ M^f_t}\right)}_{\text{leverage}} \cdot \underbrace{\frac{1}{\Gamma(\bar{\omega}_t) - \mu G(\bar{\omega}_t)}}_{\text{CSV friction}}.
 \end{equation}
-I assume intermediaries are sufficiently well capitalised in Period 0 that the external finance premium is negligible, so $p_{m,0} \approx  \Rstar$.
+
+In order to prevent friction in the household's Period 0 consumption, and form a baseline for Period 1 allocations, I impose the following assumption:
+\begin{assumption} \label{ass:p0_capitalisation}
+    Intermediaries are sufficiently well capitalised in Period 0 that the external finance premium is negligible; $p_{m,0} \approx  \Rstar$.
+\end{assumption}
 
 \subsection{Household Intratemporal Optimality}
 
@@ -432,7 +519,7 @@ At an interior solution, the household equates the marginal budgetary gain from 
 
 \subsection{Transmission of Default to Import Prices}
 
-The mechanism by which sovereign default raises import prices can be traced through the intermediary balance sheet. From the net-worth equation \eqref{eq:nw1}:
+The mechanism by which sovereign default raises import prices, our key transmission process of interest, can be traced through the intermediary balance sheet. From the net-worth equation \eqref{eq:nw1}:
 \begin{equation}\label{eq:dpm_dD}
 \frac{\partial p_{m,1}}{\partial D} = -\gamma \frac{\partial p_{m,1}}{\partial N_1}.
 \end{equation}
@@ -485,9 +572,9 @@ Consequently, the optimal haircut is governed by the household's capacity to pay
     Due to the construction of claims made in Period 0, $\frac{\partial W_1}{\partial b_1}=-1$, in turn guaranteeing $\frac{\partial m^f_1}{\partial b_1}<0$. As $b_1$ enters positively into the Domestic Intermediary's Period 1 net-worth \eqref{eq:bc1}, from \eqref{eq:domega_dn} we can see that $\frac{\partial}{\partial b_1}\frac{\partial p_{m,1}}{\partial D}<0$. These two derivatives mean that $\frac{\partial F}{\partial b_1}>0$, implying $\frac{\partial D}{\partial b_1}>0$.
 \end{proof}
 
-% Implication of this here
-
 \end{proposition}
+
+Proposition \ref{prop:convexity} in isolation produces the nonlinearity in default penalty necessary to produce the type of "doom-loop" transmission in bank balance-sheet erosion and sovereign default we witness empirically. Combining with Proposition \ref{prop:inv-debt-gdp} induces over-borrowing consistent with debt-overhang; a comparative static formalisation of this can be found in Section \ref{sec:implications}.
 
 \subsection{Intertemporal Optimality}
 
@@ -512,7 +599,9 @@ Note the sign: higher $b_1$ raises intermediary net worth (since banks hold $\ga
 
 The left-hand side of \eqref{eq:euler} is the marginal utility cost of purchasing one unit of debt at price $q_0$ in Period 0. The right-hand side comprises two components: the direct repayment of one unit of resources, and the improvement in Period 1 import prices from the additional net worth that $\gamma$ units of bond holdings deliver to intermediaries. Since $\partial p_{m,1}/\partial N_1 < 0$, the term $\gamma \mf_1 (\partial p_{m,1}/\partial N_1)$ is negative. Higher debt issuance strengthens bank balance sheets but also increases the household's future repayment burden. In equilibrium, the household balances the Period 0 consumption benefit of additional borrowing against both the direct repayment cost and the indirect effect on import prices.
 
-\section{Characterisation of Equilibrium}
+%========================================================================
+\section{Characterisation of Equilibrium} \label{sec:chareq}
+%========================================================================
 
 \subsection{Period 1 Equilibrium}
 
@@ -604,9 +693,9 @@ where $\lambda_t$ is derived in \eqref{eq:shadow}.\\
 
 Given a solution, the remaining Period~0 objects are recovered as: $N_0$ from \eqref{eq:nw0}, $\mf_0$ from 
 \eqref{eq:mf_demand}, $\md_0$ from \eqref{eq:bc0}, $C_0$ from \eqref{eq:CES}, $\Pi_0$ from 
-\eqref{eq:Pi_agg}, and $K_0 = M^f_0 - N_0$. Under the maintained assumption that Period~0 intermediaries are sufficiently capitalised, $\bar{\omega}_0$ and $Z_0$ are pinned down by \eqref{eq:omega_leverage} and \eqref{eq:efp} at negligible values of the external finance premium.
+\eqref{eq:Pi_agg}, and $K_0 = M^f_0 - N_0$. Under Assumption \ref{ass:p0_capitalisation}, $\bar{\omega}_0$ and $Z_0$ are pinned down by \eqref{eq:omega_leverage} and \eqref{eq:efp} at negligible values of the external finance premium.
 
-\paragraph{Ruling out no-trade equilibrium} For the rest of the paper, attention will be restricted to the non-trivial interior partial default equilibrium, in which $q_0>0$ and $D\in (0,b_1)$;
+\paragraph{Ruling out no-trade equilibrium} For the rest of the thesis, attention will be restricted to the non-trivial interior partial default equilibrium, in which $q_0>0$ and $D\in (0,b_1)$;
 
 \begin{assumption}\label{ass:interior}
 Parameters $(\bar{n}, \gamma, \sigma_\omega, \mu, \eta, \alpha, R^*)$ and states $(y_1, b_1)$ are such that the KKT conditions~\eqref{eq:KKT} admit an interior solution $D \in (0, b_1)$.
@@ -614,18 +703,24 @@ Parameters $(\bar{n}, \gamma, \sigma_\omega, \mu, \eta, \alpha, R^*)$ and states
 
 The model admits a second class of equilibria in which the international lender anticipates full default, sets $q_0=0$, and the household is indifferent between not borrowing and borrowing for free with the intention of defaulting upon all claims, as identified by \citet{dubey_default_2005} in models of default with non-contingent debt. The two-period setting presented in this model, without a continuation value from market access, means that the household is exactly indifferent between these two equilibria. I choose to omit the analysis of such an equilibrium, following the practice of \citet{arellano_default_2008}, \citet{peiris_capital_2025} and others, to focus upon the borrowing, default, and intermediary channels that are of primary interest to this thesis.
 
-\section{Comparative Statics and Testable Predictions}\label{sec:implications}
 
-The competitive equilibrium of Definition~\ref{def:equil} features a pecuniary externality: the atomistic household treats the bond price $q_0$ parametrically and therefore does not internalise how its borrowing affects expected default and the cost of debt. To characterise this inefficiency, I define a constrained Ramsey planner's problem, under which there is no coordination failure and thus the effect of default on the cost of borrowing is fully internalised in allocation choices, and compare outcomes with the competitive equilibrium of Definition~\ref{def:equil}. I then show that the sovereign-bank linkage parameter $\gamma$ acts as the primary amplification parameter of interest, governing the severity of default episodes.
+%========================================================================
+\section{Comparative Statics}\label{sec:implications}
+%=======================================================================
 
-\subsection{The Constrained Planner's Problem}\label{sec:planner}
+The competitive equilibrium of Definition~\ref{def:equil} features a pecuniary externality: the atomistic household treats the bond price $q_0$ parametrically and therefore does not internalise how its borrowing affects expected default and the cost of debt. To characterise this inefficiency, I define a constrained Ramsey planner's problem, under which there is no coordination failure and thus the effect of default on the cost of borrowing is fully internalised in allocation choices, and compare outcomes with the competitive equilibrium of Definition~\ref{def:equil}. 
+
+I then go on to analytically demonstrate that the intermediaries' exposure to domestic sovereign debt, $\gamma$, acts as the primary structural parameter governing amplification of default severity, with the idiosyncratic risk shock, $\sigma_{\omega}$, as the driver of financial fragility.
+
+\subsection{Welfare in Borrowing}
+
+\paragraph{The Constrained Planner's Problem}\label{sec:planner}
 
 Consider a domestic Ramsey planner who chooses $b_1$ in Period~0 to maximise household welfare, subject to the same Period~1 equilibrium conditions as the competitive economy. That is, the planner takes as given the Period~1 default rule $D(y_1, b_1)$ and the associated competitive equilibrium mappings for $(\bar{\omega}_1, M^f_1, p_{m,1}, C_1)$, but internalises the bond price schedule.
 The planner solves:
 \begin{equation}\label{eq:planner}
     \max_{b_1 \geq 0} \; u\!\bigl(C_0(b_1)\bigr) + \beta\,\E_0\!\bigl[u\!\bigl(C_1(y_1, b_1)\bigr)\bigr],
 \end{equation}
-where $C_0$ depends on $b_1$ through the budget constraint \eqref{eq:bc0} evaluated at $q_0(b_1)$:
 \[
     m^d_0 = y_0 - b_0 + q_0(b_1)\cdot b_1 + \Pi_0.
 \]
@@ -650,206 +745,139 @@ and therefore the marginal revenue from issuing an additional unit of debt is
 where the competitive household perceives only the first term. The second term, $q_0'(b_1)\cdot b_1$, captures the debt-dilution externality: additional borrowing raises expected default, depresses the bond price, and erodes the revenue raised on \emph{all} outstanding issuance.
 
 
-\subsection{The Welfare Wedge}\label{sec:wedge}
+\paragraph{The Welfare Wedge}\label{sec:wedge}
 
-Differentiating \eqref{eq:planner} with respect to $b_1$ yields the planner's first-order condition:
+\begin{proposition}[Overborrowing under CSV-Constrained Partial Default]\label{prop:overborrowing}
+Let $(b_1^{CE}, D^{CE})$ denote the competitive equilibrium allocation of Definition~\ref{def:equil} and $(b_1^{P}, D^{P})$ the constrained planner's allocation of Definition~\ref{def:planner_equil}. Suppose the equilibrium features interior partial default, $D \in (0, b_1)$, as guaranteed by Assumption~\ref{ass:interior}. Then
+\[
+    b_1^{CE} > b_1^{P}:
+\]
+the competitive household over-borrows relative to the constrained planner's optimum.
+\end{proposition}
+
+\begin{proof}
+Differentiating the planner's objective \eqref{eq:planner} with respect to $b_1$ yields the first-order condition
 \begin{equation}\label{eq:planner_foc}
-    \lambda_0^{P}\,\mathcal{R}'(b_1) = \beta\,\E_0\!\left[\lambda_1\!\left(1 + \gamma\,m^f_1\,\frac{\partial p_{m,1}}{\partial N_1}\right) + u'(C_1)\frac{\partial C_1}{\partial D}\frac{\partial D}{\partial b_1}\right],
+    \lambda_0^{P}\,\mathcal{R}'(b_1) = \beta\,\E_0\!\left[\lambda_1\!\left(1 + \gamma\,m^f_1\,\frac{\partial p_{m,1}}{\partial N_1}\right) + u'(C_1)\,\frac{\partial C_1}{\partial D}\,\frac{\partial D}{\partial b_1}\right],
 \end{equation}
-where $\lambda_t$ denotes the shadow value of income \eqref{eq:shadow}. 
-
-At the competitive equilibrium allocation, the household's Euler equation \eqref{eq:euler} holds:
+where $\lambda_t$ is the shadow value of income \eqref{eq:shadow} and $\mathcal{R}(b_1) \equiv q_0(b_1)\,b_1$ is total bond revenue, so that $\mathcal{R}'(b_1) = q_0(b_1) + q_0'(b_1)\,b_1$. The competitive household's Euler equation \eqref{eq:euler} satisfies
 \[
     \lambda_0\,q_0 = \beta\,\E_0\!\left[\lambda_1\!\left(1 + \gamma\,m^f_1\,\frac{\partial p_{m,1}}{\partial N_1}\right)\right].
 \]
-The difference between the planner's and the household's Period~0 optimality conditions identifies a welfare wedge. Evaluating the planner's FOC at the competitive equilibrium allocation:
+Evaluating \eqref{eq:planner_foc} at the competitive allocation (so that $\lambda_0^{P} = \lambda_0$) and subtracting the Euler equation identifies the welfare wedge
 \begin{equation}\label{eq:wedge}
-    \underbrace{\lambda_0\,q_0'(b_1)\cdot b_1}_{\text{debt-dilution externality}} + \beta\,\E_0\!\left[\underbrace{u'(C_1)\,\frac{\partial C_1}{\partial D}\frac{\partial D}{\partial b_1}}_{\text{insurance value of default}}\right] \neq 0.
+    \underbrace{\lambda_0\,q_0'(b_1)\cdot b_1}_{\text{debt-dilution externality}} + \beta\,\E_0\!\left[\underbrace{u'(C_1)\,\frac{\partial C_1}{\partial D}\,\frac{\partial D}{\partial b_1}}_{\text{insurance value of default}}\right].
 \end{equation}
+At any interior partial-default solution, the household's first-order condition \eqref{eq:foc_D} implies $\partial C_1/\partial D = 0$, so the insurance term vanishes and \eqref{eq:wedge} reduces to its first component. Since higher debt raises expected default and depresses the bond price, $q_0'(b_1) < 0$, the wedge is strictly negative. The planner therefore values an additional unit of $b_1$ strictly less than the competitive household at the competitive allocation, and so optimally chooses $b_1^{P} < b_1^{CE}$. \\
+\end{proof}
 
-If the competitive equilibrium were constrained efficient, this expression would equal zero and the planner would have no desire to adjust $b_1$. The sign of \eqref{eq:wedge} determines the direction of the inefficiency. The first term is unambiguously negative: $q_0'(b_1) < 0$ because higher debt raises expected default, so the household overborrrows from the perspective of bond revenue. The second term captures the insurance value of partial default under incomplete markets: higher $b_1$ raises $D(y_1, b_1)$ in low-endowment states (Proposition~\ref{prop:inv-debt-gdp}), which, despite the convex cost from Proposition~\ref{prop:convexity}, provides state-contingent relief through the partial default margin.
+\begin{remark}\label{rem:corner}
+It is worth noting that this does not necessarily hold in corner solutions: the envelope condition from \eqref{eq:foc_D} does not bind, and the sign of the second term of \eqref{eq:wedge}, and thus the direction of borrowing compared to the planner's optimum depends on the magnitude of the CSV friction relative to the intermediary net-worth.\\
+\end{remark}
 
-The insurance term in \eqref{eq:wedge} reflects a valuable property of partial default under incomplete markets. We can think of partial default as expanding the effective asset span of the non-contingent bond. With partial default, the household can smooth its state-contingent repayment, making the non-contingent bond behave more like a portfolio of Arrow securities. The more responsive $D(y_1,b_1)$ is to the state, the better the insurance properties of the debt instrument. Under the CSV friction, however, households are subject to a convex cost associated with this insurance. When the household chooses an interior default solution, we can see from the household's first-order condition \eqref{eq:foc_D} that the household selects $D$ such that $\frac{\partial C_1}{\partial D}=0$, and thus the insurance value of default collapses to 0\footnote{It is worth noting that this does not necessarily hold in corner solutions: the envelope condition from \eqref{eq:foc_D} does not bind, and the sign of the second term of \eqref{eq:wedge}, and thus the direction of borrowing compared to the planner's optimum depends on the magnitude of the CSV friction relative to the intermediary net-worth.}. We can see, then, that households overborrows compared to the planner's optimum.
+The wedge \eqref{eq:wedge} admits a natural interpretation. We can think of partial default, under incomplete markets, as expanding the effective asset span of the non-contingent bond. With partial default, the household can smooth its state-contingent repayment, making the non-contingent bond behave more like a portfolio of Arrow securities. The more responsive $D(y_1,b_1)$ is to the state, the better the insurance properties of the debt instrument. Under the CSV friction, however, households are subject to a convex cost associated with this insurance and at an interior optimum the household equates the marginal benefit and marginal cost so that the insurance collapses and isolates the debt-dilution externality as the sole source of the wedge. The result is over-borrowing. However, with a large enough risk-shock, there is no restriction on the magnitude of this term; the insurance term can dominate the debt-dilution externality, flipping the sign of the wedge and rationalising \textit{under-borrowing} relative to the planner.
 
-%------------------------------------------------------------------------
-\subsection{Comparative Statics in Domestic Bank Sovereign Debt Exposure}\label{sec:comp_stat_gamma}
-%------------------------------------------------------------------------
+\subsection{Amplification in Domestic Bank Sovereign Debt Exposure}\label{sec:comp_stat_gamma}
+
+As discussed in Section \ref{sec:intermediary}, the comparative static in $\gamma$ isolates the role of domestic bank exposure to sovereign debt. Since $\bar n(\gamma)+\gamma b_0\equiv \bar A$, changes in $\gamma$ should not be interpreted as changes in the size of the banking sector, rather as changes in the composition of intermediary portfolios toward domestic sovereign claims.
  
-The share of sovereign debt held by domestic intermediaries, defined in the model as $\gamma$, governs the sensitivity of the cost of default to the CSV friction through \eqref{eq:pm}, via \eqref{eq:nw1}: $\partial N_1/\partial D = -\gamma$. Higher $\gamma$ amplifies the pass-through from default to intermediary net worth erosion, raising the external finance premium and the import price for any given haircut. This section traces the implications of varying $\gamma$, under a partial default regime, on the competitive equilibrium.
- 
-\paragraph{(i) Expected haircut.} $\E[D/b_1]$ as a function of $\gamma$
-% TODO: Figure/table showing E[D/b1] as a function of gamma.
-% Analytical intuition: higher gamma raises the marginal cost of default
-% (Proposition 1), so the household defaults less at each y1 state.
-% But higher gamma also amplifies the doom loop for any given D, so the
-% net effect on E[D/b1] is a quantitative question.
-% Present solver output: E[D/b1] vs gamma, holding other parameters fixed.
- 
-\paragraph{(ii) Sovereign spreads.} $R^*/q_0-R^*$
-% TODO: Figure/table showing spread (bps) as a function of gamma.
-% From the bond pricing equation, spread = R*/q0 - R*, which depends
-% on E[D/b1]. Plot spread vs gamma.
- 
-\paragraph{(iii) Import compression.} $\E [m^{f,CE}_1]-\E [m^{f,P}_1]$
-% TODO: Figure/table showing E[mf_1] or the percentage decline in mf
-% relative to the frictionless benchmark, as a function of gamma.
-% This is the most direct test of the doom loop mechanism:
-% higher gamma -> larger N1 erosion -> higher pm -> lower mf.
- 
-\paragraph{(iv) External finance premium.} $\E [Z_1/R^*]$
-% TODO: Figure/table showing E[Z1/R*] as a function of gamma.
-% From eq:efp and eq:pm, the EFP = ell/Psi(omegabar).
-% Higher gamma raises omegabar for given D, raising the EFP.
- 
-\paragraph{(v) Overborrowing wedge.} $b^{CE}_1-b^P_1$
-% TODO: Figure/table showing b1^CE - b1^P as a function of gamma.
-% Requires solving the planner's problem numerically at each gamma.
-% The prediction is that the magnitude of overborrowing is increasing
-% in gamma, because higher gamma raises |q0'(b1)| through the
-% amplified default cost channel.
- 
-\medskip
+Sovereign debt exposure governs the sensitivity of the cost of default to the CSV friction through \eqref{eq:pm}, via \eqref{eq:nw1}: $\partial N_1/\partial D = -\gamma$. Higher $\gamma$ amplifies the pass-through from default to intermediary net worth erosion, raising the external finance premium and import price, generating stronger import compression and larger consumption losses conditional on any given haircut.\footnote{The effect of $\gamma$ on the equilibrium choice of haircut severity is discussed in Section~\ref{sec:discussion}; the focus here is the conditional amplification channel from a given haircut.}
+
+This is an intensive-margin result. In an analogous binary-default formulation of this model, $\gamma$ would affect the cost of the household switching from repayment to default, but it would not characterise how the marginal cost curve of default grows in steepness and convexity with the size of the haircut. Thus, under partial default we can quantitatively map import prices and consumption to observed haircuts.
+
 % TODO: Composite figure with all five panels, or a summary table
 % showing the direction and magnitude of each object's response to gamma.
 
+\subsection{The Role of Idiosyncratic Banking Risk}\label{sec:comp_stat_sigma_omega}
 
-\subsection{Testable Predictions}\label{sec:predictions}
+The idiosyncratic productivity shock variance $\sigma_\omega^2$ is the primitive driver of financial fragility in this model. Following \citet{christiano_risk_2014}, who establish that variations in the cross-sectional standard deviation of idiosyncratic productivity (the "risk shock") are the dominant driver of business-cycle fluctuations in financial variables, $\sigma_\omega$ feeds through to all key equilibrium objects of the model: the financial-friction wedge $\Psi(\bar\omega) \equiv \Gamma(\bar\omega) - \mu G(\bar\omega)$, the default threshold $\bar\omega$, the external finance premium $Z/R^*$, the import price $p_{m,1}$, and ultimately the household's optimal default policy $D(y_1, b_1)$.
 
-% The welfare wedge in \eqref{eq:wedge} arises because partial default provides state-contingent insurance that the competitive household undervalues. The existence and structure of this insurance channel — absent from binary default frameworks — generates a set of testable implications for the cross-section of sovereign restructuring episodes. I posit five testable predictions; the first two follow directly from Propositions~\ref{prop:convexity} and~\ref{prop:inv-debt-gdp}; the remaining three exploit the interaction between partial default and the CSV friction. \\
+The partial effects of $\sigma_\omega$ on the primitive CSV objects, at fixed $\bar\omega$, fall naturally from the log-normal specification (\ref{eq:omega_dist}), where an increase in $\sigma_\omega$ constitutes a mean-preserving spread of the idiosyncratic shock distribution:
 
-% \textbf{Prediction 1} (Haircuts increase in debt-to-endowment). \emph{In a cross-section of sovereign restructuring episodes, realised haircuts are positively associated with the pre-default debt-to-GDP ratio.}\\
+\begin{enumerate}
+    \item[(i)] $\partial \Gamma(\bar\omega) / \partial \sigma_\omega < 0$. The lender's expected revenue share falls: a wider distribution shifts mass into the default region $\omega < \bar\omega$ where the lender no longer collects $\bar\omega \cdot p_{m,t} m^f$ in full, and into the upper tail where the intermediary retains the residual surplus.
+    \item[(ii)] $\partial (\mu G(\bar\omega)) / \partial \sigma_\omega > 0$. Expected auditing costs rise, as more probability mass falls below $\bar\omega$ and triggers the deadweight monitoring loss.
+    \item[(iii)] $\partial \Psi(\bar\omega) / \partial \sigma_\omega = \partial \Gamma / \partial \sigma_\omega - \partial(\mu G) / \partial \sigma_\omega < 0$. The net surplus accruing to the lender per unit of intermediated imports unambiguously falls.
+\end{enumerate}
 
-% \textbf{Prediction 2} (Convexity of the output--haircut relationship). \emph{The relationship between haircut severity and the post-default output decline is convex: larger haircuts are associated with disproportionately larger output losses, and this convexity is increasing in the share of sovereign debt held domestically.}\\
+From (\ref{eq:pm}), we can see that, via result (iii), increases in $\sigma_{\omega}$ raises $p_{m,1}$ for any given leverage. Of more interest, the convexity of the import-price response in $D$, captured by the $\Psi(\bar\omega)^2$ denominator in (\ref{eq:dpm_dn}), intensifies in $\sigma_\omega$: as $\Psi$ shrinks, the same haircut produces a sharper net-worth-to-import-price pass-through. Idiosyncratic banking risk, in addition to shifting the equilibrium, increases curvature of the household's marginal cost-curve in default and acts as a exogenous commitment device for the household.
 
-% \textbf{Prediction 3} (Direction of borrowing inefficiency depends on financial sector fragility). \emph{The sign of the welfare wedge \eqref{eq:wedge} is governed by the strength of the sovereign–intermediary linkage. For low values of $\gamma$, the insurance value of partial default dominates the debt-dilution externality, and the competitive equilibrium exhibits underborrowing relative to the constrained planner. As $\gamma$ increases, the convex cost of default through the intermediary balance sheet (Proposition~\ref{prop:convexity}) erodes the insurance value, and at sufficiently high $\gamma$ the debt-dilution externality dominates, generating overborrowing.} Empirically, countries with high domestic bank sovereign exposure should exhibit debt-to-GDP ratios that exceed the constrained-efficient level, whereas countries with low exposure should exhibit the opposite. \\
- 
-% \textbf{Prediction 4} (Import compression is continuous in haircuts). \emph{Across sovereign restructuring episodes, the magnitude of import compression is positively correlated with the realised haircut, and this gradient is steeper for countries with larger banking-sovereign linkages.} Import prices respond via $\partial p_{m,1}/\partial D = -\gamma\,(\partial p_{m,1}/\partial N_1) > 0$ from \eqref{eq:dpm_dD}, and the household's demand for foreign inputs $m^f_1$ is decreasing in $p_{m,1}$ via \eqref{eq:mf_demand}.\\
 
-% \textbf{Prediction 5} (The external finance premium rises with haircut severity). \emph{Post-default corporate borrowing costs increase with the realised haircut, and the relationship is steeper for countries with higher domestic bank sovereign exposure.} The model's external finance premium is $Z_1/R^* = \ell_1/\Psi(\bar{\omega}_1)$ from \eqref{eq:efp} and \eqref{eq:pm}, which is increasing in the default volume $D$ through the intermediary balance sheet channel. A larger haircut erodes $N_1$, raises $\bar{\omega}_1$, and pushes up the premium.
+%========================================================================
+\section{Quantitative Analysis} \label{sec:quantitative}
+%========================================================================
 
-\textbf{Prediction 1} (Haircuts increase in debt-to-endowment). \emph{In a cross-section of sovereign restructuring episodes, realised haircuts are positively associated with the pre-default debt-to-GDP ratio.}\\
- 
-\noindent\textbf{Prediction 2} (Sovereign spreads increase in domestic bank exposure). \emph{For a given debt-to-GDP ratio, countries with a higher share of sovereign debt held by domestic banks exhibit wider CDS spreads.}
- 
-This is the empirical counterpart of comparative static~(ii). The doom loop mechanism implies that higher $\gamma$ raises the expected cost of default for any given debt level, which is priced into sovereign bonds via \eqref{eq:bondprice}. \\
- 
- 
-\noindent\textbf{Prediction 3} (Import compression is graded in haircut severity, amplified by $\gamma$). \emph{Across sovereign restructuring episodes, the magnitude of import compression is positively correlated with the realised haircut, and this gradient is steeper for countries with domestic banks that are more exposed to sovereign debt.}
- 
-This is the empirical counterpart of comparative static~(iii). Import prices respond via $\partial p_{m,1}/\partial D = -\gamma\,(\partial p_{m,1}/\partial N_1) > 0$ from \eqref{eq:dpm_dD}, and household demand for foreign inputs is decreasing in $p_{m,1}$ via \eqref{eq:mf_demand}. In \citet{mendoza_general_2012}, default triggers discrete exclusion from working capital markets. Here, the import declines continuously with the haircut, and the gradient is steeper at higher $\gamma$. \\
- 
-\noindent\textbf{Prediction 4} (The external finance premium rises continuously with haircut severity, amplified by $\gamma$). \emph{Post-default corporate borrowing costs increase with the realised haircut, and the relationship is steeper for countries with higher domestic bank sovereign exposure.}
- 
-This is the empirical counterpart of comparative static~(iv). The external finance premium $Z_1/R^* = \ell_1/\Psi(\bar{\omega}_1)$ from \eqref{eq:efp} and \eqref{eq:pm} is increasing in $D$ through the intermediary balance sheet.\\
- 
-\noindent\textbf{Prediction 5} (The relationship between output and haircut is convex, with convexity increasing in $\gamma$). \emph{The relationship between haircut severity and the post-default output decline is convex: larger haircuts are associated with disproportionately larger output losses, and this convexity is increasing in the share of sovereign debt held domestically.}
- 
-This is the empirical counterpart of comparative statics~(iii)-(iv) combined with Proposition~\ref{prop:convexity}. The convexity arises because the marginal cost of default accelerates as intermediary net worth falls, driven by the contracting denominator $[\Gamma(\bar{\omega}_1) - \mu G(\bar{\omega}_1)]^2$ in \eqref{eq:dpm_dn}. The interaction with $\gamma$ follows because higher $\gamma$ amplifies the pass-through from $D$ to $N_1$ via \eqref{eq:nw1}. An empirical test would regress the post-default GDP decline on the realised haircut, its square, and an interaction with the domestic bank sovereign holdings share.
 
-\section{Quantitative Analysis}
+I now move to examine the quantitative implications of the model by conducting numerical simulations. I have chosen to use Sri Lanka's 2021-2022 default period as a calibration anchor. Sri Lanka's recent and well-documented renegotiation with bilateral and multilateral creditors makes their default a prime candidate to simulate via a partial-default model. That being said, moment-matching within a two-period setting is less credible than in an infinite-horizon case; rather, the quantitative analysis here serves the purposes of (i) demonstrating that the model admits a computable equilibrium with empirically reasonable values (ii) numerical demonstrations of the types of key comparative statics that would otherwise be challenging to derive analytically.
 
-I now move to examine the quantitative implications of the model by conducting numerical simulations. Under the model's two-period setting, each period is set to a length of five years. This setting seeks to strike a balance between temporal realism and calibration feasibility. Periods shorter than this length do not allow for a realistic time frame we would reasonably expect sovereign renegotiation to occur within. Five years allows Period 1 to capture equilibrium following complete conclusion of refinancing. On the other hand, longer period settings would lead to issues of liquidity in our chosen instrument of calibration - CDS Swaps. 5 year sovereign bond CDS contracts are generally more widely traded than 10 year, thus ensuring implied default probability is adequately captured in price data. Thus, the discount rate and risk-free rate are calibrated to their respective five year compounded values. For the remainder of the quantitative analysis, I set my utility function to a CRRA arrangement,
+Under the model's two-period setting, each period is set to a length of five years. This setting seeks to strike a balance between temporal realism and calibration feasibility. Periods shorter than this length do not allow for a realistic time frame we would reasonably expect sovereign renegotiation to occur within. Five years allows Period 1 to capture equilibrium following complete conclusion of refinancing. On the other hand, longer period settings would lead to issues of liquidity in our chosen instrument of calibration - CDS Swaps. 5 year sovereign bond CDS contracts are generally more widely traded than 10 year, thus ensuring implied default probability is adequately captured in price data. Thus, the discount rate and risk-free rate are calibrated to their respective five year compounded values. For the remainder of the quantitative analysis, I set my utility function to a CRRA arrangement,
 \begin{equation*}
     u(C_t)=\frac{C_t^{1-\sigma_u}}{1-\sigma_u},
 \end{equation*}
 where $\sigma_u$ is the coefficient of relative risk aversion.
 
+The model is solved numerically through a nested optimisation architecture. The Period 0 equilibrium is recovered by maximising the household's lifetime value function over $b_1$, with the expectation approximated by a seven-node Gauss-Hermite quadrature. For each candidate $b_1$ and quadrature node $y_1$, the Period 1 equilibrium is solved for. $D^*(y_1, b_1)$ is found by maximising the household's Period 1 utility over $D \in [0, b_1]$. At each candidate $D$, the leverage--threshold condition (\ref{eq:omega_leverage}) is solved analytically for $M^f_1$ in terms of $\bar\omega_1$, leaving the foreign-input market-clearing condition (\ref{eq:mc_foreign}) as a single equation in $\bar\omega_1$ which is solved residually. The total derivative $\partial p_{m,1}/\partial N_1$ entering the Period 0 Euler equation is computed at the optimum $D^*$ via central finite differences on the inner solver.
+
 \subsection{Baseline Calibration: The Case of Sri Lanka}
 
-\begin{table}[htbp]
-    \centering
-    \renewcommand{\arraystretch}{1.2}
-    \makebox[\textwidth][c]{%
-        \begin{tabular}{@{}ccccccccc@{}}
-                \begin{tabular}{@{}lcll@{}}
-                    \toprule
-                    \textbf{Parameter} & \textbf{Value} & \textbf{Description} & \textbf{Source / Target} \\
-                    \midrule
-                    \multicolumn{4}{@{}l}{\textit{Preferences}} \\
-                    $\beta$ & 0.815 & Subjective discount factor (5-year) & \\
-                    $\sigma_u$ & 2.000 & Coefficient of relative risk aversion & \\
-                    \addlinespace
-                    
-                    \multicolumn{4}{@{}l}{\textit{Technology and Trade}} \\
-                    $\alpha$ & 0.700 & Armington weight on domestic inputs & Import share (World Bank)\\
-                    $\eta$ & -1.000 & CES substitution parameter & \\ 
-                    \addlinespace
-                    
-                    \multicolumn{4}{@{}l}{\textit{Financial Sector and Frictions}} \\
-                    $\bar{n}$ & 0.065 & Long-run intermediary net worth & CBSL Monetary Survey \\
-                    $\gamma$ & 0.320 & Home bias share of sovereign debt & CBSL Monetary Survey \\
-                    $\sigma_\omega$ & 0.250 & Idiosyncratic shock volatility & \citet{christiano_risk_2014} \\
-                    $\mu$ & 0.400 & CSV monitoring / auditing cost & \citet{christiano_risk_2014} \\
-                    \addlinespace
-                    
-                    \multicolumn{4}{@{}l}{\textit{International Market}} \\
-                    $R^*$ & 1.104 & World gross risk-free interest rate & \\ 
-                    \addlinespace
-                    
-                    \multicolumn{4}{@{}l}{\textit{Endowment and Debt Process}} \\
-                    $y_0$ & 1.000 & Period 0 endowment & Normalisation \\
-                    $b_0$ & 0.180 & Pre-existing debt (Implied debt-to-GDP) & CBSL Annual Report \\
-                    $\rho$ & 0.600 & AR(1) persistence of endowment growth &  \\
-                    $\mu_g$ & 1.200 & Unconditional mean growth rate & World Bank WDI (2015-2019 Avg) \\
-                    $\sigma_g$ & 0.150 & Growth shock standard deviation & Scaled from \citet{arellano_default_2008} \\
-                    \bottomrule
-                \end{tabular}
-        \end{tabular}
-    }
-    \caption{Baseline Parameterisation}
-    \label{tab:calibration}
-\end{table}
+\input{baseline_calibration}
 
-I chose to calibrate the expected haircut, $\E\left[ {D}/{b_1}\right]$, in the model to match the implied expected loss backed out of credit-default swap data. Specifically, I look at Sri Lankan 5 year CDS pricing data, with implied default probability generated from the standard ISDA model with an assumed recovery rate of 40\%. Following Sri Lanka's sovereign default episode in 2021-22, the average daily implied default probability rose to $\approx 78\%$, from $\approx 22\%$ the prior five years - resulting in an expected loss of $\approx0.468$. This expected loss serves as the primary empirical moment targeted by the model's expected haircut.
+I chose to anchor the calibration via the expected haircut, $\E\left[ {D}/{b_1}\right]$, in the model to target the implied expected loss backed out of credit-default swap data. Specifically, I look at Sri Lankan 5 year CDS pricing data, with implied default probability generated from the standard ISDA model with an assumed recovery rate of 40\%. Following Sri Lanka's sovereign default episode in 2021-22, the average daily implied default probability rose to $\approx 78\%$, from $\approx 22\%$ the prior five years - resulting in an expected loss of $\approx0.468$. This expected loss serves as the primary empirical moment targeted by the model's expected haircut. Table \ref{tab:calibration} documents the baseline calibration to Sri Lankan variables during this episode of default.
 
-\begin{table}[htbp]
-    \centering
-    \renewcommand{\arraystretch}{1.2}
-    \begin{tabular}{@{}lrlr@{}}
-        \toprule
-        \multicolumn{2}{@{}l}{\textbf{Period 0 Allocations}} & \multicolumn{2}{l@{}}{\textbf{Expected Summary Statistics}} \\
-        \midrule
-        Debt Issued ($b_1$) & 0.4296 & Expected Default ($\E[D]$) & 0.3216 \\
-        Bond Price ($q_0$) & 0.2277 & Expected Haircut ($\E[D/b_1]$) & 0.7487 \\
-        Domestic Goods ($m_{d,0}$) & 0.9178 & Expected Recovery ($\E[1 - D/b_1]$) & 0.2513 \\
-        Imported Goods ($m_{f,0}$) & 0.5718 & Expected Consumption ($\E[C_1]$) & 0.5137 \\
-        Consumption ($C_0$) & 0.7768 & & \\
-        Yield ($R^*/q_0$) & 4.8495 & & \\
-        Spread (bps) & 37,455 & & \\
-        \bottomrule
-    \end{tabular}
-    \caption{Period 0 Equilibrium and Expected Macroeconomic Moments}
-    \label{tab:period0_summary}
-\end{table}
+\input{simul_summary}
 
-\begin{table}[htbp]
-    \centering
-    \renewcommand{\arraystretch}{1.2}
-    \small 
-    \makebox[\textwidth][c]{%
-        \begin{tabular}{@{}ccccccccc@{}}
-            \begin{tabular}{@{}ccccccccc@{}}
-                \toprule
-                \textbf{Endowment} & \textbf{Default} & \textbf{Haircut} & \textbf{Bank Default} & \textbf{Bank} & \textbf{Import} & \textbf{Imports} & \textbf{Consumption} & \textbf{Finance} \\
-                \textbf{Shock} & \textbf{Level} & \textbf{Fraction} & \textbf{Threshold} & \textbf{Assets} & \textbf{Price} & & & \textbf{Premium} \\
-                $y_1$ & $D$ & $D/b_1$ & $\bar{\omega}_1$ & $M^f_1$ & $p_{m,1}$ & $m_{f,1}$ & $C_1$ & $Z/R^*$ \\
-                \midrule
-                0.4927 & 0.4296 & 1.0000 & 0.7290 & 0.2120 & 1.1231 & 0.2041 & 0.2787 & 1.0697 \\
-                0.6497 & 0.4233 & 0.9855 & 0.8388 & 0.2755 & 1.1691 & 0.2502 & 0.3457 & 1.1736 \\
-                0.8280 & 0.3796 & 0.8836 & 0.8388 & 0.3331 & 1.1691 & 0.3026 & 0.4180 & 1.1736 \\
-                1.0431 & 0.3268 & 0.7608 & 0.8388 & 0.4026 & 1.1691 & 0.3656 & 0.5052 & 1.1736 \\
-                1.3139 & 0.2603 & 0.6060 & 0.8388 & 0.4901 & 1.1691 & 0.4451 & 0.6150 & 1.1736 \\
-                1.6745 & 0.1718 & 0.3999 & 0.8388 & 0.6065 & 1.1691 & 0.5509 & 0.7611 & 1.1736 \\
-                2.2083 & 0.0408 & 0.0949 & 0.8388 & 0.7790 & 1.1691 & 0.7076 & 0.9775 & 1.1736 \\
-                \bottomrule
-            \end{tabular}
+The baseline calibration results, reported in Tables \ref{tab:period0_summary} and \ref{tab:period1_states}, shows a generated haircut above the targeted CDS-implied expected loss, though capturing a highly distressed default and credit environment consistent with the 2021--22 period in Sri Lanka. Likewise, the annualised spread generated overshoots peak Sri Lanka 5 Years USD / United States 5 Years Government Bond Spread in 2022 of $\approx 2500\text{ bps}$ by around 1000 points, yet again remains of the same order of magnitude as crisis-period spreads. \\
 
-        \end{tabular}
-    }
-    \caption{State-Contingent Equilibrium Outcomes in Period 1}
-    \label{tab:period1_states}
-\end{table}
+\input{simul_results}
 
+Reflecting upon the transmission flow of the model, the model exhibits default that is strongly state-contingent. Haircut severity falls monotonically with the realised endowment: the sovereign defaults most in low-output states and least in high-output states. Of note, the default policy reaches a full-default corner in the worst endowment state and approaches a low-haircut repayment region in the best state. Under our baseline calibration, allocations span both crisis and near-repayment states within the same default rule.
+
+Interestingly, when in an interior-default state, the sovereign adjusts its haircut to endogenously target a particular default threshold, holding import prices and external finance premiums close to a common level across states. This is a numerical consequence of the household's default policy (\ref{eq:KKT}): the sovereign chooses the haircut until the marginal budgetary gain from default equals the marginal import-price cost.
+
+Finally, the baseline simulation confirms that larger haircuts do indeed generate greater import compression, lowering consumption in kind.
+
+%========================================================================
+\section{Discussion} \label{sec:discussion}
+%========================================================================
+
+\subsection{Testable Predictions}\label{sec:predictions}
+
+The comparative statics of Section \ref{sec:implications} and analysis in Section \ref{sec:quantitative} admit a series of empirical predictions that can be taken to the data:
+
+\paragraph{Prediction 1: Haircuts increase monotonically and with convexity in debt-to-GDP} 
+\emph{In a cross-section of sovereign restructuring episodes, realised haircuts are positively associated with the pre-default debt-to-GDP ratio.} This is a standard prediction rationalised by existing models of partial default \citep{arellano_partial_2023, goodhart_debt_2018, peiris_capital_2025}, and the model proposed in this thesis continues to generate this convex debt-to-GDP relationship with default.
+ 
+\paragraph{Prediction 2: Import compression is graded in haircut severity}
+\emph{Across restructuring episodes, larger realised haircuts should be associated with larger contractions in imports, especially in economies where imported inputs are difficult to substitute with domestic production.} Whilst \citet{mendoza_general_2012} document the relationship between default and import-based financial frictions, the friction is still generated via a binary market-exclusion channel; here, I propose an endogenous channel where import compression rises continually, and nonlinearly, in haircut.
+ 
+\paragraph{Prediction 3: The haircut-import elasticity is increasing in domestic bank sovereign exposure}
+\emph{The elasticity of imports with respect to haircut severity is larger in countries with greater domestic bank exposure to sovereign debt.} The doom-loop literature \citep{sosa-padilla_sovereign_2018, brunnermeier_sovereign-bank_2016} establishes that sovereign distress propagates to the financial sector, but does not deliver a graded cross-sectional prediction tied to a structural exposure parameter. By isolating $\gamma$ as the share of sovereign losses transferred to intermediaries, the model proposed in this thesis generates a direct mapping from this exposure to the \textit{slope} of the haircut-import relationship.
+ 
+%\paragraph{Prediction 4: Private external finance premia rise with haircut severity}
+%\emph{Larger sovereign haircuts are followed by larger increases in private external borrowing costs, particularly for banks and import-dependent firms.}
+ 
+\paragraph{Prediction 4: Output losses are convex in haircut severity}
+\emph{The relationship between haircut severity and post-default output decline is nonlinear: larger haircuts is be associated with disproportionately larger output losses. This convexity is stronger in economies with higher domestic bank exposure to sovereign debt.} The increase in the curvature of this relationship in domestic bank exposure to sovereign debt cannot be rationalised without the modeling combination of bank net-worth erosion and partial default.
+
+\subsection{Limitations and Further Research}
+
+% Weakness: always default, 
+% Realistics spreads in quant analysis should be reserved to infinite-time horizon model
+% If banks hold a small enough share of sovereign debt, the pass-through coefficient scales the marginal cost down. As γ→0, the marginal cost vanishes — but so does the *channel*: defaulting doesn't hurt you because banks don't hold the debt. In the limit γ=0 the model degenerates to one with no transmission, and the household defaults fully (since there's no cost).
+% Also, reduced form
+% Discussion of assumptions (1&2)
+
+The most obvious direction for future research from the theoretical framework posed in this thesis is to extend the two-period model to an infinite-horizon setting. This would enable the model to speak to debt-accumulation dynamics, transition paths post-default (allowing exploration of serial-default) and more sophisticated moments-matched calibrations to a panel of emerging economies. The kinks at the corners of the household's default function under continuous partial default, combined with a large state-space including both $(b_t,N_t)$, generates a high computational cost associated with numerical solutions; this should not be prohibitive, however.
+
+Assumption \ref{ass:interior} rules out the no-trade corner and ensures interior bond-market participation, which in turn delivers the continuous default severity that is the model's central object of analysis. In the calibrated equilibrium, however, the sovereign defaults in every state of nature, with severity varying from near-full default in the worst endowment state to a low haircut in the best. Empirically, this is at odds with observed default frequencies in emerging-market panels, and as such the model speaks only to the intensive margin of default rather than to the extensive margin of \textit{when} default occurs. This is not a limitation of Assumption 1 in isolation: in an infinite-horizon extension, the continuation value would likely discipline the default decision sufficiently to generate repayment regions in sufficiently good states. In the two-period setting, the assumption binds more tightly than it would otherwise.
+
+An infinite-horizon extension would also allow for the opportunity to discipline banking parameters $\gamma,\bar{n}$, which the equilibrium allocations are highly sensitive to, by using richer micro-level data. $\gamma$ in particular is reduced-form by construction and acts as a key structural parameter - endogenising intermediary portfolio choices, following \citet{farhi_deadly_2018} for example, may provide richer equilibrium dynamics by removing a free parameter. Whilst $\gamma$ is well-interpretable as the portfolio-adjustment towards or away from domestic sovereign debt, generated by home-bias or financial repression, the parameter loses this interpretation when set to zero; the household is no longer subject to the intermediary-mediated default penalty. Examination of default induced by the \textit{existence} of idiosyncratic risk, rather than sensitivity to risk, would necessitate reworking of this parameter. Finally, the cash-in-advance nominal set-up delivers nominal neutrality (Proposition \ref{prop:neutrality}) by construction; introducing nominal rigidities would fundamentally change the implications of the CSV transmission mechanism, and would allow for analysis of real exchange rate dynamics, following the work of \citet{na_twin_2018}.
+
+\subsection{Conclusion}
+
+The theoretical framework developed within this thesis seeks to reverse the canonical emphasis sovereign default-originating credit crises by embedding a costly state verification friction in the domestic intermediary sector, with pass-through of idiosyncratic risk shocks through to import prices. By allowing the sovereign to choose a continuous haircut, the model generates clear first and second-order empirical predictions regarding how the realised haircut interacts with import compression and consumption contractions driven by exposure of the banking system to sovereign default risk.
+
+The model delivers three discrete results. First, the default penalty is convex in the haircut: each successive unit of default erodes intermediary net worth, raises the external finance premium through the CSV friction, and feeds into import prices with nonlinearity. This convexity rationalises the doom-loop transmission without recourse to multiple equilibria or sunspot selection. Second, the atomistic household over-borrows relative to the constrained Ramsey planner at any interior partial-default solution.  Third, the comparative statics in $\gamma$ identify domestic bank exposure to sovereign debt as the primary amplification channel: holding total intermediary balance sheet size fixed, higher exposure steepens the haircut-import elasticity, the external finance premium response, and the consumption loss conditional on any realised default. The Sri Lankan calibration confirms that these mechanisms operate at empirically reasonable magnitudes in a crisis-period economy.
 
 %========================================================================
 \newpage

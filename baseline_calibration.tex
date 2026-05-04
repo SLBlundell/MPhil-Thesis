@@ -1,0 +1,43 @@
+\begin{table}[htbp]
+    \centering
+    \renewcommand{\arraystretch}{1.2}
+    \resizebox{\textwidth}{!}{%
+        \begin{tabular}{@{}ccccccccc@{}}
+                \begin{tabular}{@{}lcll@{}}
+                    \toprule
+                    \textbf{Parameter} & \textbf{Value} & \textbf{Description} & \textbf{Source / Target} \\
+                    \midrule
+                    \multicolumn{4}{@{}l}{\textit{Preferences}} \\
+                    $\beta$ & 0.815 & Subjective discount factor (5-year) & \\
+                    $\sigma_u$ & 2.000 & Coefficient of relative risk aversion & \\
+                    \addlinespace
+                    
+                    \multicolumn{4}{@{}l}{\textit{Technology and Trade}} \\
+                    $\alpha$ & 0.700 & Armington weight on domestic inputs & Import share (World Bank)\\
+                    $\eta$ & -1.000 & CES substitution parameter & \\ 
+                    \addlinespace
+                    
+                    \multicolumn{4}{@{}l}{\textit{Financial Sector and Frictions}} \\
+                    $\bar{n}_{base}$ & 0.065 & Long-run non-sovereign asset stock & CBSL Monetary Survey\\
+                    $\gamma$ & 0.320 & Home bias share of sovereign debt & CBSL Monetary Survey \\
+                    $\sigma_\omega$ & 0.250 & Idiosyncratic shock volatility & \citet{christiano_risk_2014} \\
+                    $\mu$ & 0.400 & CSV monitoring / auditing cost & \citet{christiano_risk_2014} \\
+                    \addlinespace
+                    
+                    \multicolumn{4}{@{}l}{\textit{International Market}} \\
+                    $R^*$ & 1.104 & World gross risk-free interest rate & \\ 
+                    \addlinespace
+                    
+                    \multicolumn{4}{@{}l}{\textit{Endowment and Debt Process}} \\
+                    $y_0$ & 1.000 & Period 0 endowment & Normalisation \\
+                    $b_0$ & 0.180 & Pre-existing debt (Implied debt-to-GDP) & CBSL Annual Report \\
+                    $\rho$ & 0.600 & AR(1) persistence of endowment growth &  \\
+                    $\mu_g$ & 1.200 & Unconditional mean growth rate & World Bank WDI (2015-2019 Avg) \\
+                    $\sigma_g$ & 0.150 & Growth shock standard deviation & Scaled from \citet{arellano_default_2008} \\
+                    \bottomrule
+                \end{tabular}
+        \end{tabular}
+    }
+    \caption{Baseline Parameterisation}
+    \label{tab:calibration}
+\end{table}
