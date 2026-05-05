@@ -33,16 +33,16 @@ par.beta    = 0.815;        % discount factor
 par.sigma_u = 2;            % CRRA risk aversion
 
 % CES aggregator
-par.alpha   = 0.7;         % Armington weight on domestic inputs
+par.alpha   = 0.7;          % Armington weight on domestic inputs
 par.eta     = -1;           % CES parameter (eta < 0  =>  complements)
 par.sigma   = 1/(1-par.eta);% elasticity of substitution = 1/(1-eta)
 
 % Financial sector
-par.nbar    = 0.065;         % long-run intermediary net worth
+par.nbar_base    = 0.065;         % long-run intermediary net worth
 par.gamma   = 0.320;         % home bias share of sovereign debt
 
 % Christiano et al. - sigma_w = 0.25, mu = 0.2 to 0.28
-par.sigma_w = 0.250;        % idiosyncratic shock volatility (sigma_omega)
+par.sigma_w = 0.25;         % idiosyncratic shock volatility (sigma_omega)
 par.mu      = 0.400;        % CSV monitoring cost
 
 % International
@@ -53,8 +53,11 @@ par.y0      = 1.00;         % Period 0 endowment (normalised)
 par.b0      = 0.18;         % pre-existing debt (Implied Pre-Default debt-to-gdp)
 par.rho     = 0.60;         % AR(1) persistence of growth
 par.mu_g    = 1.20;         % unconditional mean growth rate
-par.sigma_g = 0.20;         % growth shock std. dev.
+par.sigma_g = 0.15;         % growth shock std. dev.
 par.g0      = 0.95;         % initial growth rate
+
+par.A_ref = par.nbar_base + par.gamma * par.b0;
+par.nbar  = par.A_ref - par.gamma * par.b0;
 
 fprintf('Parameters:\n');
 fprintf('  beta=%.2f  sigma_u=%.1f  alpha=%.2f  eta=%.1f  sigma=%.2f\n', ...
