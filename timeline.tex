@@ -2,6 +2,7 @@
 
 \begin{figure}[htbp]
 \centering
+\resizebox{\textwidth}{!}{%
 \begin{tikzpicture}[
     >=Stealth,
     every node/.style={font=\small},
@@ -9,53 +10,47 @@
     shock/.style={circle, draw=black, fill=white, inner sep=0pt, minimum size=5pt, thick},
     agentlbl/.style={anchor=east, font=\small\itshape},
     evlbl/.style={font=\footnotesize},
-    periodlbl/.style={font=\bfseries\small}
+    periodlbl/.style={font=\bfseries\small},
+    shocklbl/.style={font=\footnotesize, align=center},
+    pricelbl/.style={font=\footnotesize\itshape, anchor=south}
 ]
-
 % Event x-positions
 \def\xzA{1.0}   \def\xzB{2.2}  \def\xzC{3.4}  \def\xzD{4.6}  \def\xzE{5.8}
 \def\xsep{6.7}
 \def\xoA{7.6}   \def\xoBC{8.8} \def\xoD{10.0} \def\xoE{11.2} \def\xoF{12.4}
 \def\xmax{13.2}
-
-% Agent y-positions
+% y-positions
 \def\yH{0}     \def\yB{-1.5}  \def\yL{-3.0}
 \def\ytop{1.4}
-
+\def\yshock{-3.75}
+\def\ykey{-4.7}
 % Main timeline arrow
 \draw[->, thick] (0, \ytop) -- (\xmax, \ytop)
     node[right, font=\small\itshape] {time};
-
-% Period separator
-\draw[dashed, gray] (\xsep, \ytop) -- (\xsep, \yL-0.3);
-
+% Period separator (extends down past shock labels)
+\draw[dashed, black] (\xsep, \ytop+0.3) -- (\xsep, \yshock+0.3);
 % Period labels
-\node[periodlbl] at ({(\xzA+\xzE)/2}, \ytop+0.45) {Period 0 \;\; ($t=0$)};
-\node[periodlbl] at ({(\xoA+\xoF)/2}, \ytop+0.45) {Period 1 \;\; ($t=1$)};
-
-% Event tick marks and (a)-(f) labels on main timeline
+\node[periodlbl] at ({(\xzA+\xzE)/2}, \ytop+0.85) {Period 0 \;\; ($t=0$)};
+\node[periodlbl] at ({(\xoA+\xoF)/2}, \ytop+0.85) {Period 1 \;\; ($t=1$)};
+% Event tick marks and (a)-(e) labels on main timeline
 \foreach \x/\lab in {\xzA/{(a)}, \xzB/{(b)}, \xzC/{(c)}, \xzD/{(d)}, \xzE/{(e)},
                      \xoA/{(a)}, \xoBC/{(b)}, \xoD/{(c)}, \xoE/{(d)}, \xoF/{(e)}} {
   \draw (\x, \ytop-0.08) -- (\x, \ytop+0.08);
   \node[evlbl, below] at (\x, \ytop-0.08) {\lab};
 }
-
-% Light vertical guidelines
-\foreach \x in {\xzA, \xzB, \xzC, \xzD, \xzE, \xoA, \xoBC, \xoD, \xoE, \xoF} {
-  \draw[gray!25, dotted] (\x, \ytop-0.3) -- (\x, \yL-0.15);
-}
-
+% Shock dotted lines - running from just under time arrow all the way through agents down to shock labels
+\draw[dotted, thick, gray!65] (\xzD, \ytop-0.57) -- (\xzD, \yshock+0.4);
+\draw[dotted, thick, gray!65] (\xoA, \ytop-0.57) -- (\xoA, \yshock+0.4);
+\draw[dotted, thick, gray!65] (\xoE, \ytop-0.57) -- (\xoE, \yshock+0.4);
 % Agent axes
 \draw[thick] (0.4, \yH) -- (\xmax-0.1, \yH);
 \draw[thick] (0.4, \yB) -- (\xmax-0.1, \yB);
 \draw[thick] (0.4, \yL) -- (\xmax-0.1, \yL);
-
 % Agent labels
 \node[agentlbl] at (0.3, \yH) {Household};
 \node[agentlbl] at (0.3, \yB) {Intermediaries};
-\node[agentlbl] at (0.3, \yL) {International Lender};
-
-% Households
+\node[agentlbl] at (0.3, \yL) {Int'l Lender};
+% --- Households
 \node[known] at (\xzA, \yH) {};
 \node[known] at (\xzB, \yH) {};
 \node[shock] at (\xzD, \yH) {};
@@ -64,29 +59,36 @@
 \node[known] at (\xoBC, \yH) {};
 \node[shock] at (\xoE, \yH) {};
 \node[known] at (\xoF, \yH) {};
-
-% Intermediaries
+% --- Intermediaries
 \node[known] at (\xzB, \yB) {};
 \node[known] at (\xzC, \yB) {};
 \node[shock] at (\xzD, \yB) {};
 \node[known] at (\xoBC, \yB) {};
 \node[known] at (\xoD,  \yB) {};
 \node[shock] at (\xoE,  \yB) {};
-
-% International Lender
+% --- International Lender
 \node[known] at (\xzB, \yL) {};
 \node[known] at (\xzC, \yL) {};
 \node[known] at (\xoD, \yL) {};
-
-% Legend
-\node[known] at (0.5, \yL-1.1) {};
-\node[anchor=west, font=\footnotesize] at (0.7, \yL-1.1)
+% --- Price-determination annotations with connector ticks pointing to the relevant node
+\node[pricelbl] at (\xzB, \yL+0.38) {$q_0$ set};
+\draw[->, thin] (\xzB, \yL+0.45) -- (\xzB, \yL+0.16);
+\node[pricelbl] at (\xoD, \yB+0.38) {$p_{m,1}$ set};
+\draw[->, thin] (\xoD, \yB+0.45) -- (\xoD, \yB+0.16);
+% --- Shock labels attached to the dotted guide lines
+\node[shocklbl] at (\xzD, \yshock) {idiosyncratic\\$\omega_{i,0}$};
+\node[shocklbl] at (\xoA, \yshock) {aggregate\\$g_1$};
+\node[shocklbl] at (\xoE, \yshock) {idiosyncratic\\$\omega_{i,1}$};
+% --- Key (below the shock labels)
+\node[known] at (0.5, \ykey) {};
+\node[anchor=west, font=\footnotesize] at (0.75, \ykey)
     {conditionally known ex~ante};
-\node[shock] at (6.2, \yL-1.1) {};
-\node[anchor=west, font=\footnotesize] at (6.4, \yL-1.1)
+\node[shock] at (6.8, \ykey) {};
+\node[anchor=west, font=\footnotesize] at (7.05, \ykey)
     {shock drawn from known distribution};
-
-\end{tikzpicture}
-\caption{Within-period sequence of events by agent. Labels (a)--(e) correspond to those in Section~\ref{sec:timings}.}
+\end{tikzpicture}%
+}
+\caption{Within-period sequence of events by agent, with nodes denoting actions undertaken by a respective agent type within the given sub-period. Labels (a)--(e) correspond to
+those above in Section~\ref{sec:timings}.}
 \label{fig:timeline}
 \end{figure}
