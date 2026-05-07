@@ -66,7 +66,7 @@
 
         
         % Main Title
-        {\LARGE \bfseries Fragile Economies: A General Equilibrium Model of Partial Default with a Banking Sector \par}
+        {\LARGE \bfseries A General Equilibrium Model of Partial Default with a Banking Sector: An Application to Sri Lanka \par}
         
         \vspace{1.5cm}
         
@@ -92,7 +92,7 @@
 
 % Abstract Section
 \begin{abstract}
-     Whilst examination of historical evidence following the 2008 financial crisis demonstrated the often antecedental role of domestic banking crisis in periods of sovereign default, much of the discussion on the so-called sovereign-bank diabolical loop posits an opposing mechanism, where a banking crisis is induced by the erosion of bank balance sheets through sovereign debt holdings. I propose a two-period general equilibrium model of partial default in which idiosyncratic banking-sector risk propagates through a costly state verification friction. I show that the real costs of default increase nonlinearly in financial fragility, generating import compression via higher external finance premia. Partial default is central to this mechanism, with larger haircuts amplifying the pass-through from sovereign default to intermediary net worth, import prices, and decreased consumption. Over-borrowing precedes these episodes, driven by a pecuniary externality in debt issuance: the sovereign fails to internalise how its borrowing impacts the price of borrowing. The model is calibrated to Sri Lanka's 2021–22 default.
+     Whilst examination of historical evidence following the 2008 financial crisis demonstrated the often antecedental role of domestic banking crisis in periods of sovereign default, much of the discussion on the so-called sovereign-bank diabolical loop posits an opposing mechanism, where a banking crisis is induced by the erosion of bank balance sheets through sovereign debt holdings. I propose a two-period general equilibrium model of partial default in which idiosyncratic banking-sector risk is the structural source of sovereign default, propagating within the real economy through a costly state verification friction. I show that the real costs of default increase nonlinearly in financial fragility, generating import compression via higher external finance premia. Partial default is central to this mechanism, with larger haircuts amplifying the pass-through from sovereign default to intermediary net worth, import prices, and decreased consumption. Over-borrowing precedes these episodes, driven by a pecuniary externality in debt issuance: the sovereign fails to internalise how its issuance impacts the price of borrowing. The model is calibrated to Sri Lanka's 2021–22 default.
     
     \vspace{1cm} % Space between abstract text and keywords
     
@@ -125,7 +125,7 @@
 
 % The issue of "temporal precedence"
 
-The experiences of Iceland in 2008 and Turkey in 2018 underscore the often antecedental nature of banking crises in periods of sovereign default. The co-movement of domestic bank CDS and sovereign spreads is a well-documented relationship \citep{acharya_pyrrhic_2014}, yet existing literature on the "doom loop" relationship between banks and sovereigns fails to rationalise the empirical regularity that, across history, banking crises more often than not induce sovereign default, rather than the inverse \citep{reinhart_financial_2011}. Public debt rises by roughly 86 percent in the three years following a banking crisis. These patterns are especially salient for emerging economies, where the development of domestic financial sectors has historically coincided with the emergence of serial default.
+The experiences of Iceland in 2008 and Lebanon in 2019--20 underscore the often antecedental nature of banking crises in periods of sovereign default. The co-movement of domestic bank CDS and sovereign spreads is a well-documented relationship \citep{acharya_pyrrhic_2014}, yet existing literature on the "doom loop" relationship between banks and sovereigns fails to rationalise the empirical regularity that, across history, banking crises more often than not induce sovereign default, rather than the inverse \citep{reinhart_financial_2011}. Public debt rises by roughly 86 percent in the three years following a banking crisis. These patterns are especially salient for emerging economies, where the development of domestic financial sectors has historically coincided with the emergence of serial default.
 
 % OPPOSING VIEW - sovereign default induced bank-crisis
 % Brunnermeier et al, 2016
@@ -137,7 +137,7 @@ The experiences of Iceland in 2008 and Turkey in 2018 underscore the often antec
 % Fahri and Triole, 2017:
 %   -As banks use sovereign bonds as a store of value, holding them until they need the resources to invest, the solvency of the Sovereign is reduced for two reasons when the economy suffers an adverse shock. First, there is a direct negative effect of the shock on economic activity, and thus on the fiscal revenues of the Sovereign. Secondly, there is an indirect effect of the shock that operates through the balance sheets of banks. The initial fall in the price of public debt hurts the net worth of banks and thus their investment. If the Sovereign attaches a sufficiently high value to investment, it bails out the banks.
 
-The dominant approach to modelling the sovereign-bank nexus relies upon the assumption that sovereign distress is the originating shock. \citet{brunnermeier_sovereign-bank_2016} utilise a sunspot to select an equilibrium that devalues sovereign bonds, prompting investors to anticipate, correctly, the erosion of bank balance sheets that hold sovereign debt. Building upon this mechanism, \citet{farhi_deadly_2018}'s model uses an aggregate-demand shock that induces sovereign default, followed by a bailout of the subsequently damaged balanced sheets of domestic banks, conditional on the level of oversight the sovereign has over these banks. \citet{bocola_pass-through_2016} demonstrates this transmission quantitatively, showing that elevated sovereign default risk raises domestic bank funding costs and contracts private lending. These existing models of the sovereign-bank nexus typically emphasise how sovereign distress weakens domestic banks through their sovereign bond holdings. Less attention has been paid to how the structure of the domestic banking system shapes the sovereign’s default problem itself. In particular, in the context of a domestic banking system that intermediates the real economy, the size of a haircut affects not only repayment and bank-net worth but also external finance premia, import prices, and consumption. This thesis studies this \textit{intensive margin} of sovereign default.
+The dominant approach to modeling the sovereign-bank nexus relies upon the assumption that sovereign distress is the originating shock. \citet{brunnermeier_sovereign-bank_2016} utilise a sunspot to select an equilibrium that devalues sovereign bonds, prompting investors to anticipate, correctly, the erosion of bank balance sheets that hold sovereign debt. Building upon this mechanism, \citet{farhi_deadly_2018}'s model uses an aggregate-demand shock that induces sovereign default, followed by a bailout of the subsequently damaged balanced sheets of domestic banks, conditional on the level of oversight the sovereign has over these banks. \citet{bocola_pass-through_2016} demonstrates this transmission quantitatively, showing that elevated sovereign default risk raises domestic bank funding costs and contracts private lending. These existing models of the sovereign-bank nexus typically emphasise how sovereign distress weakens domestic banks through their sovereign bond holdings. Less attention has been paid to how the structure of the domestic banking system shapes the sovereign’s default problem itself. In particular, in the context of a domestic banking system that intermediates the real economy, the size of a haircut affects not only repayment and bank-net worth but also external finance premia, import prices, and consumption. This thesis studies this \textit{intensive margin} of sovereign default.
 % MY MODEL:
 %   - home bias/financial repression induced holdings of sovereign bonds (as a single risky asset)
 %   - Bank insolvency brought on by idiosyncratic shock rather than aggregate -> the level of insolvency maps on to default cost
@@ -800,29 +800,75 @@ The partial effects of $\sigma_\omega$ on the primitive CSV objects, at fixed $\
     \item[(iii)] $\partial \Psi(\bar\omega) / \partial \sigma_\omega = \partial \Gamma / \partial \sigma_\omega - \partial(\mu G) / \partial \sigma_\omega < 0$. The net surplus accruing to the lender per unit of intermediated imports unambiguously falls.
 \end{enumerate}
 
-From (\ref{eq:pm}), we can see that, via result (iii), increases in $\sigma_{\omega}$ raises $p_{m,1}$ for any given leverage. Of more interest, the convexity of the import-price response in $D$, captured by the $\Psi(\bar\omega)^2$ denominator in (\ref{eq:dpm_dn}), intensifies in $\sigma_\omega$: as $\Psi$ shrinks, the same haircut produces a sharper net-worth-to-import-price pass-through. Idiosyncratic banking risk, in addition to shifting the equilibrium, increases curvature of the household's marginal cost-curve in default and acts as a exogenous commitment device for the household.
+From (\ref{eq:pm}), we can see that, via result (iii), increases in $\sigma_{\omega}$ raises $p_{m,1}$ for any given leverage. Of more interest, the convexity of the import-price response in $D$, captured by the $\Psi(\bar\omega)^2$ denominator in (\ref{eq:dpm_dn}), intensifies in $\sigma_\omega$: as $\Psi$ shrinks, the same haircut produces a sharper net-worth-to-import-price pass-through. Idiosyncratic banking risk, in addition to shifting the equilibrium, increases curvature of the household's marginal cost-curve in default
 
+\begin{proposition}[Necessity of Idiosyncratic Banking Risk for Interior Default] \label{prop:internal_default}
+Suppose $\sigma_{\omega}=0$, that is, that no idiosyncratic risk exists within the realised output of intermediated foreign goods supplied by domestic intermediaries. Then,
+\begin{equation*}
+    D^*=b_1 \quad \forall \quad b_1 \in [0,\infty),
+\end{equation*}
+in words, the household in equilibrium will optimally default on all issued debt, in all states, regardless of period 0 issuance. Therefore, for an interior default solution to be sustained in equilibrium it must be that $\sigma_\omega>0$.
+\end{proposition}
+
+\begin{proof}
+Take $\sigma_\omega \to 0$. The log-normal distribution (\ref{eq:omega_dist}) degenerates to a point mass at $\omega = 1$, since the mean parameter $-\sigma_\omega^2/2 \to 0$. Hence for any $\bar\omega \in (0, 1)$:
+\begin{equation*}
+    F(\bar\omega) = 0, \qquad \Gamma(\bar\omega) = \int_0^{\bar\omega} \omega \, dF(\omega) + \bar\omega\bigl(1 - F(\bar\omega)\bigr) = \bar\omega, \qquad G(\bar\omega) = 0,
+\end{equation*}
+and $\Gamma'(\bar\omega) = 1 - F(\bar\omega) = 1$, $\mu G'(\bar\omega) = 0$. Substituting into the leverage--threshold condition (\ref{eq:sys_leverage}):
+\begin{equation*}
+    1 - \bar\omega_1 = \bar\omega_1 \cdot \frac{N_1}{\Mf_1 - N_1} \quad \Longrightarrow \quad \bar\omega_1 = 1 - \frac{N_1}{\Mf_1}.
+\end{equation*}
+Substituting $\Gamma(\bar\omega_1) = \bar\omega_1$ and $G(\bar\omega_1) = 0$ into the import price equation (\ref{eq:pm}):
+\begin{equation*}
+    p_{m,1} = \Rstar \cdot \frac{1 - N_1/\Mf_1}{\bar\omega_1} = \Rstar \cdot \frac{\bar\omega_1}{\bar\omega_1} = \Rstar.
+\end{equation*}
+The import price is identically equal to the world risk-free rate, independent of $D$. Hence $\partial p_{m,1}/\partial D = 0$, and the marginal cost of default in the household's first-order condition (\ref{eq:foc_D}) collapses to zero. The KKT system (\ref{eq:KKT}) reduces to
+\begin{equation*}
+    \frac{\partial \mathcal{L}_1}{\partial D} = \lambda_1 \cdot 1 > 0 \qquad \forall \, D \in [0, b_1],
+\end{equation*}
+so the marginal benefit of default strictly exceeds the marginal cost everywhere on $[0, b_1]$. The corner $D^* = b_1$ is therefore the unique optimum for any $b_1 > 0$ (with $D^* = 0 = b_1$ holding trivially at $b_1 = 0$).
+
+Suppose, towards contradiction, that an interior partial-default equilibrium with $b_1 > 0$ exists when $\sigma_\omega = 0$. Then by the lender's pricing equation (\ref{eq:bondprice}),
+\begin{equation*}
+    q_0 = \frac{1}{\Rstar} \E_0\!\left[1 - \frac{D(y_1, b_1)}{b_1}\right] = 0,
+\end{equation*}
+and the household raises zero revenue from issuance, contradicting the requirement of an interior allocation in (\ref{eq:bc0}). Hence no equilibrium with $b_1 > 0$ exists, and the only equilibrium consistent with $\sigma_\omega = 0$ is the no-trade corner of \textcite{dubey_default_2005}, ruled out by Assumption \ref{ass:interior}.
+\end{proof}
+
+Herein we can see the dialectical role banking risk has on sovereign default within this thesis; from Proposition \ref{prop:internal_default}, the presence of idiosyncratic risk within the banking sector is necessary to admit partial default in equilibrium. Conditional on this equilibrium, idiosyncratic risk acts as an exogenous commitment device for the household, increasing the marginal cost of defaulting, thus the expected haircut is \textit{lower} under an increased $\sigma_{\omega}$. Banking risk both gives rise to the continuous-default mechanism that is the central object of equilibrium allocations, and disciplines its severity at the margin.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=1\linewidth]{cs_surfaces.pdf}
+    \caption{Comparative Static surfaces over $\gamma$ and $\sigma_{\omega}$, simulated under baseline calibration documented in Section \ref{sec:quantitative}.}
+    \label{fig:cs_surfaces}
+\end{figure}
 
 %========================================================================
 \section{Quantitative Analysis} \label{sec:quantitative}
 %========================================================================
 
 
-I now move to examine the quantitative implications of the model by conducting numerical simulations. I have chosen to use Sri Lanka's 2021-2022 default period as a calibration anchor. Sri Lanka's recent and well-documented renegotiation with bilateral and multilateral creditors makes their default a prime candidate to simulate via a partial-default model. That being said, moment-matching within a two-period setting is less credible than in an infinite-horizon case; rather, the quantitative analysis here serves the purposes of (i) demonstrating that the model admits a computable equilibrium with empirically reasonable values (ii) numerical demonstrations of the types of key comparative statics that would otherwise be challenging to derive analytically.
+I now move to examine the quantitative implications of the model by conducting numerical simulations. I have chosen to use Sri Lanka's 2021-2022 default period as a calibration anchor. Sri Lanka's recent and well-documented renegotiation with bilateral and multilateral creditors makes their default a prime candidate to simulate via a partial-default model. That being said, moment-matching within a two-period setting is less credible than in an infinite-horizon case; the absence of an ergodic distribution over debt and default outcomes means empirical moments such as average spreads, default frequency, and debt-to-GDP ratios cannot be targeted directly, and default costs cannot be spread onto a recursive continuation value. Rather, the quantitative analysis here serves the purposes of (i) demonstrating that the model admits a computable equilibrium with empirically reasonable values (ii) numerical demonstrations of the types of key comparative statics that would otherwise be challenging to derive analytically.
 
-Under the model's two-period setting, each period is set to a length of five years. This setting seeks to strike a balance between temporal realism and calibration feasibility. Periods shorter than this length do not allow for a realistic time frame we would reasonably expect sovereign renegotiation to occur within. Five years allows Period 1 to capture equilibrium following complete conclusion of refinancing. On the other hand, longer period settings would lead to issues of liquidity in our chosen instrument of calibration - CDS Swaps. 5 year sovereign bond CDS contracts are generally more widely traded than 10 year, thus ensuring implied default probability is adequately captured in price data. Thus, the discount rate and risk-free rate are calibrated to their respective five year compounded values. For the remainder of the quantitative analysis, I set my utility function to a CRRA arrangement,
+Under the model's two-period setting, each period is set to a length of five years. This setting seeks to strike a balance between temporal realism and calibration feasibility. Periods shorter than this length do not allow for a realistic time frame we would reasonably expect sovereign renegotiation to occur within. Five years allows Period 1 to capture equilibrium following complete conclusion of refinancing. On the other hand, longer period settings would lead to issues of liquidity in our chosen instrument of calibration - CDS Swaps. 5 year sovereign bond CDS contracts are generally more widely traded than 10 year, ensuring implied default probability is adequately captured in price data. Thus, the discount rate and risk-free rate are calibrated to their respective five year compounded values. For the remainder of the quantitative analysis, I set my utility function to a CRRA arrangement,
 \begin{equation*}
     u(C_t)=\frac{C_t^{1-\sigma_u}}{1-\sigma_u},
 \end{equation*}
 where $\sigma_u$ is the coefficient of relative risk aversion.
 
-The model is solved numerically through a nested optimisation architecture. The Period 0 equilibrium is recovered by maximising the household's lifetime value function over $b_1$, with the expectation approximated by a seven-node Gauss-Hermite quadrature. For each candidate $b_1$ and quadrature node $y_1$, the Period 1 equilibrium is solved for. $D^*(y_1, b_1)$ is found by maximising the household's Period 1 utility over $D \in [0, b_1]$. At each candidate $D$, the leverage--threshold condition (\ref{eq:omega_leverage}) is solved analytically for $M^f_1$ in terms of $\bar\omega_1$, leaving the foreign-input market-clearing condition (\ref{eq:mc_foreign}) as a single equation in $\bar\omega_1$ which is solved residually. The total derivative $\partial p_{m,1}/\partial N_1$ entering the Period 0 Euler equation is computed at the optimum $D^*$ via central finite differences on the inner solver.
+The model is solved numerically through a nested optimisation architecture. The Period 0 equilibrium is recovered by maximising the household's lifetime value function over $b_1$, with the expectation approximated by a seven-node Gauss-Hermite quadrature. For each candidate $b_1$ and quadrature node $y_1$, the Period 1 equilibrium is solved for. $D^*(y_1, b_1)$ is found by maximising the household's Period 1 utility over $D \in [0, b_1]$. At each candidate $D$, the leverage-threshold condition (\ref{eq:omega_leverage}) is solved analytically for $M^f_1$ in terms of $\bar\omega_1$, leaving the foreign-input market-clearing condition (\ref{eq:mc_foreign}) as a single equation in $\bar\omega_1$ which is solved residually. The total derivative $\partial p_{m,1}/\partial N_1$ entering the Period 0 Euler equation is computed at the optimum $D^*$ via central finite differences on the inner solver.
 
 \subsection{Baseline Calibration: The Case of Sri Lanka}
+
+Leading up to Sri Lanka's 2021--22 default, government revenue in 2019 as a percentage of GDP fell from ~12\% to ~8\% following reductions to value-added and labour taxation. Fiscal deterioration worsened following the collapse of tourism receipts following COVID-19, and spikes in wheat and fuel prices induced by Russia's invasion of Ukraine. A ban on chemical fertiliser imports drove down agricultural yields in 2021, forcing greater food imports and leaving the economy particularly susceptible to a balance-of-payments crisis. Foreign exchange reserves fell by ~99\% from 2019--22, and public debt rose to well above 100 \% of GDP, characterising a \textit{twin-deficits} crisis. Sri Lanka delcared a unilateral external debt moratorium on 12th of April 2022, with imports contracting significantly in the following months. Credit Default Swaps (CDS) on government bonds soared during this period \ref{fig:sri_cds}. 
 
 \input{baseline_calibration}
 
 I chose to anchor the calibration via the expected haircut, $\E\left[ {D}/{b_1}\right]$, in the model to target the implied expected loss backed out of credit-default swap data. Specifically, I look at Sri Lankan 5 year CDS pricing data, with implied default probability generated from the standard ISDA model with an assumed recovery rate of 40\%. Following Sri Lanka's sovereign default episode in 2021-22, the average daily implied default probability rose to $\approx 78\%$, from $\approx 22\%$ the prior five years - resulting in an expected loss of $\approx0.468$. This expected loss serves as the primary empirical moment targeted by the model's expected haircut. Table \ref{tab:calibration} documents the baseline calibration to Sri Lankan variables during this episode of default.
+
+Sri Lankan financial sector parameters are primarily based upon data published by the Central Bank of Sri Lanka (CBSL)\footnote{These statistics can be accessed within the \href{https://www.cbsl.gov.lk/en/publications/economic-and-financial-reports}{CBSL's Monetary Survey}.}. Some calibrations worthy of particular comment: $\bar n$ here is calibrated to the pre-crisis equity capital held by licensed commercial banks (LCBs) as a share of nominal GDP. $\gamma$ is calibrated to the ratio of sovereign debt exposure of LCBs to total local-currency debt issued by the Government of Sri Lanka, on the grounds that the sovereign-bank nexus in Sri Lanka operates almost exclusively through the LKR debt market, with a negligible share of international sovereign bonds held by LCBs. The Armington weight on domestic inputs $1-\alpha$ targets Sri Lanka's pre-crisis import share of GDP of $\approx25-30\%$ as published by the World Bank. CSV parameters $\sigma_{\omega}$ and $\mu$ follow standard \citet{bernanke_chapter_1999} style calibrations, with auditing costs $\mu$ sitting slightly above the high-end of \citet{carlstrom_agency_1997}'s estimates, reflecting Sri-Lanka's weaker bankruptcy infrastructure\footnote{The World Bank's \textit{Doing Business} "Resolving Insolvency" indicator places Sri Lanka as 94th of 190 in 2020 \citep{world_bank_doing_2020}. Most relevant to my calibration, the recovery rate for secured creditors is listed as 0.43 cents on the dollar, mapping to auditing costs of 0.57. I split the difference between this rate and the estimates of \citet{carlstrom_agency_1997} in my calibration of $\mu=0.4$}.
 
 \input{simul_summary}
 
