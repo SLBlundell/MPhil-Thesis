@@ -1,9 +1,8 @@
-%% MINIMIZE_HAIRCUT
+%% CALIBRATE and SOLVE GE MODEL
 %  Grid search over (gamma, sigma_w, mu) to find the parameter
 %  combination that minimises the expected haircut E[D/b1].
 %
-%  Re-uses the V0-maximising competitive-equilibrium solver pattern from
-%  solve_ge_model_value_max.m / comparative_static_surfaces.m:
+%  Uses V0-maximising competitive-equilibrium solver pattern.
 %
 %    For each (gamma, sigma_w, mu):
 %      1. Build CSV function handles
