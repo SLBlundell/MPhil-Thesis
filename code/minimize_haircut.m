@@ -155,10 +155,13 @@ if on_edge
     fprintf('NOTE: Minimum is on the grid boundary -- consider widening the search range.\n\n');
 end
 
-%% =============== DIAGNOSTIC RE-SOLVE AT MINIMUM =====================
+%% =============== FULL SIMULATION AT MINIMUM =========================
+%  Mirrors the output block of solve_ge_model_value_max.m, with the
+%  haircut-minimising (gamma, sigma_w, mu) substituted into par_base.
+
 fprintf('============================================================\n');
-fprintf('  Diagnostic re-solve at the minimum\n');
-fprintf('============================================================\n');
+fprintf('  Full simulation under the haircut-minimising calibration\n');
+fprintf('============================================================\n\n');
 
 par_star         = par_base;
 par_star.gamma   = gamma_star;
@@ -168,21 +171,105 @@ par_star.A_ref   = par_star.nbar_base + par_star.gamma * par_star.b0;
 par_star.nbar    = par_star.A_ref - par_star.gamma * par_star.b0;
 csv_star         = csv_functions(par_star.sigma_w, par_star.mu);
 
-ce_star = solve_b1_CE(par_star, csv_star, y1_nodes, weights, b1_max, n_coarse);
+% --- Echo parameters ---
+fprintf('Parameters:\n');
+fprintf('  beta=%.2f  sigma_u=%.1f  alpha=%.2f  eta=%.1f  sigma=%.2f\n', ...
+    par_star.beta, par_star.sigma_u, par_star.alpha, par_star.eta, par_star.sigma);
+fprintf('  nbar=%.4f  gamma=%.4f  sigma_w=%.4f  mu=%.4f  R*=%.2f\n', ...
+    par_star.nbar, par_star.gamma, par_star.sigma_w, par_star.mu, par_star.Rstar);
+fprintf('  y0=%.2f  b0=%.2f  rho=%.2f  mu_g=%.2f  sigma_g=%.3f\n\n', ...
+    par_star.y0, par_star.b0, par_star.rho, par_star.mu_g, par_star.sigma_g);
 
-fprintf('  b1*           = %.6f\n', ce_star.b1);
-fprintf('  q0            = %.6f\n', ce_star.q0);
-fprintf('  E[D/b1]       = %.6f\n', ce_star.E_haircut);
-fprintf('  Spread        = %.1f bp\n\n', ce_star.spread_bp);
-
-fprintf('Per-state default policy at the minimum:\n');
-fprintf('  %8s %10s %10s\n', 'y1', 'D*', 'D*/b1');
-fprintf('  %s\n', repmat('-', 1, 32));
+% --- Echo quadrature ---
+fprintf('Gauss-Hermite quadrature (%d nodes):\n', nq);
+fprintf('  %6s  %10s  %10s\n', 'j', 'y1', 'weight');
 for j = 1:nq
-    sj = solve_period1(y1_nodes(j), ce_star.b1, par_star, csv_star, []);
-    fprintf('  %8.4f %10.4f %10.4f\n', y1_nodes(j), sj.D, sj.D / ce_star.b1);
+    fprintf('  %6d  %10.6f  %10.6f\n', j, y1_nodes(j), weights(j));
 end
+fprintf('  Sum of weights = %.10f\n\n', sum(weights));
+
+% --- Re-solve Period 0 and Period 1 fully at (gamma*, sigma_w*, mu*) ---
+b1_star_full = b1_at_min;
+D_vals  = zeros(nq, 1);
+sol1    = cell(nq, 1);
+for j = 1:nq
+    sol1{j}  = solve_period1(y1_nodes(j), b1_star_full, par_star, csv_star, []);
+    D_vals(j) = sol1{j}.D;
+end
+
+q0_star = (1 / par_star.Rstar) * sum( weights .* (1 - D_vals / b1_star_full) );
+md0 = par_star.y0 - par_star.b0 + q0_star * b1_star_full;
+mf0 = md0 * ( (1 - par_star.alpha) / (par_star.alpha * par_star.Rstar) )^par_star.sigma;
+C0  = ( par_star.alpha * md0^par_star.eta + (1 - par_star.alpha) * mf0^par_star.eta )^(1/par_star.eta);
+
+if q0_star > 1e-8
+    yield0    = par_star.Rstar / q0_star;
+    spread_bp = (yield0 - par_star.Rstar) * 10000;
+else
+    yield0    = Inf;
+    spread_bp = Inf;
+end
+
+% --- Period 0 ---
+fprintf('--- Period 0 ---\n');
+fprintf('  b1          = %10.6f\n', b1_star_full);
+fprintf('  q0          = %10.6f\n', q0_star);
+fprintf('  md0         = %10.6f\n', md0);
+fprintf('  mf0         = %10.6f\n', mf0);
+fprintf('  C0          = %10.6f\n', C0);
+fprintf('  Yield (R/q) = %10.6f\n', yield0);
+fprintf('  Spread (bp) = %10.1f\n\n', spread_bp);
+
+% --- Period 1 by state ---
+fprintf('--- Period 1 (by state) ---\n');
+fprintf('  %8s %8s %8s %8s %8s %8s %8s %8s %8s\n', ...
+    'y1', 'D', 'D/b1', 'wbar', 'Mf', 'pm', 'mf', 'C1', 'Z/R*');
+fprintf('  %s\n', repmat('-', 1, 80));
+for j = 1:nq
+    s = sol1{j};
+    fprintf('  %8.4f %8.4f %8.4f %8.4f %8.4f %8.4f %8.4f %8.4f %8.4f\n', ...
+        y1_nodes(j), s.D, s.D/b1_star_full, s.omegabar, s.Mf, ...
+        s.pm, s.mf, s.C1, s.Z_Rstar);
+end
+
+% --- Summary statistics ---
+E_D        = sum(weights .* D_vals);
+E_haircut  = E_D / b1_star_full;
+C1_vals    = cellfun(@(s) s.C1, sol1);
+Z_vals     = cellfun(@(s) s.Z_Rstar, sol1);
+wbar_vals  = cellfun(@(s) s.omegabar, sol1);
+mf_vals    = cellfun(@(s) s.mf, sol1);
+pm_vals    = cellfun(@(s) s.pm, sol1);
+
+fprintf('\n--- Summary ---\n');
+fprintf('  E[D]              = %10.6f\n', E_D);
+fprintf('  E[D/b1] (haircut) = %10.6f\n', E_haircut);
+fprintf('  E[1-D/b1] (recov) = %10.6f\n', 1 - E_haircut);
+fprintf('  E[C1]             = %10.6f\n', sum(weights .* C1_vals));
+fprintf('  E[Z/R*] (EFP)     = %10.6f\n', sum(weights .* Z_vals));
+fprintf('  E[wbar]           = %10.6f\n', sum(weights .* wbar_vals));
+fprintf('  E[mf]             = %10.6f\n', sum(weights .* mf_vals));
+fprintf('  E[pm]             = %10.6f\n', sum(weights .* pm_vals));
 fprintf('\n');
+
+% Stash the full simulation in the result struct so it lands in the .mat
+ce_star.b1          = b1_star_full;
+ce_star.q0          = q0_star;
+ce_star.md0         = md0;
+ce_star.mf0         = mf0;
+ce_star.C0          = C0;
+ce_star.yield0      = yield0;
+ce_star.spread_bp   = spread_bp;
+ce_star.D_vals      = D_vals;
+ce_star.C1_vals     = C1_vals;
+ce_star.Z_vals      = Z_vals;
+ce_star.wbar_vals   = wbar_vals;
+ce_star.mf_vals     = mf_vals;
+ce_star.pm_vals     = pm_vals;
+ce_star.y1_nodes    = y1_nodes;
+ce_star.weights     = weights;
+ce_star.sol1        = sol1;
+ce_star.E_haircut   = E_haircut;
 
 %% ====================== SAVE RESULTS ================================
 EH3   = reshape(EH,   size(GA));
