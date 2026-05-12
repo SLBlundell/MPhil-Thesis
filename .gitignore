@@ -3,3 +3,4 @@ adaptive_solver.py
 code/solve_ge_model.asv
 *.asv
 code/solve_ge_model_euler.m
+/.claude
