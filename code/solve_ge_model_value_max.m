@@ -39,11 +39,11 @@ par.sigma   = 1/(1-par.eta);% elasticity of substitution = 1/(1-eta)
 
 % Financial sector
 par.nbar_base    = 0.065;         % long-run intermediary net worth
-par.gamma   = 0.320;         % home bias share of sovereign debt
+par.gamma   = 0.250;         % home bias share of sovereign debt
 
 % Christiano et al. - sigma_w = 0.25, mu = 0.2 to 0.28
-par.sigma_w = 0.25;         % idiosyncratic shock volatility (sigma_omega)
-par.mu      = 0.400;        % CSV monitoring cost
+par.sigma_w = 0.35;         % idiosyncratic shock volatility (sigma_omega)
+par.mu      = 0.450;        % CSV monitoring cost
 
 % International
 par.Rstar   = 1.104;        % world gross interest rate

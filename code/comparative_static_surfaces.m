@@ -1,20 +1,25 @@
-%% COMPARATIVE_STATIC_SURFACES (CE-only, V0-max with multi-start)
+%% COMPARATIVE_STATIC_SURFACES (CE-only, V0-max with leftmost-local-max)
 %  Generates 3-D comparative-static surfaces over (sigma_omega, gamma)
 %  for the four CE objects in Section 8.3:
 %
 %    (i)   Expected haircut          E[D/b1]
-%    (ii)  Sovereign spread          R*/q0 - R*           (basis points, capped)
+%    (ii)  Annualised spread         (R*/q0)^(1/T) - R*^(1/T)   (bp)
 %    (iv)  External finance premium  E[Z1/R*]
-%    (vi)  Import compression        E[mf | D=0] - E[mf]   (>= 0)
+%    (vi)  Import compression        E[mu * G(omegabar)]
 %
 %  ----------------------------------------------------------------------
-%  CE solver: multi-start grid search + fminbnd refinement on V0.
-%  Mirrors solve_ge_model_value_max.m but adds a coarse global scan to
-%  defend against local maxima of V0(b1).
+%  CE solver: V0 max with LEFTMOST-LOCAL-MAX selection.
+%  V0(b1) at this class of calibration has multiple local maxima:
+%    - Prudent equilibrium (moderate b1, moderate default)
+%    - Ponzi-like equilibrium (high b1, near-full default)
+%  Both satisfy lender break-even; we consistently select the prudent
+%  (leftmost) local maximum, which matches your baseline simulation and
+%  the standard literature convention.
 %
-%  Conceptual note: V0 max with q0(b1) computed inside is technically
-%  the planner's b1 -- the strict CE differs by the q0'(b1)*b1 term in
-%  the Period 0 FOC.  Matches the choice in the main solver script.
+%  Spread annualisation: each model period is T = 5 years (matching CDS
+%  tenor).  The raw 5-year spread R*/q0 - R* is converted to annualised
+%  basis points via geometric annualisation, eliminating the need for
+%  capping at extreme values.
 %  ----------------------------------------------------------------------
 %
 %  Workflow:
@@ -34,9 +39,9 @@ ngamma     = 12;
 sigma_w_lo = 0.20;     sigma_w_hi = 0.40;
 gamma_lo   = 0.15;     gamma_hi   = 0.50;
 b1_max     = 2.0;
-spread_cap = 20000;                      % bumped from 5000
+T_years    = 5;                          % model period length, years
 
-n_coarse   = 15;                         % b1 grid for multi-start
+n_coarse   = 25;                         % b1 grid for local-max search
 
 out_dir    = 'cs_output';
 save_individual_panels = true;
@@ -84,17 +89,23 @@ par_diag.sigma_w = sigma_w_base;
 par_diag.gamma   = gamma_base;
 csv_diag         = csv_functions(par_diag.sigma_w, par_diag.mu);
 
-ce_diag = solve_b1_CE(par_diag, csv_diag, y1_nodes, weights, b1_max, n_coarse);
+[ce_diag, ~, b1_curve_diag, lmx_diag] = ...
+    solve_b1_CE(par_diag, csv_diag, y1_nodes, weights, b1_max, n_coarse, T_years);
+
+fprintf('\n  V0(b1) coarse scan: %d local maxima found at b1 = ', ...
+    numel(lmx_diag));
+fprintf('%.3f ', b1_curve_diag(lmx_diag));
+fprintf('\n  Selected: leftmost (b1 ~ %.3f)\n', b1_curve_diag(lmx_diag(1)));
 
 fprintf('\n  CE equilibrium:\n');
-fprintf('    b1*           = %.6f\n', ce_diag.b1);
-fprintf('    q0            = %.6f\n', ce_diag.q0);
-fprintf('    E[D/b1]       = %.6f\n', ce_diag.E_haircut);
-fprintf('    Spread        = %.1f bp\n', ce_diag.spread_bp);
-fprintf('    E[Z/R*]       = %.6f\n', ce_diag.E_ZR);
-fprintf('    E[mf]         = %.6f\n', ce_diag.E_mf);
-fprintf('    E[mf | D=0]   = %.6f\n', ce_diag.E_mf_nd);
-fprintf('    Imp. comp.    = %.6f\n\n', ce_diag.import_comp);
+fprintf('    b1*               = %.6f\n', ce_diag.b1);
+fprintf('    q0                = %.6f\n', ce_diag.q0);
+fprintf('    E[D/b1]           = %.6f\n', ce_diag.E_haircut);
+fprintf('    Spread (raw, %dy) = %.1f bp\n', T_years, ce_diag.spread_bp_raw);
+fprintf('    Spread (annual)   = %.1f bp\n', ce_diag.spread_bp_ann);
+fprintf('    E[Z/R*]           = %.6f\n', ce_diag.E_ZR);
+fprintf('    E[mf]             = %.6f\n', ce_diag.E_mf);
+fprintf('    Import comp.      = %.6f  (E[mu G(omegabar)])\n\n', ce_diag.import_comp);
 
 fprintf('  Per-state default policy:\n');
 fprintf('  %6s %8s %8s %14s %12s\n', 'y1', 'D*', 'D*/b1', 'Status', '|dC1/dD|');
@@ -137,13 +148,13 @@ for j = 1:nq
         y1, Dj, haircut_j, status, dC1dD);
 end
 
-fprintf('\n  Summary: %d/%d interior, %d/%d corner.\n', ...
+fprintf('\n  Summary: %d/%d interior, %d/%d corner.\n\n', ...
     n_interior, nq, n_corner, nq);
-fprintf('\n');
 
 %% ============= ALLOCATE OUTPUT ARRAYS ===============================
 EH       = nan(N,1);
-SPRD     = nan(N,1);
+SPRD_RAW = nan(N,1);
+SPRD_ANN = nan(N,1);
 EFP      = nan(N,1);
 IMPCOMP  = nan(N,1);
 B1       = nan(N,1);
@@ -169,15 +180,17 @@ t0 = tic;
 
 if use_par
     parfor k = 1:N
-        [EH(k), SPRD(k), EFP(k), IMPCOMP(k), B1(k), NCORNER(k), OK(k)] = ...
+        [EH(k), SPRD_RAW(k), SPRD_ANN(k), EFP(k), IMPCOMP(k), ...
+         B1(k), NCORNER(k), OK(k)] = ...
             solve_one_point(SW(k), GA(k), par_base, ...
-                            y1_nodes, weights, b1_max, n_coarse);
+                            y1_nodes, weights, b1_max, n_coarse, T_years);
     end
 else
     for k = 1:N
-        [EH(k), SPRD(k), EFP(k), IMPCOMP(k), B1(k), NCORNER(k), OK(k)] = ...
+        [EH(k), SPRD_RAW(k), SPRD_ANN(k), EFP(k), IMPCOMP(k), ...
+         B1(k), NCORNER(k), OK(k)] = ...
             solve_one_point(SW(k), GA(k), par_base, ...
-                            y1_nodes, weights, b1_max, n_coarse);
+                            y1_nodes, weights, b1_max, n_coarse, T_years);
     end
 end
 
@@ -185,26 +198,25 @@ fprintf('Completed in %.1f s (%d/%d successful).\n', toc(t0), sum(OK), N);
 fprintf('Mean corner states per grid point: %.2f / %d\n', ...
     mean(NCORNER(OK)), nq);
 
-%% ============= RESHAPE & APPLY SPREAD CAP ===========================
-EH       = reshape(EH,      size(SW));
-SPRD     = reshape(SPRD,    size(SW));
-EFP      = reshape(EFP,     size(SW));
-IMPCOMP  = reshape(IMPCOMP, size(SW));
-B1       = reshape(B1,      size(SW));
-NCORNER  = reshape(NCORNER, size(SW));
-
-SPRD_capped = min(SPRD, spread_cap);
+%% ============= RESHAPE ===============================================
+EH       = reshape(EH,       size(SW));
+SPRD_RAW = reshape(SPRD_RAW, size(SW));
+SPRD_ANN = reshape(SPRD_ANN, size(SW));
+EFP      = reshape(EFP,      size(SW));
+IMPCOMP  = reshape(IMPCOMP,  size(SW));
+B1       = reshape(B1,       size(SW));
+NCORNER  = reshape(NCORNER,  size(SW));
 
 %% ====================== SAVE & PLOT =================================
 if ~exist(out_dir,'dir'); mkdir(out_dir); end
 
 save(fullfile(out_dir,'cs_results.mat'), ...
     'sigma_w_grid','gamma_grid','SW','GA', ...
-    'EH','SPRD','SPRD_capped','EFP','IMPCOMP','B1','NCORNER','OK', ...
-    'par_base','spread_cap');
+    'EH','SPRD_RAW','SPRD_ANN','EFP','IMPCOMP','B1','NCORNER','OK', ...
+    'par_base','T_years');
 
-plot_surfaces(SW, GA, EH, SPRD_capped, EFP, IMPCOMP, B1, NCORNER, ...
-              spread_cap, nq, out_dir, save_individual_panels);
+plot_surfaces(SW, GA, EH, SPRD_ANN, EFP, IMPCOMP, B1, NCORNER, ...
+              T_years, nq, out_dir, save_individual_panels);
 
 fprintf('All output written to %s/\n', out_dir);
 
@@ -212,53 +224,58 @@ fprintf('All output written to %s/\n', out_dir);
 %  ============================ LOCAL FUNCTIONS ========================
 %% ====================================================================
 
-function [eh, sp, efp, imp, b1, nc, ok] = solve_one_point(sw, ga, par_base, ...
-                                            y1n, w, b1max, n_coarse)
+function [eh, sp_raw, sp_ann, efp, imp, b1, nc, ok] = ...
+    solve_one_point(sw, ga, par_base, y1n, w, b1max, n_coarse, T_years)
     par         = par_base;
     par.sigma_w = sw;
     par.gamma   = ga;
     csv_k       = csv_functions(par.sigma_w, par.mu);
-    eh = NaN; sp = NaN; efp = NaN; imp = NaN;
+    eh = NaN; sp_raw = NaN; sp_ann = NaN; efp = NaN; imp = NaN;
     b1 = NaN; nc = NaN; ok = false;
     try
-        ce  = solve_b1_CE(par, csv_k, y1n, w, b1max, n_coarse);
-        eh  = ce.E_haircut;
-        sp  = ce.spread_bp;
-        efp = ce.E_ZR;
-        imp = ce.import_comp;
-        b1  = ce.b1;
-        nc  = ce.n_corner;
-        ok  = true;
+        ce  = solve_b1_CE(par, csv_k, y1n, w, b1max, n_coarse, T_years);
+        eh     = ce.E_haircut;
+        sp_raw = ce.spread_bp_raw;
+        sp_ann = ce.spread_bp_ann;
+        efp    = ce.E_ZR;
+        imp    = ce.import_comp;
+        b1     = ce.b1;
+        nc     = ce.n_corner;
+        ok     = true;
     catch
         % keep NaNs
     end
 end
 
-function ce = solve_b1_CE(par, csv, y1n, w, b1max, n_coarse)
-% Multi-start V0 max:
-%   1. Coarse grid evaluation of V0 across [eps, b1max]
-%   2. fminbnd refinement in neighbourhood of global max
-%
-% Defends against local maxima of V0(b1), which arise when the Period 1
-% policy function induces a non-concave value function (typical in
-% partial-default models).
+function [ce, V_curve, b1_curve, local_max_idx] = ...
+    solve_b1_CE(par, csv, y1n, w, b1max, n_coarse, T_years)
+% V0 max with leftmost-local-max selection.
 
-    b1_coarse = linspace(1e-3, b1max, n_coarse);
-    V_coarse  = -inf(size(b1_coarse));
+    b1_curve = linspace(1e-3, b1max, n_coarse);
+    V_curve  = -inf(size(b1_curve));
     for i = 1:n_coarse
         try %#ok<TRYNC>
-            V_coarse(i) = V0(b1_coarse(i), par, csv, y1n, w);
+            V_curve(i) = V0(b1_curve(i), par, csv, y1n, w);
         end
     end
 
-    [~, idx] = max(V_coarse);
-    lo = b1_coarse(max(idx-1, 1));
-    hi = b1_coarse(min(idx+1, n_coarse));
+    local_max_idx = find( ...
+        V_curve(2:end-1) > V_curve(1:end-2) & ...
+        V_curve(2:end-1) > V_curve(3:end)) + 1;
 
+    if ~isempty(local_max_idx)
+        idx = local_max_idx(1);
+    else
+        [~, idx] = max(V_curve);
+        local_max_idx = idx;
+    end
+
+    lo = b1_curve(max(idx-1, 1));
+    hi = b1_curve(min(idx+1, n_coarse));
     opts          = optimset('Display','off','TolX',1e-7);
     [b1_star, ~]  = fminbnd(@(b) -V0(b, par, csv, y1n, w), lo, hi, opts);
 
-    ce = compute_moments(b1_star, par, csv, y1n, w);
+    ce = compute_moments(b1_star, par, csv, y1n, w, T_years);
 end
 
 function v = V0(b1, par, csv, y1n, w)
@@ -281,17 +298,16 @@ function v = V0(b1, par, csv, y1n, w)
     v   = u0 + par.beta * Eu1;
 end
 
-function out = compute_moments(b1, par, csv, y1n, w)
+function out = compute_moments(b1, par, csv, y1n, w, T_years)
     nq        = numel(y1n);
     Dv        = zeros(nq,1);
     Zv        = zeros(nq,1);
     Hv        = zeros(nq,1);
     mf_eq     = zeros(nq,1);
-    mf_nd     = zeros(nq,1);
+    comp_v    = zeros(nq,1);
     is_corner = false(nq,1);
 
     for j = 1:nq
-        % Equilibrium
         s         = solve_period1(y1n(j), b1, par, csv, []);
         Dv(j)     = s.D;
         Zv(j)     = s.Z_Rstar;
@@ -299,63 +315,63 @@ function out = compute_moments(b1, par, csv, y1n, w)
         mf_eq(j)  = s.mf;
         is_corner(j) = (s.D < 1e-4) || (abs(s.D - b1) < 1e-4*b1);
 
-        % Counterfactual: D=0 forced at same b1
-        mf_nd(j) = compute_mf_at_D(0, y1n(j), b1, par, csv);
+        if isfield(s, 'omegabar')
+            comp_v(j) = par.mu * csv.G(s.omegabar);
+        else
+            comp_v(j) = compute_compression_at_D(s.D, y1n(j), b1, par, csv);
+        end
     end
 
-    q0       = (1/par.Rstar) * sum(w .* (1 - Dv/b1));
+    q0 = (1/par.Rstar) * sum(w .* (1 - Dv/b1));
 
-    % Robust expectation for counterfactual
-    valid_nd = ~isnan(mf_nd);
-    if any(valid_nd)
-        E_mf_nd = sum(w(valid_nd) .* mf_nd(valid_nd)) / sum(w(valid_nd));
+    % Spread: raw is per-period (T-year) gross yield differential in bp.
+    % Annualised version converts to per-annum basis points by extracting
+    % the geometric Tth root of both gross returns and differencing.
+    spread_raw_bp = (par.Rstar/q0 - par.Rstar) * 10000;
+    if q0 > 0
+        R_yield_ann   = (par.Rstar/q0)^(1/T_years);
+        Rstar_ann     = par.Rstar^(1/T_years);
+        spread_ann_bp = (R_yield_ann - Rstar_ann) * 10000;
     else
-        E_mf_nd = NaN;
+        spread_ann_bp = NaN;
     end
-    E_mf = sum(w .* mf_eq);
 
-    out.b1          = b1;
-    out.q0          = q0;
-    out.E_haircut   = sum(w .* Hv);
-    out.spread_bp   = (par.Rstar/q0 - par.Rstar) * 10000;
-    out.E_ZR        = sum(w .* Zv);
-    out.E_mf        = E_mf;
-    out.E_mf_nd     = E_mf_nd;
-    out.import_comp = E_mf_nd - E_mf;
-    out.n_corner    = sum(is_corner);
+    valid    = ~isnan(comp_v);
+
+    out.b1            = b1;
+    out.q0            = q0;
+    out.E_haircut     = sum(w .* Hv);
+    out.spread_bp_raw = spread_raw_bp;
+    out.spread_bp_ann = spread_ann_bp;
+    out.E_ZR          = sum(w .* Zv);
+    out.E_mf          = sum(w .* mf_eq);
+    if any(valid)
+        out.import_comp = sum(w(valid) .* comp_v(valid)) / sum(w(valid));
+    else
+        out.import_comp = NaN;
+    end
+    out.n_corner      = sum(is_corner);
 end
 
 %% ----------------- INNER-SOLVE HELPERS ------------------------------
 
-function mf = compute_mf_at_D(D, y1, b1, par, csv)
-% Imports mf at fixed D, holding b1 and y1 fixed.  Used for the
-% no-default counterfactual.
-
-    par.y1 = y1; par.b1 = b1;
+function comp = compute_compression_at_D(D, y1, b1, par, csv)
     N           = par.nbar + par.gamma * (b1 - D);
     income_base = y1 - (b1 - D);
     if N <= 0 || income_base <= 0
-        mf = NaN; return
+        comp = NaN; return
     end
-
     opts = optimoptions('fsolve','Display','off','TolFun',1e-8);
     [log_wb_star, ~, flag] = fsolve(@(x) mc_resid(x, N, income_base, par, csv), ...
                                     log(0.45), opts);
     if flag <= 0
-        mf = NaN; return
+        comp = NaN; return
     end
-
     omegabar = exp(log_wb_star);
-    Gam      = csv.Gamma(omegabar);
-    Gp       = csv.GammaPrime(omegabar);
-    muG      = par.mu * csv.G(omegabar);
-    Mf       = N * (1 + Gp*omegabar/(1-Gam));
-    mf       = Mf * (1 - muG);
+    comp     = par.mu * csv.G(omegabar);
 end
 
 function C1 = compute_C1_at_D(D, y1, b1, par, csv)
-% C1 at fixed D.  Used for diagnostic FOC check.
-
     par.y1 = y1; par.b1 = b1;
     N           = par.nbar + par.gamma * (b1 - D);
     income_base = y1 - (b1 - D);
@@ -401,14 +417,14 @@ end
 
 %% ----------------- PLOTTING -----------------------------------------
 
-function plot_surfaces(SW, GA, EH, SPRD, EFP, IMPCOMP, B1, NCORNER, ...
-                       spread_cap, nq, outdir, save_each)
+function plot_surfaces(SW, GA, EH, SPRD_ANN, EFP, IMPCOMP, B1, NCORNER, ...
+                       T_years, nq, outdir, save_each)
 
     panels = {
-        EH,       'Expected Haircut $E[D/b_1]$',                       'haircut';
-        SPRD,     sprintf('Sovereign Spread (bp, capped at %d)', spread_cap), 'spread';
-        EFP,      'External Finance Premium $E[Z_1/R^*]$',             'efp';
-        IMPCOMP,  'Import Compression $E[m^f | D{=}0] - E[m^f]$',      'import_comp';
+        EH,       'Expected Haircut $E[D/b_1]$',                          'haircut';
+        SPRD_ANN, sprintf('Annualised Sovereign Spread (bp, %d-year period)', T_years), 'spread';
+        EFP,      'External Finance Premium $E[Z_1/R^*]$',                'efp';
+        IMPCOMP,  'Import Compression $E[\mu G(\bar\omega)]$',            'import_comp';
     };
 
     %% Combined 2x2 figure ---------------------------------------------
