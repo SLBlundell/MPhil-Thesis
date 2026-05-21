@@ -1,19 +1,26 @@
 \begin{table}[htbp]
     \centering
     \renewcommand{\arraystretch}{1.2}
+    \renewcommand{\thefootnote}{\fnsymbol{footnote}} 
+    
     \begin{tabular}{@{}lrlr@{}}
         \toprule
-        \multicolumn{2}{@{}l}{\textbf{Period 0 Allocations}} & \multicolumn{2}{l@{}}{\textbf{Expected Summary Statistics}} \\
+        \multicolumn{2}{@{}l}{\textbf{Period 0 Allocations}} & \multicolumn{2}{l@{}}{\textbf{Expected Period 1 Outcomes}} \\
         \midrule
-        Debt Issued ($b_1$) & 0.4296 & Expected Default ($\E[D]$) & 0.3216 \\
-        Bond Price ($q_0$) & 0.2277 & Expected Haircut ($\E[D/b_1]$) & 0.7487 \\
-        Domestic Goods ($m_{d,0}$) & 0.9178 & Expected Recovery ($\E[1 - D/b_1]$) & 0.2513 \\
-        Imported Goods ($m_{f,0}$) & 0.5718 & Expected Consumption ($\E[C_1]$) & 0.5137 \\
-        Consumption ($C_0$) & 0.7768 & & \\
-        Spread (bps, annualised) & 3,505 & & \\
-        Spread (bps, 5-yr cumul.) & 37,455 & & \\
+        Consumption ($C_0$)         & 0.8378 & Expected Default ($\E[D]$)            & 0.2348 \\
+        Domestic Goods ($m_{d,0}$)  & 0.9899 & Expected Haircut ($\E[D/b_1]$)        & 0.5558 \\
+        Imported Goods ($m_{f,0}$)  & 0.6168 & Expected Recovery ($\E[1 - D/b_1]$)   & 0.4442 \\
+        Debt Issued ($b_1$)         & 0.4223 & Expected Consumption ($\E[C_1]$)      & 0.5110 \\
+        Bond Price ($q_0$)          & 0.4023 &                                       &        \\
+        Spread (bps, annualised)\footnotemark[1] & 2{,}038 &                         &        \\
         \bottomrule
     \end{tabular}
-    \caption{Period 0 Equilibrium and Expected Macroeconomic Moments}
+    \caption{Period 0 Equilibrium and Expected Macroeconomic Moments.}
     \label{tab:period0_summary}
 \end{table}
+
+% Wrap the footnotetext in a group to strictly enforce the symbol
+\begingroup
+\renewcommand{\thefootnote}{\fnsymbol{footnote}}
+\footnotetext[1]{Under the two-period model formulation where each period corresponds to five years, the cumulative spread is converted to an annualised basis-point measure via $\text{spread}_{\text{ann.}} = \left[(R^*/q_0)^{1/5} - (R^*)^{1/5}\right] \times 10{,}000$.}
+\endgroup
